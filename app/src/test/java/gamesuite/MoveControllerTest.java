@@ -22,7 +22,7 @@ public class MoveControllerTest {
     @Test
     void testCheckMove() {
         GameBoard board = new GameBoard(8);
-        GameState game = new GameState(board, p1, p1);
+        GameState game = new GameState(board, p1, p2);
         GameStateManager stateMang = new GameStateManager(game);
         RulesValidator validator = new RulesValidator(game);
         MoveController movCont = new MoveController(validator, stateMang);
@@ -69,7 +69,7 @@ public class MoveControllerTest {
         assertFalse(movCont.checkMove(move));
 
         board = new GameBoard(8);
-        game = new GameState(board, null, null);
+        game = new GameState(board, p1, p2);
         stateMang = new GameStateManager(game);
         validator = new RulesValidator(game);
         movCont = new MoveController(validator, stateMang);

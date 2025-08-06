@@ -2,6 +2,8 @@ package gamesuite.model.logic;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
 import gamesuite.model.data.CoordPair;
 import gamesuite.model.data.CoordPairView;
 import gamesuite.model.data.Move;
@@ -95,7 +97,12 @@ public class MoveController {
                 };
                 for(CoordPair currPos : checks) {
                     boolean hasFurtherJumps = this.validator.hasFurtherJumps(currPos);
-                    this.stateManager.removeFromJumps(currPos, hasFurtherJumps);
+                    if(!hasFurtherJumps)
+                        this.stateManager.removeFromJumps(currPos, hasFurtherJumps);
+                    else if(currPos.getPiece() != null && currPos.getPiece().getName() == "B")
+                        this.stateManager.addPlayerJumps(currPos, 1);
+                    else if(currPos.getPiece() != null && currPos.getPiece().getName() == "R")
+                        this.stateManager.addPlayerJumps(currPos, 2);
                 }
             }
             int x = changed.get(size - 1).getX();
@@ -109,12 +116,30 @@ public class MoveController {
 
             if(this.stateManager.getFurtherJumps() != null && this.stateManager.getFurtherJumps().equals(start))
                 this.stateManager.setFurtherJumps(null);   
+
+            if(changed.size() == 3 && this.stateManager.getFurtherJumps() == null && this.validator.hasFurtherJumps(end))
+                this.stateManager.setFurtherJumps(end);
         }
 
         if(this.stateManager.getFurtherJumps() == null) {
             boolean check = this.validator.hasValidMoves("B");
             boolean check2 = this.validator.hasValidMoves("R");
             this.stateManager.incrTurn(check, check2);
+        }
+        updateJumpsList();
+    }
+
+      private void updateJumpsList() {
+        Set<CoordPair> p1Jumps = this.stateManager.getJumps(1);
+        Set<CoordPair> p2Jumps = this.stateManager.getJumps(2);
+
+        for(CoordPair pos: p1Jumps) {
+            if(!this.validator.hasFurtherJumps(pos))
+                this.stateManager.removeFromJumps(pos, false);
+        }
+        for(CoordPair pos: p2Jumps) {
+            if(!this.validator.hasFurtherJumps(pos))
+                this.stateManager.removeFromJumps(pos, false);
         }
     }
     

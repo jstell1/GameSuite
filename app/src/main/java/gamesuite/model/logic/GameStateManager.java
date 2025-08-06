@@ -1,7 +1,6 @@
 package gamesuite.model.logic;
 
 import java.util.Set;
-
 import gamesuite.model.data.CoordPair;
 import gamesuite.model.data.GameBoard;
 import gamesuite.model.data.GameBoardView;
@@ -131,4 +130,12 @@ public class GameStateManager {
     public int getTurn() { return this.game.getTurn(); }
 
     public GameStateView getGameStateView() { return this.game.getGameStateView(); }
+
+    public void addPlayerJumps(CoordPair currPos, int playerNum) {
+        this.game.addPlayerJumps(currPos.getX(), currPos.getY(), playerNum);
+    }
+    
+    public Set<CoordPair> getJumps(int playerNum) {
+        return this.game.getJumps(playerNum);
+    }
 }
