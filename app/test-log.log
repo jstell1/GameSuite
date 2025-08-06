@@ -1,0 +1,314 @@
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |  |  |  |  |  |  |  |
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |  |  |  |  |  |  |  |
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:23:53 PM gamesuite.GameControllerTest getBoardStateTest
+INFO: getBoardStateTest passed
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |  |  |  |  |  |  |  |
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |  |  |  |  |  |  |  |
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:29:10 PM gamesuite.GameControllerTest getBoardStateTest
+INFO: getBoardStateTest passed
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |  |  |  |  |  |  |  |
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |  |  |  |  |  |  |  |
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |BC|  |BC|  |BC|
+________________________
+|BC|  |  |  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Test Passed: testMakeMove()
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Expected Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |  |  |BC|  |BC|
+________________________
+|BC|  |BC|  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest testMakeMove
+INFO: Actual Board:
+_________________________
+|  |BC|  |BC|  |BC|  |BC|
+________________________
+|BC|  |BC|  |BC|  |BC|  |
+________________________
+|  |  |  |  |  |BC|  |BC|
+________________________
+|BC|  |BC|  |  |  |  |  |
+________________________
+|  |RC|  |  |  |  |  |  |
+________________________
+|  |  |RC|  |RC|  |RC|  |
+________________________
+|  |RC|  |RC|  |RC|  |RC|
+________________________
+|RC|  |RC|  |RC|  |RC|  |
+________________________
+
+
+Jul 22, 2025 7:49:02 PM gamesuite.GameControllerTest getBoardStateTest
+INFO: getBoardStateTest passed
