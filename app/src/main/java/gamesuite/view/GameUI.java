@@ -37,9 +37,9 @@ public class GameUI {
         CoordPair endPos = null;
         
         if(playerNum == 1)
-            System.out.print("Player 1 enter start coordinates (x, y): ");
+            System.out.print("Player 1 enter start coordinates (row, col): ");
         else 
-            System.out.print("Player 2 enter start coordinates (x, y): ");
+            System.out.print("Player 2 enter start coordinates (row, col): ");
 
         String input = this.in.nextLine();
         Matcher matcher = COORD_PATTERN.matcher(input);
@@ -49,9 +49,9 @@ public class GameUI {
             startPos = new CoordPair(x, y);
         }
         if(playerNum == 1)
-            System.out.print("Player 1 enter end coordinates (x, y): ");
+            System.out.print("Player 1 enter end coordinates (row, col): ");
         else
-            System.out.print("Player 2 enter end coordinates (x, y): ");
+            System.out.print("Player 2 enter end coordinates (row, col): ");
 
         input = this.in.nextLine();
         matcher = COORD_PATTERN.matcher(input);

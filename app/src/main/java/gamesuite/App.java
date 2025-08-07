@@ -32,7 +32,7 @@ public class App {
             }
         }
         if(checkers.getWinner() != null)
-            System.out.println("Winner" + checkers.getWinner().getName());
+            System.out.println("Winner: " + checkers.getWinner().getName());
         else    
             System.out.println("Draw");
     }
