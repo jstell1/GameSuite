@@ -19,11 +19,10 @@ public class GameStateManager {
     }
 
     public void incrTurn(boolean p1HasMoves, boolean p2HasMoves) {
-         Player[] players = this.game.getPlayers();
+        Player[] players = this.game.getPlayers();
         int p1Points = players[0].getPoints();
         int p2Points = players[1].getPoints();
-    
-        if(p2HasMoves && !p1HasMoves) {
+             if(p2HasMoves && !p1HasMoves) {
             this.game.setWinner(2);
         } else if(p1HasMoves && !p2HasMoves) {
             this.game.setWinner(1);
@@ -38,6 +37,7 @@ public class GameStateManager {
             this.game.setTurn(this.game.getTurn() % 2 + 1);
             this.game.flipTurnFactor();
         }
+        
     }
 
      public void incrPoints() {
@@ -91,8 +91,8 @@ public class GameStateManager {
         if(this.game.isBoardInit())
             return false;
 
-        initPlayerSide("B", "C", 0, 0, 2);
-        initPlayerSide("R", "C", 0, 5, 7);
+        initPlayerSide("B", "C", 1, 0, 2);
+        initPlayerSide("R", "C", 1, 5, 7);
         this.game.setBoardInit();
         return true;
     }

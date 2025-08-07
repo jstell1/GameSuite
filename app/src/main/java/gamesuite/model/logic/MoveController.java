@@ -7,6 +7,7 @@ import java.util.Set;
 import gamesuite.model.data.CoordPair;
 import gamesuite.model.data.CoordPairView;
 import gamesuite.model.data.Move;
+import gamesuite.model.data.Player;
 
 public class MoveController {
 
@@ -80,7 +81,9 @@ public class MoveController {
             changed[1] = jumped;
             changed[2] = end;
         }
-        return Arrays.asList(changed);
+        if(changed != null)
+            return Arrays.asList(changed);
+        return null;
     }
 
     public void updateState(List<CoordPairView> changed) {
@@ -122,9 +125,10 @@ public class MoveController {
         }
 
         if(this.stateManager.getFurtherJumps() == null) {
-            boolean check = this.validator.hasValidMoves("B");
-            boolean check2 = this.validator.hasValidMoves("R");
-            this.stateManager.incrTurn(check, check2);
+        boolean check = this.validator.hasValidMoves("B");
+        boolean check2 = this.validator.hasValidMoves("R");
+  
+        this.stateManager.incrTurn(check, check2);
         }
         updateJumpsList();
     }
@@ -134,12 +138,14 @@ public class MoveController {
         Set<CoordPair> p2Jumps = this.stateManager.getJumps(2);
 
         for(CoordPair pos: p1Jumps) {
-            if(!this.validator.hasFurtherJumps(pos))
-                this.stateManager.removeFromJumps(pos, false);
+            boolean hasFurther = this.validator.hasFurtherJumps(pos);
+            if(!hasFurther) 
+                this.stateManager.removeFromJumps(pos, hasFurther);
         }
         for(CoordPair pos: p2Jumps) {
-            if(!this.validator.hasFurtherJumps(pos))
-                this.stateManager.removeFromJumps(pos, false);
+            boolean hasFurther = this.validator.hasFurtherJumps(pos);
+            if(!hasFurther)
+                this.stateManager.removeFromJumps(pos, hasFurther);
         }
     }
     

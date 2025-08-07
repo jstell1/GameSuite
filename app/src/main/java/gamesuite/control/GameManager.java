@@ -18,16 +18,15 @@ import gamesuite.model.logic.MoveController;
 import gamesuite.model.logic.RulesValidator;
 
 public class GameManager {
-    private GameState game;
     private RulesValidator validator;
     private GameStateManager stateManager;
     private MoveController moveController;
 
     public GameManager(Player player1, Player player2) {
         GameBoard board = new GameBoard(8);
-        this.game = new GameState(board, player1, player2);
-        this.validator = new RulesValidator(this.game);
-        this.stateManager = new GameStateManager(this.game);
+        GameState game = new GameState(board, player1, player2);
+        this.validator = new RulesValidator(game);
+        this.stateManager = new GameStateManager(game);
         this.moveController = new MoveController(validator, stateManager);
     }
 
@@ -36,7 +35,7 @@ public class GameManager {
         if(this.moveController.checkMove(move)) {
             List<CoordPairView> changed = this.moveController.makeMove(move);
             this.moveController.updateState(changed);
-            gameView = this.game.getGameStateView();
+            gameView = this.stateManager.getGameStateView();
         }
         return gameView;
     }
