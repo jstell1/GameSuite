@@ -3,6 +3,7 @@ package gamesuite.view;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import gamesuite.control.MoveListener;
 import gamesuite.model.data.CoordPair;
 import gamesuite.model.data.GameBoard;
 import gamesuite.model.data.GameBoardView;
@@ -21,8 +22,9 @@ public class TextGameCLI implements GameUI {
     private GameBoardView board;
     private int sideLength;
     private GameStateView game;
+    private MoveListener moveListener;
 
-    public TextGameCLI(GameStateView game, Scanner in) {
+    public TextGameCLI(GameStateView game, Scanner in, MoveListener moveListener) {
         this.game = game;
         this.board = game.getBoardView();
         this.players = game.getPlayerViews().toArray(new PlayerView[game.getPlayerViews().size()]);
@@ -30,9 +32,9 @@ public class TextGameCLI implements GameUI {
         this.sideLength = this.board.getSideLength();
         String pattern = "^\\s*([1-" + this.sideLength + "])\\s*,\\s*([1-" + this.sideLength + "])\\s*$";
         COORD_PATTERN = Pattern.compile(pattern);
+        this.moveListener = moveListener;
     }
     
-    @Override
     public Move getPlayerMove(int playerNum) { 
         CoordPair startPos = null;
         CoordPair endPos = null;
@@ -73,6 +75,21 @@ public class TextGameCLI implements GameUI {
         System.out.println("Player 2 points: " + game.getPlayerPoints(2));
     }
 
-    @Override
     public void displayBoard() { System.out.println(this.board.toString()); }
+
+    @Override
+    public void runGame() {
+        while(!this.game.isGameOver()) {
+            displayBoard();
+            int turn = this.game.getTurn();
+            Move move = getPlayerMove(turn);
+            if(move != null) {
+                game = this.moveListener.sendMove(move);
+            }
+        }
+        if(this.game.getWinnerView() != null)
+            System.out.println("Winner: " + this.game.getWinnerView().getName());
+        else    
+            System.out.println("Draw");
+    }
 }

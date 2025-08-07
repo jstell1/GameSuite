@@ -22,6 +22,7 @@ public class GameState implements GameStateView {
     private boolean boardInit;
     private final String[] pieceNames = {"B", "R"};
     private List<CoordPairView> changedPos;
+    private boolean gameOver;
 
     public GameState(GameBoard board, Player player1, Player player2) {
         this.board = board;
@@ -37,10 +38,19 @@ public class GameState implements GameStateView {
         this.boardSize = this.board.getSideLength();
         this.turnFactor = -1;
         this.boardInit = false;
+        this.gameOver = false;
     }
 
     public String[] getPieceNames() { 
         return Arrays.copyOf(this.pieceNames, this.pieceNames.length); 
+    }
+
+    @Override
+    public boolean isGameOver() { return this.gameOver; }
+
+    public void setGameOver(boolean gameOver) { 
+        if(this.gameOver == false)
+            this.gameOver = gameOver; 
     }
 
     public boolean isBoardInit() { return this.boardInit; }
@@ -123,6 +133,7 @@ public class GameState implements GameStateView {
         return this.furtherJumps;
     } 
 
+    @Override
     public boolean getDraw() { return this.isDraw; }
 
     public void setDraw() { this.isDraw = true; }

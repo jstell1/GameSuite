@@ -18,7 +18,7 @@ import gamesuite.model.logic.GameStateManager;
 import gamesuite.model.logic.MoveController;
 import gamesuite.model.logic.RulesValidator;
 
-public class GameManager {
+public class GameManager implements MoveListener {
     private RulesValidator validator;
     private GameStateManager stateManager;
     private MoveController moveController;

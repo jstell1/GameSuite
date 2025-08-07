@@ -27,21 +27,10 @@ public class App {
 
         GameUI ui = null;
         if(input == "cli") 
-            ui = new TextGameCLI(game, in);   
+            ui = new TextGameCLI(game, in, checkers);   
         else
-            ui = new GameGUI(game);
-            
-        while(!checkers.gameOver()) {
-            ui.displayBoard();
-            int turn = checkers.getTurn();
-            Move move = ui.getPlayerMove(turn);
-            if(move != null) {
-                game = checkers.sendMove(move);
-            }
-        }
-        if(checkers.getWinner() != null)
-            System.out.println("Winner: " + checkers.getWinner().getName());
-        else    
-            System.out.println("Draw");
+            ui = new GameGUI(game, checkers);
+
+        ui.runGame();
     }
 }

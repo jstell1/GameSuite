@@ -12,4 +12,6 @@ public interface GameStateView {
     public int getNumPlayers();
     public List<CoordPairView> getChangedPos();
     public PlayerView getWinnerView();
+    public boolean isGameOver();
+    public boolean getDraw();
 }

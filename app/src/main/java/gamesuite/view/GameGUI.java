@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import gamesuite.control.MoveListener;
 import gamesuite.model.data.GameStateView;
 import gamesuite.model.data.Move;
 import java.awt.BorderLayout;
@@ -14,13 +15,15 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class GameGUI implements GameUI {
-    JFrame window;
-    GameStateView gameView;
-    GameBoardPanel gameBoard;
-    JLabel turnLabel;
-    int turn;
+    private JFrame window;
+    private GameStateView gameView;
+    private GameBoardPanel gameBoard;
+    private JLabel turnLabel;
+    private int turn;
+    private MoveListener moveListener;
 
-    public GameGUI(GameStateView gameView) {
+    public GameGUI(GameStateView gameView, MoveListener moveListener) {
+        this.moveListener = moveListener;
         this.gameView = gameView;
         this.turn = gameView.getTurn();
         this.window = new JFrame("GameSuite");
@@ -36,18 +39,13 @@ public class GameGUI implements GameUI {
         centerPanel.add(gameBoard);
         this.window.add(centerPanel, BorderLayout.CENTER);
         this.window.setMinimumSize(new Dimension(800, 800));
-        this.window.pack();
         this.window.setResizable(true);
+    }
+
+    @Override
+    public void runGame() {
+        this.window.pack();
         this.window.setVisible(true);
-    }
-
-    @Override
-    public void displayBoard() {
-    }
-
-    @Override
-    public Move getPlayerMove(int playerNum) {
-        return null;
     }
 
 }
