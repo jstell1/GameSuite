@@ -96,7 +96,11 @@ public class MoveController {
                     this.stateManager.getBoardPos(x - 1, y - 1),
                     this.stateManager.getBoardPos(x - 1, y + 1),
                     this.stateManager.getBoardPos(x + 1, y - 1),
-                    this.stateManager.getBoardPos(x + 1, y + 1) 
+                    this.stateManager.getBoardPos(x + 1, y + 1),
+                    this.stateManager.getBoardPos(x - 2, y - 2),
+                    this.stateManager.getBoardPos(x - 2, y + 2),
+                    this.stateManager.getBoardPos(x + 2, y - 2),
+                    this.stateManager.getBoardPos(x + 2, y + 2)
                 };
                 for(CoordPair currPos : checks) {
                     boolean hasFurtherJumps = this.validator.hasFurtherJumps(currPos);
@@ -108,6 +112,7 @@ public class MoveController {
                         this.stateManager.addPlayerJumps(currPos, 2);
                 }
             }
+
             int x = changed.get(size - 1).getX();
             int y = changed.get(size - 1).getY();
             int sX = changed.get(0).getX();

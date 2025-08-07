@@ -13,6 +13,7 @@ import gamesuite.model.data.GameState;
 import gamesuite.model.data.GameStateView;
 import gamesuite.model.data.Move;
 import gamesuite.model.data.Player;
+import gamesuite.model.data.PlayerView;
 import gamesuite.model.logic.GameStateManager;
 import gamesuite.model.logic.MoveController;
 import gamesuite.model.logic.RulesValidator;
@@ -40,7 +41,7 @@ public class GameManager {
         return gameView;
     }
 
-    public Player getWinner() { 
+    public PlayerView getWinner() { 
         if(this.stateManager.getWinner() != null) 
             return this.stateManager.getWinner().copy();
         return null; 
