@@ -120,8 +120,10 @@ public class MoveController {
             int sY = changed.get(0).getY();
             CoordPair end = this.stateManager.getBoardPos(x, y);
             CoordPair start = this.stateManager.getBoardPos(sX, sY);
-            if(this.validator.isKingable(end)) 
+            if(this.validator.isKingable(end)) {
                 this.stateManager.kingPiece(end);
+                this.stateManager.addJustKinged(end);
+            }
 
             if(this.stateManager.getFurtherJumps() != null && this.stateManager.getFurtherJumps().equals(start))
                 this.stateManager.setFurtherJumps(null);   

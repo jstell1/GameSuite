@@ -289,7 +289,12 @@ public class RulesValidatorTest {
         assertFalse(v.hasFurtherJumps(game.getBoardPos(3, 2)));
         assertFalse(v.hasFurtherJumps(game.getBoardPos(0, 0)));
         assertFalse(v.hasFurtherJumps(game.getBoardPos(0, 1)));
-        
+        GamePiece pi1 = new GamePiece("B", "K", 1);
+        game.setBoardPos(7, 2, pi1);
+        GamePiece pi3 = new GamePiece("R", "C", 1);
+        game.setBoardPos(6, 1, pi3);
+        game.addJustKinged(game.getBoardPos(7, 2));
+        assertFalse(v.hasFurtherJumps(game.getBoardPos(7, 2)));
     }
     
 }

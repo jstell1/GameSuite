@@ -289,8 +289,13 @@ public class RulesValidator {
                     endPiece = end.getPiece();
                 GamePiece jumpPiece = jumpPos.getPiece();
 
-                if(jumpPiece != null && name != jumpPiece.getName() && endPiece == null)
+                if(jumpPiece != null && name != jumpPiece.getName() && endPiece == null) {
+                    if(this.game.isJustKinged(pos)) {
+                        this.game.removeJustKinged(pos);
+                        return false;
+                    }
                     return true;
+                }
             }
         }
         return false;

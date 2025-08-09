@@ -23,6 +23,7 @@ public class GameState implements GameStateView {
     private final String[] pieceNames = {"B", "R"};
     private List<CoordPairView> changedPos;
     private boolean gameOver;
+    private Set<CoordPair> justKinged;
 
     public GameState(GameBoard board, Player player1, Player player2) {
         this.board = board;
@@ -39,10 +40,23 @@ public class GameState implements GameStateView {
         this.turnFactor = -1;
         this.boardInit = false;
         this.gameOver = false;
+        this.justKinged = new HashSet<>();
     }
 
     public String[] getPieceNames() { 
         return Arrays.copyOf(this.pieceNames, this.pieceNames.length); 
+    }
+
+    public void addJustKinged(CoordPair pos) {
+        this.justKinged.add(pos);
+    }
+
+    public void removeJustKinged(CoordPair pos) {
+        this.justKinged.remove(pos);
+    }
+
+    public boolean isJustKinged(CoordPair pos) {
+        return this.justKinged.contains(pos);
     }
 
     @Override

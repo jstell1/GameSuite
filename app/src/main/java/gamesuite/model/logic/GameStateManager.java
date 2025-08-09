@@ -148,4 +148,8 @@ public class GameStateManager {
     public void setChanged(List<CoordPairView> changed) {
         this.game.setChanged(changed);
     }
+
+    public void addJustKinged(CoordPair pos) {
+        this.game.addJustKinged(pos);
+    }
 }
