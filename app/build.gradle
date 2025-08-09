@@ -36,6 +36,15 @@ run {
     standardInput = System.in
 }
 
+tasks.register('runCli', JavaExec) {
+    group = 'application'
+    description = 'Runs the application in CLI mode'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    args = ['cli']
+    standardInput = System.in
+}
+
 test {
     useJUnitPlatform()
 }

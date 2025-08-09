@@ -84,12 +84,17 @@ public class TextGameCLI implements GameUI {
             int turn = this.game.getTurn();
             Move move = getPlayerMove(turn);
             if(move != null) {
-                game = this.moveListener.sendMove(move);
+                this.moveListener.sendMove(move);
             }
         }
         if(this.game.getWinnerView() != null)
             System.out.println("Winner: " + this.game.getWinnerView().getName());
         else    
             System.out.println("Draw");
+    }
+
+    @Override
+    public void sendChanges(GameStateView gameView) {
+        this.game = gameView;
     }
 }

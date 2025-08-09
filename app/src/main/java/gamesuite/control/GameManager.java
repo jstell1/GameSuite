@@ -17,11 +17,13 @@ import gamesuite.model.data.PlayerView;
 import gamesuite.model.logic.GameStateManager;
 import gamesuite.model.logic.MoveController;
 import gamesuite.model.logic.RulesValidator;
+import gamesuite.view.GameUI;
 
 public class GameManager implements MoveListener {
     private RulesValidator validator;
     private GameStateManager stateManager;
     private MoveController moveController;
+    private GameUI ui;
 
     public GameManager(Player player1, Player player2) {
         GameBoard board = new GameBoard(8);
@@ -31,14 +33,22 @@ public class GameManager implements MoveListener {
         this.moveController = new MoveController(validator, stateManager);
     }
 
-    public GameStateView sendMove(Move move) {
+    public void setUI(GameUI ui) { 
+        if(ui != null)
+            this.ui = ui;
+    }
+
+    @Override
+    public void sendMove(Move move) {
+        if(ui == null)
+            return;
         GameStateView gameView = null;
         if(this.moveController.checkMove(move)) {
             List<CoordPairView> changed = this.moveController.makeMove(move);
             this.moveController.updateState(changed);
             gameView = this.stateManager.getGameStateView();
         }
-        return gameView;
+        this.ui.sendChanges(gameView);
     }
 
     public PlayerView getWinner() { 
