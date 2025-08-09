@@ -39,17 +39,21 @@ public class GameManager implements MoveListener {
     }
 
     @Override
-    public void sendMove(Move move) {
+    public GameStateView sendMove(Move move) {
         if(ui == null)
-            return;
+            return null;
         GameStateView gameView = null;
         if(this.moveController.checkMove(move)) {
             List<CoordPairView> changed = this.moveController.makeMove(move);
             this.moveController.updateState(changed);
             gameView = this.stateManager.getGameStateView();
         }
-        this.ui.sendChanges(gameView);
+        System.out.println(getBoardString());
+        return gameView;
+        //this.ui.sendChanges(gameView);
     }
+
+    public String getBoardString() { return this.stateManager.getBoardString(); }
 
     public PlayerView getWinner() { 
         if(this.stateManager.getWinner() != null) 

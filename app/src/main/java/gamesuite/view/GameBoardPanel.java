@@ -72,7 +72,12 @@ public class GameBoardPanel extends JPanel implements CoordPairPanelObserver {
             
             setEnabled(false);
             new Thread(() -> {
-                this.listener.sendMove(new Move(this.tmpX, this.tmpY, x, y));
+                GameStateView gameState = this.listener.sendMove(new Move(this.tmpX, this.tmpY, x, y));
+                if(gameState != null)
+                    this.changed = gameState.getChangedPos();
+                SwingUtilities.invokeLater(() -> {
+                    sendChanges(this.changed);
+                });
             }).start();
             
         }
@@ -99,7 +104,6 @@ public class GameBoardPanel extends JPanel implements CoordPairPanelObserver {
             updateList[i] = this.boardPanel[this.changed.get(i).getX()][this.changed.get(i).getY()];
             updateList[i].setPiece(this.changed.get(i).getPieceView());
         }
-        repaint();
         this.changed = null;
     }
 

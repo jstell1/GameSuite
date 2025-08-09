@@ -69,8 +69,8 @@ public class CoordPairPanel extends JPanel {
 
     private void setPiece() {
         if(this.pos.getPieceView() == null)
-            return;
-        if(this.pos.getPieceView().getName().equals("B")) {
+            this.piece = null;
+        else if(this.pos.getPieceView().getName().equals("B")) {
             this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPieceView().isKing());
             //add(this.piece);
         } else {
@@ -94,6 +94,7 @@ public class CoordPairPanel extends JPanel {
             this.piece = new GamePieceAsset(Color.RED,this.pos.getPieceView().isKing());
             //add(this.piece);
         }
+        repaint();
     }
 
     public GamePieceAsset getPiece() {

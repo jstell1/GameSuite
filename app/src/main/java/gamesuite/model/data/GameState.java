@@ -205,4 +205,8 @@ public class GameState implements GameStateView {
     }    
 
     public GameStateView getGameStateView() { return this; }
+
+	public void setChanged(List<CoordPairView> changed) {
+        this.changedPos = changed;
+	}
 }

@@ -81,6 +81,7 @@ public class MoveController {
             changed[1] = jumped;
             changed[2] = end;
         }
+        this.stateManager.setChanged(Arrays.asList(changed));
         if(changed != null)
             return Arrays.asList(changed);
         return null;
