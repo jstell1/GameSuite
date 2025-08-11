@@ -5,5 +5,4 @@ import gamesuite.model.data.Move;
 
 public interface GameUI {
     public void runGame();
-    public void sendChanges(GameStateView gameView);
 }

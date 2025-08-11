@@ -2,6 +2,7 @@ package gamesuite;
 
 import java.util.Scanner;
 
+import gamesuite.control.GUIManager;
 import gamesuite.control.GameManager;
 import gamesuite.model.data.GameStateView;
 import gamesuite.model.data.Move;
@@ -25,8 +26,7 @@ public class App {
         if(input.equals("cli")) 
             ui = new TextGameCLI(game, in, checkers);   
         else
-            ui = new GameGUI(game, checkers);
-        checkers.setUI(ui);
+            ui = new GUIManager(checkers);
         ui.runGame();
     }
 }

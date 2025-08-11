@@ -6,7 +6,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import java.awt.event.MouseEvent;
-import gamesuite.control.MoveListener;
+
+import gamesuite.control.GUIManager;
+import gamesuite.control.UIListener;
 import gamesuite.model.data.GameStateView;
 import gamesuite.model.data.Move;
 import java.awt.BorderLayout;
@@ -16,24 +18,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class GameGUI implements GameUI {
+public class GameGUI {
     private JFrame window;
-    private GameStateView gameView;
     private GameBoardPanel gameBoard;
     private JLabel turnLabel;
-    private MoveListener moveListener;
 
-    public GameGUI(GameStateView gameView, MoveListener moveListener) {
-        this.moveListener = moveListener;
-        this.gameView = gameView;
+    public GameGUI(int startTurn, GameBoardPanel gameBoard) {
         this.window = new JFrame("GameSuite");
         this.window.setSize(800,800);
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.window.setLayout(new BorderLayout());
 
-        this.turnLabel = new JLabel("Player " + this.gameView.getTurn() + "'s turn");
+        this.turnLabel = new JLabel("Player " + startTurn + "'s turn");
         this.window.add(this.turnLabel, BorderLayout.NORTH); 
-        this.gameBoard = new GameBoardPanel(this.gameView.getBoardView(), 600, this.moveListener);
+        this.gameBoard = gameBoard;
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centerPanel.add(gameBoard);
@@ -42,20 +40,8 @@ public class GameGUI implements GameUI {
         this.window.setResizable(true);
     }
 
-    @Override
-    public void runGame() {
+    public void activate() {
         this.window.pack();
         this.window.setVisible(true);
     }
-
-    @Override
-    public void sendChanges(GameStateView gameView) {
-        SwingUtilities.invokeLater(() -> {
-            if(gameView != null)
-                this.gameBoard.sendChanges(gameView.getChangedPos());
-        });
-    }
-
-
-
 }

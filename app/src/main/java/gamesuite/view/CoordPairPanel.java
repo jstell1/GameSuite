@@ -10,8 +10,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
-import gamesuite.control.MoveListener;
+import gamesuite.control.UIListener;
 import gamesuite.model.data.CoordPairView;
 import gamesuite.model.data.GamePieceView;
 public class CoordPairPanel extends JPanel {
@@ -20,10 +22,10 @@ public class CoordPairPanel extends JPanel {
     private CoordPairView pos;
     private int row;
     private int col;
-    private CoordPairPanelObserver listener;
+    private UIListener listener;
     private Color baseColor;
 
-    public CoordPairPanel(CoordPairView pos, CoordPairPanelObserver listener, Color baseColor) {
+    public CoordPairPanel(CoordPairView pos, UIListener listener, Color baseColor) {
         super();
         this.pos = pos;
         this.row = pos.getX();
@@ -41,8 +43,10 @@ public class CoordPairPanel extends JPanel {
                 if(listener.getIsBoardEnabled()) {
                     Color currCol = getBackground();
                     if(currCol != Color.YELLOW) {
-                        setBackground(Color.YELLOW);
-                        repaint();
+                        SwingUtilities.invokeLater(() -> {
+                            setBackground(Color.YELLOW);
+                            repaint();
+                        });
                         listener.sendYellowedPanel(getSelf());
                         listener.sendChange(row, col);
                     } else {
@@ -129,4 +133,6 @@ public class CoordPairPanel extends JPanel {
             g2d.dispose();
         }
     }
+
+    public Color getBaseColor() { return this.baseColor; }
 }

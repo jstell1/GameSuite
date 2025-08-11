@@ -3,7 +3,8 @@ package gamesuite.view;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import gamesuite.control.MoveListener;
+import gamesuite.control.GameManager;
+import gamesuite.control.UIListener;
 import gamesuite.model.data.CoordPair;
 import gamesuite.model.data.GameBoard;
 import gamesuite.model.data.GameBoardView;
@@ -22,9 +23,10 @@ public class TextGameCLI implements GameUI {
     private GameBoardView board;
     private int sideLength;
     private GameStateView game;
-    private MoveListener moveListener;
+    private GameManager gm;
 
-    public TextGameCLI(GameStateView game, Scanner in, MoveListener moveListener) {
+    public TextGameCLI(GameStateView game, Scanner in, GameManager gm) {
+        this.gm = gm;
         this.game = game;
         this.board = game.getBoardView();
         this.players = game.getPlayerViews().toArray(new PlayerView[game.getPlayerViews().size()]);
@@ -32,7 +34,6 @@ public class TextGameCLI implements GameUI {
         this.sideLength = this.board.getSideLength();
         String pattern = "^\\s*([1-" + this.sideLength + "])\\s*,\\s*([1-" + this.sideLength + "])\\s*$";
         COORD_PATTERN = Pattern.compile(pattern);
-        this.moveListener = moveListener;
     }
     
     public Move getPlayerMove(int playerNum) { 
@@ -84,17 +85,12 @@ public class TextGameCLI implements GameUI {
             int turn = this.game.getTurn();
             Move move = getPlayerMove(turn);
             if(move != null) {
-                this.moveListener.sendMove(move);
+                this.gm.sendMove(move);
             }
         }
         if(this.game.getWinnerView() != null)
             System.out.println("Winner: " + this.game.getWinnerView().getName());
         else    
             System.out.println("Draw");
-    }
-
-    @Override
-    public void sendChanges(GameStateView gameView) {
-        this.game = gameView;
     }
 }

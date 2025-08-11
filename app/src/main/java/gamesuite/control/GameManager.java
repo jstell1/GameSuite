@@ -19,11 +19,11 @@ import gamesuite.model.logic.MoveController;
 import gamesuite.model.logic.RulesValidator;
 import gamesuite.view.GameUI;
 
-public class GameManager implements MoveListener {
+public class GameManager {
     private RulesValidator validator;
     private GameStateManager stateManager;
     private MoveController moveController;
-    private GameUI ui;
+    //private GameUI ui;
 
     public GameManager(Player player1, Player player2) {
         GameBoard board = new GameBoard(8);
@@ -32,16 +32,15 @@ public class GameManager implements MoveListener {
         this.stateManager = new GameStateManager(game);
         this.moveController = new MoveController(validator, stateManager);
     }
-
+/*
     public void setUI(GameUI ui) { 
         if(ui != null)
             this.ui = ui;
     }
-
-    @Override
-    public GameStateView sendMove(Move move) {
-        if(ui == null)
-            return null;
+*/
+    public void sendMove(Move move) {
+        //if(ui == null)
+          //  return null;
         GameStateView gameView = null;
         if(this.moveController.checkMove(move)) {
             List<CoordPairView> changed = this.moveController.makeMove(move);
@@ -49,7 +48,6 @@ public class GameManager implements MoveListener {
             gameView = this.stateManager.getGameStateView();
         }
         System.out.println(getBoardString());
-        return gameView;
         //this.ui.sendChanges(gameView);
     }
 
