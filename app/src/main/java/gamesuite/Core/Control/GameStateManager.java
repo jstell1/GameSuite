@@ -27,8 +27,10 @@ public class GameStateManager {
         int p2Points = players[1].getPoints();
              if(p2HasMoves && !p1HasMoves) {
             this.game.setWinner(2);
+            this.game.setGameOver(true);
         } else if(p1HasMoves && !p2HasMoves) {
             this.game.setWinner(1);
+            this.game.setGameOver(true);
         } else if(!p1HasMoves && !p2HasMoves) {
             if(p1Points > p2Points) 
                 this.game.setWinner(1);
@@ -36,6 +38,7 @@ public class GameStateManager {
                 this.game.setWinner(2);
             else
                 this.game.setDraw();
+            this.game.setGameOver(true);
         } else {
             this.game.setTurn(this.game.getTurn() % 2 + 1);
             this.game.flipTurnFactor();

@@ -67,8 +67,9 @@ public class GUIManager implements GameUI, UIListener {
                     }
                     this.tmpX = -1;
                     this.tmpY = -1;
-                    if(this.gameView.isGameOver())
-                        this.gameBoard.setEnabled(false);
+
+                    if(!this.gameView.isGameOver())
+                        this.gameBoard.setEnabled(true);
                 });
             }).start();
         }

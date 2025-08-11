@@ -75,7 +75,6 @@ public class GameBoardPanel extends JPanel {
         }
 
         this.yellowed.clear();
-        setEnabled(true);
     }
     
     public void addYellowedPanel(CoordPairPanel pos) {
