@@ -7,16 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.CoordPairView;
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GameState;
-import gamesuite.model.data.Move;
-import gamesuite.model.data.Player;
-import gamesuite.model.logic.GameStateManager;
-import gamesuite.model.logic.MoveController;
-import gamesuite.model.logic.RulesValidator;
+
+import gamesuite.Core.Control.GameStateManager;
+import gamesuite.Core.Control.MoveController;
+import gamesuite.Core.Control.RulesValidator;
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.Model.GameState;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.Model.Player;
+import gamesuite.Core.View.CoordPairView;
 
 public class MoveControllerTest {
     

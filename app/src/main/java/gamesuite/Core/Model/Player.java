@@ -1,4 +1,6 @@
-package gamesuite.model.data;
+package gamesuite.Core.Model;
+
+import gamesuite.Core.View.PlayerView;
 
 public class Player implements PlayerView {
     private int points;

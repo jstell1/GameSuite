@@ -1,4 +1,4 @@
-package gamesuite.view;
+package gamesuite.Client.View;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,9 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import gamesuite.control.UIListener;
-import gamesuite.model.data.CoordPairView;
-import gamesuite.model.data.GamePieceView;
+import gamesuite.Client.Control.UIListener;
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GamePieceView;
 public class CoordPairPanel extends JPanel {
 
     private GamePieceAsset piece;

@@ -1,6 +1,8 @@
-package gamesuite.model.data;
+package gamesuite.Core.Model;
 
 import java.util.Arrays;
+
+import gamesuite.Core.View.GamePieceView;
 
 public class GamePiece implements GamePieceView {
     private String name;

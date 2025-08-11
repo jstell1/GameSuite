@@ -1,4 +1,7 @@
-package gamesuite.model.data;
+package gamesuite.Core.Model;
+
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GameBoardView;
 
 public class GameBoard implements GameBoardView {
     private CoordPair[][] board;

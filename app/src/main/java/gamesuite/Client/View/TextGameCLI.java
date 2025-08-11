@@ -1,17 +1,17 @@
-package gamesuite.view;
+package gamesuite.Client.View;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import gamesuite.control.GameManager;
-import gamesuite.control.UIListener;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GameBoardView;
-import gamesuite.model.data.GameStateView;
-import gamesuite.model.data.Move;
-import gamesuite.model.data.Player;
-import gamesuite.model.data.PlayerView;
+import gamesuite.Client.Control.GameManager;
+import gamesuite.Client.Control.UIListener;
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.Model.Player;
+import gamesuite.Core.View.GameBoardView;
+import gamesuite.Core.View.GameStateView;
+import gamesuite.Core.View.PlayerView;
 
 import java.util.regex.Matcher;
 

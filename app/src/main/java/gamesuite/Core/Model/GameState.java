@@ -1,6 +1,12 @@
-package gamesuite.model.data;
+package gamesuite.Core.Model;
 
 import java.util.Set;
+
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GameBoardView;
+import gamesuite.Core.View.GameStateView;
+import gamesuite.Core.View.PlayerView;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;

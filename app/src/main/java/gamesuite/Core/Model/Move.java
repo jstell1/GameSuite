@@ -1,4 +1,4 @@
-package gamesuite.model.data;
+package gamesuite.Core.Model;
 
 public class Move {
     int startX, startY;

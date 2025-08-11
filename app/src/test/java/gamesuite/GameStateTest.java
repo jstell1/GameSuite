@@ -7,11 +7,12 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GameState;
-import gamesuite.model.data.Player;
+
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.Model.GameState;
+import gamesuite.Core.Model.Player;
 
 public class GameStateTest {
 

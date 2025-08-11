@@ -2,12 +2,13 @@ package gamesuite;
 
 import java.util.Scanner;
 
-import gamesuite.control.GUIManager;
-import gamesuite.control.GameManager;
-import gamesuite.model.data.GameStateView;
-import gamesuite.model.data.Move;
-import gamesuite.model.data.Player;
-import gamesuite.view.*;
+import gamesuite.Client.Control.GUIManager;
+import gamesuite.Client.Control.GameManager;
+import gamesuite.Client.View.*;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.Model.Player;
+import gamesuite.Core.View.GameStateView;
+import gamesuite.Client.View.GameUI;
 
 public class App {
 

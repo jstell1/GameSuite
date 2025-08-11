@@ -7,11 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GameState;
-import gamesuite.model.data.Player;
-import gamesuite.model.logic.GameStateManager;
+import gamesuite.Core.Control.GameStateManager;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.Model.GameState;
+import gamesuite.Core.Model.Player;
 
 public class GameStateManagerTest {
 

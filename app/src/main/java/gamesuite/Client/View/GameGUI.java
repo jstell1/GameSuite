@@ -1,4 +1,4 @@
-package gamesuite.view;
+package gamesuite.Client.View;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -7,10 +7,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import java.awt.event.MouseEvent;
 
-import gamesuite.control.GUIManager;
-import gamesuite.control.UIListener;
-import gamesuite.model.data.GameStateView;
-import gamesuite.model.data.Move;
+import gamesuite.Client.Control.GUIManager;
+import gamesuite.Client.Control.UIListener;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.View.GameStateView;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

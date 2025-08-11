@@ -1,4 +1,4 @@
-package gamesuite.view;
+package gamesuite.Client.View;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,11 +11,11 @@ import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import gamesuite.control.UIListener;
-import gamesuite.model.data.CoordPairView;
-import gamesuite.model.data.GameBoardView;
-import gamesuite.model.data.GameStateView;
-import gamesuite.model.data.Move;
+import gamesuite.Client.Control.UIListener;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GameBoardView;
+import gamesuite.Core.View.GameStateView;
 
 public class GameBoardPanel extends JPanel {
 

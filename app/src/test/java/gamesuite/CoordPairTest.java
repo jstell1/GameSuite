@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.GamePiece;
+
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GamePiece;
 
 public class CoordPairTest {
     

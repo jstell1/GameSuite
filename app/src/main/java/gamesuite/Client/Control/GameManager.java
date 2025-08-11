@@ -1,23 +1,24 @@
-package gamesuite.control;
+package gamesuite.Client.Control;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.CoordPairView;
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GameBoardView;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GameState;
-import gamesuite.model.data.GameStateView;
-import gamesuite.model.data.Move;
-import gamesuite.model.data.Player;
-import gamesuite.model.data.PlayerView;
-import gamesuite.model.logic.GameStateManager;
-import gamesuite.model.logic.MoveController;
-import gamesuite.model.logic.RulesValidator;
-import gamesuite.view.GameUI;
+
+import gamesuite.Client.View.GameUI;
+import gamesuite.Core.Control.GameStateManager;
+import gamesuite.Core.Control.MoveController;
+import gamesuite.Core.Control.RulesValidator;
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.Model.GameState;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.Model.Player;
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GameBoardView;
+import gamesuite.Core.View.GameStateView;
+import gamesuite.Core.View.PlayerView;
 
 public class GameManager {
     private RulesValidator validator;

@@ -1,4 +1,4 @@
-package gamesuite.model.data;
+package gamesuite.Core.View;
 
 public interface CoordPairView {
     public GamePieceView getPieceView();

@@ -1,13 +1,13 @@
-package gamesuite.model.logic;
+package gamesuite.Core.Control;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.CoordPairView;
-import gamesuite.model.data.Move;
-import gamesuite.model.data.Player;
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.Model.Player;
+import gamesuite.Core.View.CoordPairView;
 
 public class MoveController {
 

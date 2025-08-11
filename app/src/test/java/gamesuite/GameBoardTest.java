@@ -2,11 +2,12 @@ package gamesuite;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GamePieceView;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.CoordPairView;
+
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GamePieceView;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

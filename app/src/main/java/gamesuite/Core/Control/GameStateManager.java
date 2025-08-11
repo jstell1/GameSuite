@@ -1,16 +1,17 @@
-package gamesuite.model.logic;
+package gamesuite.Core.Control;
 
 import java.util.List;
 import java.util.Set;
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.CoordPairView;
-import gamesuite.model.data.GameBoard;
-import gamesuite.model.data.GameBoardView;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GameState;
-import gamesuite.model.data.GameStateView;
-import gamesuite.model.data.Move;
-import gamesuite.model.data.Player;
+
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GameBoard;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.Model.GameState;
+import gamesuite.Core.Model.Move;
+import gamesuite.Core.Model.Player;
+import gamesuite.Core.View.CoordPairView;
+import gamesuite.Core.View.GameBoardView;
+import gamesuite.Core.View.GameStateView;
 
 public class GameStateManager {
 

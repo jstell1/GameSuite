@@ -1,4 +1,4 @@
-package gamesuite.view;
+package gamesuite.Client.View;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -8,7 +8,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
-import gamesuite.model.data.GamePieceView;
+import gamesuite.Core.View.GamePieceView;
 
 public class GamePieceAsset extends JComponent {
     private Color color;

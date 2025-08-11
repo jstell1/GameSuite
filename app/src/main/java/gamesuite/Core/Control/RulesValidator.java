@@ -1,12 +1,12 @@
-package gamesuite.model.logic;
+package gamesuite.Core.Control;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import gamesuite.model.data.CoordPair;
-import gamesuite.model.data.GamePiece;
-import gamesuite.model.data.GameState;
-import gamesuite.model.data.Move;
+import gamesuite.Core.Model.CoordPair;
+import gamesuite.Core.Model.GamePiece;
+import gamesuite.Core.Model.GameState;
+import gamesuite.Core.Model.Move;
 
 public class RulesValidator {
     private HashSet<CoordPair> validMoves;
