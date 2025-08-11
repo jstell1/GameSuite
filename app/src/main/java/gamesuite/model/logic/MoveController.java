@@ -120,7 +120,8 @@ public class MoveController {
             int sY = changed.get(0).getY();
             CoordPair end = this.stateManager.getBoardPos(x, y);
             CoordPair start = this.stateManager.getBoardPos(sX, sY);
-            if(this.validator.isKingable(end)) {
+            boolean isKingable = this.validator.isKingable(end); 
+            if(isKingable) {
                 this.stateManager.kingPiece(end);
                 this.stateManager.addJustKinged(end);
             }
@@ -128,8 +129,12 @@ public class MoveController {
             if(this.stateManager.getFurtherJumps() != null && this.stateManager.getFurtherJumps().equals(start))
                 this.stateManager.setFurtherJumps(null);   
 
-            if(changed.size() == 3 && this.stateManager.getFurtherJumps() == null && this.validator.hasFurtherJumps(end))
+            if(changed.size() == 3 && this.stateManager.getFurtherJumps() == null && this.validator.hasFurtherJumps(end) && !this.stateManager.isJustKinged(end))
                 this.stateManager.setFurtherJumps(end);
+            else if(changed.size() == 3 && this.stateManager.getFurtherJumps() == null && this.validator.hasFurtherJumps(end)) {
+                this.stateManager.addPlayerJumps(end, this.stateManager.getTurn());
+            }
+            this.stateManager.clearJustKinged();
         }
 
         if(this.stateManager.getFurtherJumps() == null) {

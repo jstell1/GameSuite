@@ -43,10 +43,8 @@ public class CoordPairPanel extends JPanel {
                 if(listener.getIsBoardEnabled()) {
                     Color currCol = getBackground();
                     if(currCol != Color.YELLOW) {
-                        SwingUtilities.invokeLater(() -> {
-                            setBackground(Color.YELLOW);
-                            repaint();
-                        });
+                        setBackground(Color.YELLOW);
+                        repaint();
                         listener.sendYellowedPanel(getSelf());
                         listener.sendChange(row, col);
                     } else {

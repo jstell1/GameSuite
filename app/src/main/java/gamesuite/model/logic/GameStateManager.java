@@ -152,4 +152,12 @@ public class GameStateManager {
     public void addJustKinged(CoordPair pos) {
         this.game.addJustKinged(pos);
     }
+
+    public void clearJustKinged() {
+        this.game.clearJustKinged();
+    }
+
+    public boolean isJustKinged(CoordPair pos) {
+        return this.game.isJustKinged(pos);
+    }
 }

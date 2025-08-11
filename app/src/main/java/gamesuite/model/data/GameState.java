@@ -223,4 +223,8 @@ public class GameState implements GameStateView {
 	public void setChanged(List<CoordPairView> changed) {
         this.changedPos = changed;
 	}
+
+    public void clearJustKinged() {
+        this.justKinged.clear();
+    }
 }

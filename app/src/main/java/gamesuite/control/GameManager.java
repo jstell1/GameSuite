@@ -47,7 +47,7 @@ public class GameManager {
             this.moveController.updateState(changed);
             gameView = this.stateManager.getGameStateView();
         }
-        System.out.println(getBoardString());
+        //System.out.println(getBoardString());
         //this.ui.sendChanges(gameView);
     }
 
