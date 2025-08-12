@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.util.List;
 import javax.swing.SwingUtilities;
-
-import org.w3c.dom.events.MouseEvent;
-
 import gamesuite.Client.View.CoordPairPanel;
 import gamesuite.Client.View.GameBoardPanel;
 import gamesuite.Client.View.GameGUI;
@@ -14,6 +11,7 @@ import gamesuite.Client.View.GameUI;
 import gamesuite.Core.Model.Move;
 import gamesuite.Core.View.CoordPairView;
 import gamesuite.Core.View.GameStateView;
+import gamesuite.Core.View.PlayerView;
 
 public class GUIManager implements GameUI, UIListener {
     private GameStateView gameView;
@@ -68,8 +66,13 @@ public class GUIManager implements GameUI, UIListener {
                     this.tmpX = -1;
                     this.tmpY = -1;
 
-                    if(!this.gameView.isGameOver())
+                    if(!this.gameView.isGameOver()) {
                         this.gameBoard.setEnabled(true);
+                        this.gui.setTurnLabel(this.gameView.getTurn());
+                    } else {
+                        PlayerView winner = this.gameView.getWinnerView();
+                        this.gui.setGameOverLabel(winner.getName() + " is the winner");
+                    }
                 });
             }).start();
         }

@@ -3,21 +3,9 @@ package gamesuite.Client.View;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import java.awt.event.MouseEvent;
-
-import gamesuite.Client.Control.GUIManager;
-import gamesuite.Client.Control.UIListener;
-import gamesuite.Core.Model.Move;
-import gamesuite.Core.View.GameStateView;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class GameGUI {
     private JFrame window;
@@ -44,5 +32,13 @@ public class GameGUI {
     public void activate() {
         this.window.pack();
         this.window.setVisible(true);
+    }
+
+    public void setTurnLabel(int num) {
+        this.turnLabel.setText("Player " + num + "'s turn");
+    }
+
+    public void setGameOverLabel(String msg) {
+        this.turnLabel.setText(msg);
     }
 }
