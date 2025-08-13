@@ -1,0 +1,27 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+dependencies {
+    implementation project(':Core')
+    implementation 'com.google.guava:guava:33.0.0-jre'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+application {
+    mainClass = 'gamesuite.client.App'
+}
+
+run {
+    standardInput = System.in
+}
+
+tasks.register('runCli', JavaExec) {
+    group = 'application'
+    description = 'Runs the application in CLI mode'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    args = ['cli']
+    standardInput = System.in
+}
