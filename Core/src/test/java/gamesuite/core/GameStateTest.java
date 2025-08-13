@@ -1,4 +1,4 @@
-package gamesuite;
+package gamesuite.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 

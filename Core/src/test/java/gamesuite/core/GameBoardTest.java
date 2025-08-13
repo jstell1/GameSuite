@@ -1,4 +1,4 @@
-package gamesuite;
+package gamesuite.core;
 
 import org.junit.jupiter.api.Test;
 
