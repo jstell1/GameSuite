@@ -1,13 +1,10 @@
-package gamesuite.client.control;
+package gamesuite.core.control;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import gamesuite.core.control.GameStateManager;
-import gamesuite.core.control.MoveController;
-import gamesuite.core.control.RulesValidator;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GamePiece;
@@ -23,7 +20,14 @@ public class GameManager {
     private RulesValidator validator;
     private GameStateManager stateManager;
     private MoveController moveController;
-    //private GameUI ui;
+
+    public GameManager(Player player1) {
+        GameBoard board = new GameBoard(8);
+        GameState game = new GameState(board, player1);
+        this.validator = new RulesValidator(game);
+        this.stateManager = new GameStateManager(game);
+        this.moveController = new MoveController(validator, stateManager);
+    }
 
     public GameManager(Player player1, Player player2) {
         GameBoard board = new GameBoard(8);
@@ -32,23 +36,13 @@ public class GameManager {
         this.stateManager = new GameStateManager(game);
         this.moveController = new MoveController(validator, stateManager);
     }
-/*
-    public void setUI(GameUI ui) { 
-        if(ui != null)
-            this.ui = ui;
-    }
-*/
     public void sendMove(Move move) {
-        //if(ui == null)
-          //  return null;
         GameStateView gameView = null;
         if(this.moveController.checkMove(move)) {
             List<CoordPairView> changed = this.moveController.makeMove(move);
             this.moveController.updateState(changed);
             gameView = this.stateManager.getGameStateView();
         }
-        //System.out.println(getBoardString());
-        //this.ui.sendChanges(gameView);
     }
 
     public String getBoardString() { return this.stateManager.getBoardString(); }
@@ -65,7 +59,13 @@ public class GameManager {
         return false;
     }
     
-    public boolean initBoard() { return this.stateManager.initBoard(); }
+    public boolean initBoard() { 
+        if(this.validator.playersReady()) {
+            this.stateManager.initBoard(); 
+            return true;
+        }
+        return false;
+    }
 
     public GameStateView getGameStateView() { return this.stateManager.getGameStateView(); }
 

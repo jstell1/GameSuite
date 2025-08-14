@@ -92,5 +92,5 @@ public class GameBoard implements GameBoardView {
         return str;
     }
 
-    public GameBoardView getGameBoardView() { return this; }
+    //public GameBoardView getGameBoardView() { return this; }
 }

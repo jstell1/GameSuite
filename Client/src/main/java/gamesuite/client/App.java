@@ -2,10 +2,10 @@ package gamesuite.client;
 
 import java.util.Scanner;
 
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.Player;
 import gamesuite.core.view.GameStateView;
 import gamesuite.client.control.GUIManager;
-import gamesuite.client.control.GameManager;
 import gamesuite.core.model.Player;
 import gamesuite.core.view.GameStateView;
 import gamesuite.client.view.GameUI;

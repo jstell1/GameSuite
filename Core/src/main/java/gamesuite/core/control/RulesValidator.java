@@ -301,5 +301,11 @@ public class RulesValidator {
         return false;
     }
 
+    public boolean playersReady() {
+        if(this.game.getPlayers().length == 2)
+            return true;
+        return false;
+    }
+
     
 }

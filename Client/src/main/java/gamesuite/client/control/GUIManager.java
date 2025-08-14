@@ -9,6 +9,7 @@ import gamesuite.client.view.CoordPairPanel;
 import gamesuite.client.view.GameBoardPanel;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.Move;
 import gamesuite.core.view.CoordPairView;
 import gamesuite.core.view.GameStateView;

@@ -49,6 +49,30 @@ public class GameState implements GameStateView {
         this.justKinged = new HashSet<>();
     }
 
+    public GameState(GameBoard board, Player player1) {
+        this.board = board;
+        this.player1 = player1;
+        this.numPlayers = 1;
+        this.turn = 1;
+        this.winner = null;
+        this.isDraw = false;
+        this.p1Jumps = new HashSet<>();
+        this.p2Jumps = new HashSet<>();
+        this.furtherJumps = null;
+        this.boardSize = this.board.getSideLength();
+        this.turnFactor = -1;
+        this.boardInit = false;
+        this.gameOver = false;
+        this.justKinged = new HashSet<>();
+    }
+
+    public void setPlayer2(Player player2) {
+        if(this.player2 == null) {
+            this.player2 = player2;
+            this.numPlayers++;
+        }
+    }
+
     public String[] getPieceNames() { 
         return Arrays.copyOf(this.pieceNames, this.pieceNames.length); 
     }
@@ -134,14 +158,24 @@ public class GameState implements GameStateView {
 
     @Override
     public List<PlayerView> getPlayerViews() {
-        PlayerView[] players = new PlayerView[2];
-        players[0] = this.player1.getPlayerView();
-        players[1] = this.player2.getPlayerView();
+        PlayerView[] players; 
+        if(player2 == null)
+            players = new PlayerView[1];
+        else
+            players = new PlayerView[2];
+
+        players[0] = Player.getPlayerView(this.player1);
+        if(players.length == 2)
+            players[1] = Player.getPlayerView(this.player2);
         return Arrays.asList(players);
     }
 
     @Override
-    public PlayerView getPlayerView(int num) { return getPlayer(num); }
+    public PlayerView getPlayerView(int num) { 
+        if(num < getNumPlayers())
+            return getPlayer(num); 
+        return null;
+    }
 
     public void setFurtherJumps(CoordPair pos) { this.furtherJumps = pos; }
 
@@ -175,8 +209,8 @@ public class GameState implements GameStateView {
         int points = -1;
         if(playerNum == 1) 
             this.player1.getPoints();
-        else if(playerNum == 2) 
-            this.player1.getPoints();
+        else if(playerNum == 2 && this.player2 != null) 
+            this.player2.getPoints();
         return points;
     }
 
@@ -232,5 +266,9 @@ public class GameState implements GameStateView {
 
     public void clearJustKinged() {
         this.justKinged.clear();
+    }
+
+    public GameBoard getBoard() {
+        return this.board;
     }
 }

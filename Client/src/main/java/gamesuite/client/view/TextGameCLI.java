@@ -3,7 +3,7 @@ package gamesuite.client.view;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import gamesuite.client.control.GameManager;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.CoordPair;
