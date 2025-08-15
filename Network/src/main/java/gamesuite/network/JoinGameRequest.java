@@ -4,8 +4,8 @@ import gamesuite.core.model.Player;
 
 public class JoinGameRequest {
 
-    Player player;
-    String gameId;
+    private Player player;
+    private String gameId;
     public JoinGameRequest() {}
 
     public void setPlayer(Player player) { this.player = player; }

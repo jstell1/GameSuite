@@ -31,7 +31,7 @@ public class ServerGameRepo {
     }
 
     public GameState getGameView(String gameId) {
-        return null;//this.games.get(gameId).getGameState();
+        return this.games.get(gameId).getGameState();
     }
 
     public boolean contains(String gameId) {

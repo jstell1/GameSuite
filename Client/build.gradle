@@ -26,3 +26,18 @@ tasks.register('runCli', JavaExec) {
     args = ['cli']
     standardInput = System.in
 }
+
+
+tasks.register('fatJar', Jar) {
+    archiveClassifier.set('all')
+    manifest {
+        attributes('Main-Class': 'gamesuite.client.App')
+    }
+    from(sourceSets.main.output)
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

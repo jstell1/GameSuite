@@ -20,6 +20,8 @@ public class GameBoard {
         this.size = board.length * board.length;
     }
 
+    public CoordPair[][] getBoard() { return this.board; }
+
     public GameBoard copy() {
         GameBoard board = new GameBoard(this.sideLength);
         for(CoordPair[] row: this.board)

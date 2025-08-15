@@ -5,8 +5,3 @@ plugins {
 
 rootProject.name = 'GameSuite'
 include 'Core', 'Server', 'Client', 'Network'
-
-/*
-rootProject.name = 'GameSuite'
-include('app')
-*/
