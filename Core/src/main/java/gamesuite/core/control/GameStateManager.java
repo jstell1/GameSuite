@@ -2,23 +2,21 @@ package gamesuite.core.control;
 
 import java.util.List;
 import java.util.Set;
-
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GamePiece;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GameBoardView;
-import gamesuite.core.view.GameStateView;
 
 public class GameStateManager {
 
-    GameState game;
+    private GameState game;
+    private GameBoard board;
 
-    public GameStateManager(GameState game) {
+    public GameStateManager(GameState game, GameBoard board) {
         this.game = game;
+        this.board = board;
     }
 
     public void incrTurn(boolean p1HasMoves, boolean p2HasMoves) {
@@ -59,8 +57,8 @@ public class GameStateManager {
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY(); 
-        CoordPair start = this.game.getBoardPos(sX, sY);
-        CoordPair end = this.game.getBoardPos(eX, eY);
+        CoordPair start = this.board.getBoardPos(sX, sY);
+        CoordPair end = this.board.getBoardPos(eX, eY);
         end.setPiece(start.getPiece());
         start.setPiece(null);
     }
@@ -75,7 +73,7 @@ public class GameStateManager {
 
         GamePiece piece = pos.getPiece();
         String[] names = this.game.getPieceNames();
-        boolean check = piece.getName() == names[0] && pos.getX() == this.game.getBoardSize() - 1;
+        boolean check = piece.getName() == names[0] && pos.getX() == this.board.getSideLength() - 1;
         check = check || piece.getName() == names[1] && pos.getX() == 0; 
         if(check) 
             piece.kingPiece();
@@ -88,8 +86,8 @@ public class GameStateManager {
         GamePiece piece = pos.getPiece();
 
         if(piece == null || !hasFurtherJumps) {
-            this.game.removePlayerJumps(pos.getX(), pos.getY(), 1);
-            this.game.removePlayerJumps(pos.getX(), pos.getY(), 2);
+            this.game.removePlayerJumps(pos, 1);
+            this.game.removePlayerJumps(pos, 2);
         } 
     } 
 
@@ -114,17 +112,17 @@ public class GameStateManager {
     }
 
     private void initRow(String name, String type, int val, int row, int startPos) {
-        int size = this.game.getBoardSize();
+        int size = this.board.getSideLength();
         for(int j = startPos; j < size; j += 2) {
             GamePiece piece = new GamePiece(name, type, val);
-            this.game.setBoardPos(row, j, piece);
+            this.board.setBoardPos(row, j, piece);
         }
     }
 
-    public CoordPair getBoardPos(int x, int y) { return this.game.getBoardPos(x, y); }
+    public CoordPair getBoardPos(int x, int y) { return this.board.getBoardPos(x, y); }
 
     public String getBoardString() {
-        return this.game.getBoardStr();
+        return this.board.toString();
     }
 
     public CoordPair getFurtherJumps() { return this.game.getFurtherJumps(); }
@@ -133,23 +131,19 @@ public class GameStateManager {
 
     public boolean getDraw() { return this.game.getDraw(); }
 
-    public GameBoardView getBoardView() { return this.game.getBoardView(); }
-
-    public GameBoard getBoardCopy() { return this.game.getBoardCopy(); }
+    public GameBoard getBoardCopy() { return this.board.copy(); }
 
     public int getTurn() { return this.game.getTurn(); }
 
-    public GameStateView getGameStateView() { return this.game.getGameStateView(); }
-
     public void addPlayerJumps(CoordPair currPos, int playerNum) {
-        this.game.addPlayerJumps(currPos.getX(), currPos.getY(), playerNum);
+        this.game.addPlayerJumps(currPos, playerNum);
     }
     
     public Set<CoordPair> getJumps(int playerNum) {
         return this.game.getJumps(playerNum);
     }
 
-    public void setChanged(List<CoordPairView> changed) {
+    public void setChanged(List<CoordPair> changed) {
         this.game.setChanged(changed);
     }
 
@@ -163,5 +157,9 @@ public class GameStateManager {
 
     public boolean isJustKinged(CoordPair pos) {
         return this.game.isJustKinged(pos);
+    }
+
+    public boolean addPlayer(Player player) {
+        return this.game.addPlayer(player);
     }
 }

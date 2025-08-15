@@ -14,18 +14,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import gamesuite.client.control.UIListener;
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GamePieceView;
+import gamesuite.core.model.CoordPair;
+import gamesuite.core.model.GamePiece;
 public class CoordPairPanel extends JPanel {
 
     private GamePieceAsset piece;
-    private CoordPairView pos;
+    private CoordPair pos;
     private int row;
     private int col;
     private UIListener listener;
     private Color baseColor;
 
-    public CoordPairPanel(CoordPairView pos, UIListener listener, Color baseColor) {
+    public CoordPairPanel(CoordPair pos, UIListener listener, Color baseColor) {
         super();
         this.pos = pos;
         this.row = pos.getX();
@@ -67,33 +67,33 @@ public class CoordPairPanel extends JPanel {
 
     public int getCol() { return this.col; }
 
-    public CoordPairView getCoordPairView() { return this.pos; }
+    public CoordPair getCoordPair() { return this.pos; }
 
     private void setPiece() {
-        if(this.pos.getPieceView() == null)
+        if(this.pos.getPiece() == null)
             this.piece = null;
-        else if(this.pos.getPieceView().getName().equals("B")) {
-            this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPieceView().isKing());
+        else if(this.pos.getPiece().getName().equals("B")) {
+            this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPiece().isKing());
             //add(this.piece);
         } else {
-            this.piece = new GamePieceAsset(Color.RED,this.pos.getPieceView().isKing());
+            this.piece = new GamePieceAsset(Color.RED,this.pos.getPiece().isKing());
             //add(this.piece);
         }
         repaint();
     }
 
-    public void setPiece(GamePieceView piece) {
+    public void setPiece(GamePiece piece) {
         if(piece == null) {
             this.piece = null;
         }
             //remove(this.piece);
-        else if(this.pos.getPieceView().getName().equals("B")) {
+        else if(this.pos.getPiece().getName().equals("B")) {
             //remove(this.piece);
-            this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPieceView().isKing());
+            this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPiece().isKing());
             //add(this.piece);
         } else {
             //remove(this.piece);
-            this.piece = new GamePieceAsset(Color.RED,this.pos.getPieceView().isKing());
+            this.piece = new GamePieceAsset(Color.RED,this.pos.getPiece().isKing());
             //add(this.piece);
         }
         repaint();

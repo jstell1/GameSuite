@@ -1,9 +1,6 @@
 package gamesuite.core.model;
 
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GameBoardView;
-
-public class GameBoard implements GameBoardView {
+public class GameBoard {
     private CoordPair[][] board;
     private int sideLength;
     private int size;
@@ -34,10 +31,8 @@ public class GameBoard implements GameBoardView {
         return board;
     }
 
-    @Override
     public int getSize() { return this.size; }
 
-    @Override
     public int getSideLength() { return this.sideLength; }
 
     public CoordPair getBoardPos(int x, int y) {
@@ -51,16 +46,12 @@ public class GameBoard implements GameBoardView {
             board[x][y].setPiece(piece);
     }
 
-    @Override
-    public CoordPairView getPos(int x, int y) { return getBoardPos(x, y); }
-
     public boolean isValidPos(int x, int y) {
         if(x < 0 || x >= sideLength || y < 0 || y >= sideLength) 
             return false;
         return true;
     }
 
-    @Override
     public String toString() {
 
         String str = "";
@@ -91,6 +82,4 @@ public class GameBoard implements GameBoardView {
         str += "\n";
         return str;
     }
-
-    //public GameBoardView getGameBoardView() { return this; }
 }

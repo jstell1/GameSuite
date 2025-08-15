@@ -2,9 +2,7 @@ package gamesuite.core.model;
 
 import java.util.Arrays;
 
-import gamesuite.core.view.GamePieceView;
-
-public class GamePiece implements GamePieceView {
+public class GamePiece {
     private String name;
     private String type;
     private int val;
@@ -21,16 +19,12 @@ public class GamePiece implements GamePieceView {
 
     public GamePiece copy() { return new GamePiece(this.name, this.type, this.val); }
 
-    @Override
     public String getName() { return this.name; }
 
-    @Override
     public String getType() { return this.type; }
 
-    @Override
     public int getVal() { return this.val; }
     
-    @Override
     public String toString() {
         return this.name + this.type;
     }
@@ -40,7 +34,6 @@ public class GamePiece implements GamePieceView {
             this.type = "K";
     }
 
-    @Override
     public int[][] getValidMoves() { 
         if(this.type == "C")
             return Arrays.copyOf(this.validMoves, this.validMoves.length);
@@ -48,7 +41,6 @@ public class GamePiece implements GamePieceView {
             return Arrays.copyOf(this.validKingMoves, this.validKingMoves.length);
     }
 
-    @Override
     public int[][] getValidJumps() {
         if(this.type == "C") 
             return Arrays.copyOf(this.validJumps, this.validJumps.length);
@@ -56,8 +48,5 @@ public class GamePiece implements GamePieceView {
             return Arrays.copyOf(this.validKingJumps, this.validKingJumps.length);
     }
 
-    @Override
     public boolean isKing() { return this.type == "K"; }
-
-    public GamePieceView getPieceView() { return this; }
 }

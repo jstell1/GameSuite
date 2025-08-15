@@ -17,7 +17,6 @@ import gamesuite.core.model.GamePiece;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.view.CoordPairView;
 
 public class MoveControllerTest {
     
@@ -34,9 +33,9 @@ public class MoveControllerTest {
         this.p1 = new Player("Frodo", 0);
         this.p2 = new Player("Sam", 0);
         this.board = new GameBoard(8);
-        this.game = new GameState(board, p1, p2);
-        this.stateMang = new GameStateManager(game);
-        this.validator = new RulesValidator(game);
+        this.game = new GameState(p1, p2);
+        this.stateMang = new GameStateManager(game, board);
+        this.validator = new RulesValidator(game, board);
         this.movCont = new MoveController(validator, stateMang);
     }
     
@@ -58,7 +57,7 @@ public class MoveControllerTest {
         };
 
         this.game.setTurn(2);
-        this.game.addPlayerJumps(4, 1, 2);
+        this.game.addPlayerJumps(this.board.getBoardPos(4, 1), 2);
         this.board.setBoardPos(3, 0, pieces[0]);
         this.board.setBoardPos(3, 2, pieces[1]);
         this.board.setBoardPos(4, 1, pieces[5]);
@@ -66,7 +65,7 @@ public class MoveControllerTest {
         Move move = new Move(6, 3, 5, 4);
         assertFalse(this.movCont.checkMove(move));
         this.board.setBoardPos(5, 4, pieces[2]);
-        this.game.addPlayerJumps(6, 3, 2);
+        this.game.addPlayerJumps(this.board.getBoardPos(6, 3), 2);
         move = new Move(4, 1, 2,3);
         assertTrue(this.movCont.checkMove(move));
         move = new Move(6,3,4,3);
@@ -78,22 +77,22 @@ public class MoveControllerTest {
         this.game.setFurtherJumps(null);
         move = new Move(6, 3, 5, 2);
         assertFalse(this.movCont.checkMove(move));
-        this.game.removePlayerJumps(6, 3, 2);
-        this.game.removePlayerJumps(4, 1, 2);
+        this.game.removePlayerJumps(this.board.getBoardPos(6, 3), 2);
+        this.game.removePlayerJumps(this.board.getBoardPos(4, 1), 2);
         move = new Move(6, 3, 5, 2);
         assertTrue(this.movCont.checkMove(move));
         move = new Move(6, 3, 5, 3);
         assertFalse(this.movCont.checkMove(move));
 
         this.board = new GameBoard(8);
-        this.game = new GameState(this.board, this.p1, this.p2);
-        this.stateMang = new GameStateManager(this.game);
-        this.validator = new RulesValidator(this.game);
+        this.game = new GameState(this.p1, this.p2);
+        this.stateMang = new GameStateManager(this.game, this.board);
+        this.validator = new RulesValidator(this.game, this.board);
         this.movCont = new MoveController(this.validator, this.stateMang);
-        this.game.setBoardPos(3, 2, pieces[0]);
-        this.game.setBoardPos(4, 1, pieces[5]);
-        this.game.setBoardPos(6, 1, pieces[6]);
-        this.game.addPlayerJumps(4, 1, 2);
+        this.board.setBoardPos(3, 2, pieces[0]);
+        this.board.setBoardPos(4, 1, pieces[5]);
+        this.board.setBoardPos(6, 1, pieces[6]);
+        this.game.addPlayerJumps(this.board.getBoardPos(4, 1), 2);
         move = new Move(6, 1, 5, 2);
         assertFalse(this.movCont.checkMove(move));
     }
@@ -132,18 +131,18 @@ public class MoveControllerTest {
             new GamePiece("R","C",1)
         };
 
-        this.game.setBoardPos(3,2, pieces[0]);
-        this.game.setBoardPos(2,5, pieces[1]);
-        this.game.setBoardPos(5,2, pieces[2]);
-        this.game.setBoardPos(4,5, pieces[3]);
+        this.board.setBoardPos(3,2, pieces[0]);
+        this.board.setBoardPos(2,5, pieces[1]);
+        this.board.setBoardPos(5,2, pieces[2]);
+        this.board.setBoardPos(4,5, pieces[3]);
 
         CoordPair[] positions = {
-            this.game.getBoardPos(3,2),
-            this.game.getBoardPos(2,5),
-            this.game.getBoardPos(5,2),
-            this.game.getBoardPos(4,5),
-            this.game.getBoardPos(4,3),
-            this.game.getBoardPos(3, 4),
+            this.board.getBoardPos(3,2),
+            this.board.getBoardPos(2,5),
+            this.board.getBoardPos(5,2),
+            this.board.getBoardPos(4,5),
+            this.board.getBoardPos(4,3),
+            this.board.getBoardPos(3, 4),
         };
 
         Move[] moves = {
@@ -157,7 +156,7 @@ public class MoveControllerTest {
             new Move(5,2,4,3)
         };
 
-        List<CoordPairView> changed = this.movCont.makeMove(moves[0]);
+        List<CoordPair> changed = this.movCont.makeMove(moves[0]);
         this.movCont.updateState(changed);
         assertEquals(2, this.stateMang.getTurn());
         assertTrue(this.game.getJumps(2).contains(positions[2]));
@@ -171,16 +170,16 @@ public class MoveControllerTest {
 
         setUp();
         CoordPair[] positions2 = {
-            this.game.getBoardPos(3,2),
-            this.game.getBoardPos(2,5),
-            this.game.getBoardPos(5,2),
-            this.game.getBoardPos(4,5),
-            this.game.getBoardPos(4,3),
-            this.game.getBoardPos(3, 4),
+            this.board.getBoardPos(3,2),
+            this.board.getBoardPos(2,5),
+            this.board.getBoardPos(5,2),
+            this.board.getBoardPos(4,5),
+            this.board.getBoardPos(4,3),
+            this.board.getBoardPos(3, 4),
         };
-        this.game.setBoardPos(3,2, pieces[0]);
-        this.game.setBoardPos(2,5, pieces[1]);
-        this.game.setBoardPos(5,2, pieces[2]);
+        this.board.setBoardPos(3,2, pieces[0]);
+        this.board.setBoardPos(2,5, pieces[1]);
+        this.board.setBoardPos(5,2, pieces[2]);
         changed = this.movCont.makeMove(moves[6]);
         this.movCont.updateState(changed);
         assertEquals(2, this.stateMang.getTurn());
@@ -193,10 +192,10 @@ public class MoveControllerTest {
         assertTrue(this.game.getJumps(1).contains(positions2[5]));
 
         setUp();
-        this.game.setBoardPos(1, 0, pieces[0]);
-        this.game.setBoardPos(2, 1, pieces[2]);
-        this.game.setBoardPos(4, 3, pieces[3]);
-        this.game.addPlayerJumps(1, 0, 1);
+        this.board.setBoardPos(1, 0, pieces[0]);
+        this.board.setBoardPos(2, 1, pieces[2]);
+        this.board.setBoardPos(4, 3, pieces[3]);
+        this.game.addPlayerJumps(this.board.getBoardPos(1, 0), 1);
         this.game.setTurn(2);
         Move move = new Move(4,3,3,2);
         changed = this.movCont.makeMove(move);
@@ -204,23 +203,23 @@ public class MoveControllerTest {
         assertEquals(this.p2, this.game.getWinner());
 
         setUp();
-        this.game.setBoardPos(0, 7, pieces[0]);
-        this.game.setBoardPos(3, 6, pieces[1]);
-        this.game.setBoardPos(1, 6, pieces[2]);
-        this.game.setBoardPos(4, 5, pieces[3]);
-        this.game.setBoardPos(4, 7, pieces[4]);
+        this.board.setBoardPos(0, 7, pieces[0]);
+        this.board.setBoardPos(3, 6, pieces[1]);
+        this.board.setBoardPos(1, 6, pieces[2]);
+        this.board.setBoardPos(4, 5, pieces[3]);
+        this.board.setBoardPos(4, 7, pieces[4]);
         GamePiece piece = new GamePiece("B", "K", 1);
-        this.game.setBoardPos(5, 4, piece);
-        this.game.addPlayerJumps(0, 7, 1);
-        this.game.addPlayerJumps(3, 6, 1);
-        this.game.addPlayerJumps(4, 5, 2);
-        this.game.addPlayerJumps(4, 7, 2);
+        this.board.setBoardPos(5, 4, piece);
+        this.game.addPlayerJumps(this.board.getBoardPos(0, 7), 1);
+        this.game.addPlayerJumps(this.board.getBoardPos(3, 6), 1);
+        this.game.addPlayerJumps(this.board.getBoardPos(4, 5), 2);
+        this.game.addPlayerJumps(this.board.getBoardPos(4, 7), 2);
         this.game.setTurn(2);
         move = new Move(4, 7, 2, 5);
         changed = this.movCont.makeMove(move);
         this.movCont.updateState(changed);
         assertEquals(1, this.game.getJumps(1).size());
-        assertFalse(this.game.getJumps(1).contains(this.game.getBoardPos(0, 7)));
-        assertTrue(this.game.getJumps(1).contains(this.game.getBoardPos(5, 4)));
+        assertFalse(this.game.getJumps(1).contains(this.board.getBoardPos(0, 7)));
+        assertTrue(this.game.getJumps(1).contains(this.board.getBoardPos(5, 4)));
     }
 }

@@ -43,12 +43,12 @@ public class GameStateTest {
         };
         CoordPair[][] arr = getBoardArr(3, ar);
         this.board = new GameBoard(arr);
-        this.game = new GameState(this.board, this.p1, this.p2);
+        this.game = new GameState(this.p1, this.p2);
 
-        assertTrue(this.game.isValidPos(0, 0));
-        assertTrue(this.game.isValidPos(1, 0));
-        assertFalse(this.game.isValidPos(-1, 2));
-        assertFalse(this.game.isValidPos(-2, 9));
+        assertTrue(this.board.isValidPos(0, 0));
+        assertTrue(this.board.isValidPos(1, 0));
+        assertFalse(this.board.isValidPos(-1, 2));
+        assertFalse(this.board.isValidPos(-2, 9));
     }
 
     @Test
@@ -59,13 +59,13 @@ public class GameStateTest {
         arr[2] = new CoordPair(2, 2);
         CoordPair[][] board = getBoardArr(3, arr);
         this.board = new GameBoard(board);
-        this.game = new GameState(this.board, this.p1, this.p2);
+        this.game = new GameState(this.p1, this.p2);
 
-        assertEquals(arr[0], this.game.getBoardPos(0, 0));
-        assertNotEquals(arr[1], this.game.getBoardPos(0, 0));
-        assertNull(this.game.getBoardPos(0, 1));
-        assertNull(this.game.getBoardPos(-1, 4));
-        assertNull(this.game.getBoardPos(9, 1));
+        assertEquals(arr[0], this.board.getBoardPos(0, 0));
+        assertNotEquals(arr[1], this.board.getBoardPos(0, 0));
+        assertNull(this.board.getBoardPos(0, 1));
+        assertNull(this.board.getBoardPos(-1, 4));
+        assertNull(this.board.getBoardPos(9, 1));
     }
 
     @Test
@@ -80,18 +80,18 @@ public class GameStateTest {
         arr[1].setPiece(p2);
         CoordPair[][] board = getBoardArr(3, arr);
         this.board = new GameBoard(board);
-        this.game = new GameState(this.board, this.p1, this.p2);
+        this.game = new GameState(this.p1, this.p2);
         assertTrue(this.game.getJumps(1).isEmpty());
-        this.game.addPlayerJumps(0, 0, 1);
+        this.game.addPlayerJumps(this.board.getBoardPos(0, 0), 1);
         Set<CoordPair> jumps = this.game.getJumps(1);
         assertTrue(jumps.contains(board[0][0]));
-        this.game.addPlayerJumps(1, 0, 1);
-        this.game.addPlayerJumps(1, 0, 1);
+        this.game.addPlayerJumps(this.board.getBoardPos(1, 0), 1);
+        this.game.addPlayerJumps(this.board.getBoardPos(1, 0), 1);
         assertEquals(this.game.getJumps(1).size(), 1);
         assertFalse(this.game.getJumps(1).contains(board[1][0]));
-        this.game.addPlayerJumps(1, 1, 2);
+        this.game.addPlayerJumps(this.board.getBoardPos(1, 1), 2);
         assertTrue(this.game.getJumps(2).contains(board[1][1]));
-        this.game.addPlayerJumps(-1, -5, 1);
+        this.game.addPlayerJumps(this.board.getBoardPos(-1, -5), 1);
         assertEquals(this.game.getJumps(1).size(), 1);
         assertTrue(jumps.contains(board[0][0]));
     }
@@ -108,15 +108,15 @@ public class GameStateTest {
         arr[1].setPiece(p2);
         CoordPair[][] board = getBoardArr(3, arr);
         this.board = new GameBoard(board);
-        this.game = new GameState(this.board, this.p1, this.p2);
-        this.game.addPlayerJumps(0, 0, 1);
+        this.game = new GameState(this.p1, this.p2);
+        this.game.addPlayerJumps(this.board.getBoardPos(0, 0), 1);
         assertTrue(this.game.getJumps(1).contains(board[0][0]));
-        this.game.removePlayerJumps(1, 0, 1);
+        this.game.removePlayerJumps(this.board.getBoardPos(1, 0), 1);
         assertTrue(this.game.getJumps(1).contains(board[0][0]));
-        this.game.removePlayerJumps(-3, 9, 1);
+        this.game.removePlayerJumps(this.board.getBoardPos(-3, 9), 1);
         assertTrue(this.game.getJumps(1).contains(board[0][0]));
         assertEquals(this.game.getJumps(1).size(), 1);
-        this.game.removePlayerJumps(0, 0, 1);
+        this.game.removePlayerJumps(this.board.getBoardPos(0, 0), 1);
         assertTrue(this.game.getJumps(1).isEmpty());
     }
     

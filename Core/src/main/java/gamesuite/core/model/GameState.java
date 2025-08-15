@@ -1,19 +1,12 @@
 package gamesuite.core.model;
 
 import java.util.Set;
-
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GameBoardView;
-import gamesuite.core.view.GameStateView;
-import gamesuite.core.view.PlayerView;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-public class GameState implements GameStateView {
+public class GameState {
 
-    private GameBoard board;
     private Player player1;
     private Player player2;
     private int numPlayers;
@@ -27,12 +20,11 @@ public class GameState implements GameStateView {
     private int turnFactor;
     private boolean boardInit;
     private final String[] pieceNames = {"B", "R"};
-    private List<CoordPairView> changedPos;
+    private List<CoordPair> changedPos;
     private boolean gameOver;
     private Set<CoordPair> justKinged;
 
-    public GameState(GameBoard board, Player player1, Player player2) {
-        this.board = board;
+    public GameState(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.numPlayers = 2;
@@ -42,15 +34,13 @@ public class GameState implements GameStateView {
         this.p1Jumps = new HashSet<>();
         this.p2Jumps = new HashSet<>();
         this.furtherJumps = null;
-        this.boardSize = this.board.getSideLength();
         this.turnFactor = -1;
         this.boardInit = false;
         this.gameOver = false;
         this.justKinged = new HashSet<>();
     }
 
-    public GameState(GameBoard board, Player player1) {
-        this.board = board;
+    public GameState(Player player1) {
         this.player1 = player1;
         this.numPlayers = 1;
         this.turn = 1;
@@ -59,7 +49,6 @@ public class GameState implements GameStateView {
         this.p1Jumps = new HashSet<>();
         this.p2Jumps = new HashSet<>();
         this.furtherJumps = null;
-        this.boardSize = this.board.getSideLength();
         this.turnFactor = -1;
         this.boardInit = false;
         this.gameOver = false;
@@ -89,7 +78,6 @@ public class GameState implements GameStateView {
         return this.justKinged.contains(pos);
     }
 
-    @Override
     public boolean isGameOver() { return this.gameOver; }
 
     public void setGameOver(boolean gameOver) { 
@@ -105,13 +93,11 @@ public class GameState implements GameStateView {
 
     public void flipTurnFactor() { this.turnFactor *= -1; }
 
-    public void addPlayerJumps(int x, int y, int playerNum) {
-        if(isValidPos(x, y)) {
-            if(playerNum == 1 && getBoardPos(x, y) != null)
-                p1Jumps.add(getBoardPos(x, y));
-            else if(playerNum == 2 && getBoardPos(x, y) != null)
-                p2Jumps.add(getBoardPos(x, y));
-        }
+    public void addPlayerJumps(CoordPair pos, int playerNum) {
+        if(playerNum == 1 && pos != null)
+            p1Jumps.add(pos);
+        else if(playerNum == 2 && pos != null)
+            p2Jumps.add(pos);
     }
 
     public Set<CoordPair> getJumps(int playerNum) {
@@ -123,16 +109,13 @@ public class GameState implements GameStateView {
         return null;
     }
 
-    public int getBoardSize() { return this.boardSize; }
-
-    public void removePlayerJumps(int x, int y, int playerNum) {
+    public void removePlayerJumps(CoordPair pos, int playerNum) {
         if(playerNum == 1) 
-            this.p1Jumps.remove(getBoardPos(x, y));
+            this.p1Jumps.remove(pos);
         else if(playerNum == 2)
-            this.p2Jumps.remove(getBoardPos(x, y));
+            this.p2Jumps.remove(pos);
     }
 
-    @Override
     public int getTurn() { return this.turn; }
 
     public int setTurn(int num) {
@@ -156,27 +139,6 @@ public class GameState implements GameStateView {
         return players;
     }
 
-    @Override
-    public List<PlayerView> getPlayerViews() {
-        PlayerView[] players; 
-        if(player2 == null)
-            players = new PlayerView[1];
-        else
-            players = new PlayerView[2];
-
-        players[0] = Player.getPlayerView(this.player1);
-        if(players.length == 2)
-            players[1] = Player.getPlayerView(this.player2);
-        return Arrays.asList(players);
-    }
-
-    @Override
-    public PlayerView getPlayerView(int num) { 
-        if(num < getNumPlayers())
-            return getPlayer(num); 
-        return null;
-    }
-
     public void setFurtherJumps(CoordPair pos) { this.furtherJumps = pos; }
 
     public void removeFurtherJumps() { this.furtherJumps = null; }
@@ -187,15 +149,11 @@ public class GameState implements GameStateView {
         return this.furtherJumps;
     } 
 
-    @Override
     public boolean getDraw() { return this.isDraw; }
 
     public void setDraw() { this.isDraw = true; }
     
     public Player getWinner() { return this.winner; }
-
-    @Override
-    public PlayerView getWinnerView() { return this.winner; }
 
     public void setWinner(int playerNum) { 
         if(this.winner == null && playerNum == 1)
@@ -204,7 +162,6 @@ public class GameState implements GameStateView {
             this.winner = player2; 
     }
 
-    @Override
     public int getPlayerPoints(int playerNum) {
         int points = -1;
         if(playerNum == 1) 
@@ -214,14 +171,6 @@ public class GameState implements GameStateView {
         return points;
     }
 
-    public CoordPair getBoardPos(int x, int y) {
-        if(isValidPos(x, y))
-            return this.board.getBoardPos(x, y);
-        return null;
-    }
-
-    public GameBoard getBoardCopy() { return this.board.copy(); }
-
     public void addPlayerPoints(int playerNum) {
         if(playerNum == 1)
             this.player1.addPoints(1);
@@ -229,38 +178,13 @@ public class GameState implements GameStateView {
             this.player2.addPoints(1);
     }
 
-    public void setBoardPos(int x, int y, GamePiece piece) {
-        if(isValidPos(x, y))
-            this.board.setBoardPos(x, y, piece);
-    }
-
-    @Override
     public int getNumPlayers() { return this.numPlayers; }
 
-    
-    public String getBoardStr() {
-        return this.board.toString();
-    }
-
-    public boolean isValidPos(int x, int y) {
-        if(this.board.isValidPos(x, y))
-            return true;
-        return false;
-    }
-
-    @Override
-    public GameBoardView getBoardView() { 
-        return this.board; 
-    }
-
-    @Override
-    public List<CoordPairView> getChangedPos() {
+    public List<CoordPair> getChangedPos() {
         return this.changedPos;
     }    
 
-    public GameStateView getGameStateView() { return this; }
-
-	public void setChanged(List<CoordPairView> changed) {
+	public void setChanged(List<CoordPair> changed) {
         this.changedPos = changed;
 	}
 
@@ -268,7 +192,12 @@ public class GameState implements GameStateView {
         this.justKinged.clear();
     }
 
-    public GameBoard getBoard() {
-        return this.board;
+    public synchronized boolean addPlayer(Player player) {
+        if(this.player2 == null) {
+            this.player2 = player;
+            this.numPlayers++;
+            return true;
+        }
+        return false;
     }
 }

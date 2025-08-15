@@ -6,31 +6,29 @@ import java.util.regex.Pattern;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
+import gamesuite.core.model.GameState;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.view.GameBoardView;
-import gamesuite.core.view.GameStateView;
-import gamesuite.core.view.PlayerView;
 
 import java.util.regex.Matcher;
 
 public class TextGameCLI implements GameUI {
 
-    private PlayerView[] players;
+    private Player[] players;
     private static Pattern COORD_PATTERN; 
     private Scanner in;
-    private GameBoardView board;
+    private GameBoard board;
     private int sideLength;
-    private GameStateView game;
+    private GameState game;
     private GameManager gm;
 
-    public TextGameCLI(GameStateView game, Scanner in, GameManager gm) {
+    public TextGameCLI(GameState game, GameBoard board, Scanner in, GameManager gm) {
         this.gm = gm;
         this.game = game;
-        this.board = game.getBoardView();
-        this.players = game.getPlayerViews().toArray(new PlayerView[game.getPlayerViews().size()]);
+        this.board = board;
+        this.players = game.getPlayers();
         this.in = in;
         this.sideLength = this.board.getSideLength();
         String pattern = "^\\s*([1-" + this.sideLength + "])\\s*,\\s*([1-" + this.sideLength + "])\\s*$";
@@ -72,7 +70,7 @@ public class TextGameCLI implements GameUI {
         return null;        
     }
 
-    public void updateBoard(GameStateView game) {
+    public void updateBoard(GameState game) {
         System.out.println("Player 1 points: " + game.getPlayerPoints(1));
         System.out.println("Player 2 points: " + game.getPlayerPoints(2));
     }
@@ -89,8 +87,8 @@ public class TextGameCLI implements GameUI {
                 this.gm.sendMove(move);
             }
         }
-        if(this.game.getWinnerView() != null)
-            System.out.println("Winner: " + this.game.getWinnerView().getName());
+        if(this.game.getWinner() != null)
+            System.out.println("Winner: " + this.game.getWinner().getName());
         else    
             System.out.println("Draw");
     }

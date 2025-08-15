@@ -10,25 +10,33 @@ import gamesuite.client.view.GameBoardPanel;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
 import gamesuite.core.control.GameManager;
+import gamesuite.core.model.CoordPair;
+import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GameStateView;
-import gamesuite.core.view.PlayerView;
+import gamesuite.core.model.Player;
 
 public class GUIManager implements GameUI, UIListener {
-    private GameStateView gameView;
+    private GameState gameView;
     private GameManager gm;
     private GameGUI gui;
     private GameBoardPanel gameBoard;
     private int tmpX, tmpY;
 
-    public GUIManager(GameManager gm) {
+    public GUIManager(GameManager gm, GameState game) {
         this.gm = gm;
         this.tmpX = -1; 
         this.tmpY = -1;
-        this.gameView = gm.getGameStateView();
-        this.gameBoard = new GameBoardPanel(this.gameView.getBoardView(), 600, this);
-        this.gui = new GameGUI(this.gameView.getTurn(), this.gameBoard);
+        this.gameView = game;
+    }
+
+    public void setGameGUI(GameGUI gui) {
+        if(this.gui == null)
+            this.gui = gui;
+    }
+
+    public void setBoard(GameBoardPanel boardPanel) {
+        if(this.gameBoard == null)
+            this.gameBoard = boardPanel;
     }
 
     @Override
@@ -62,7 +70,7 @@ public class GUIManager implements GameUI, UIListener {
                 this.gm.sendMove(new Move(this.tmpX, this.tmpY, x, y));
                 SwingUtilities.invokeLater(() -> {
                     if(this.gameView != null) {
-                        List<CoordPairView> changed = this.gameView.getChangedPos();
+                        List<CoordPair> changed = this.gameView.getChangedPos();
                         this.gameBoard.updateBoard(changed);
                     }
                     this.tmpX = -1;
@@ -72,7 +80,7 @@ public class GUIManager implements GameUI, UIListener {
                         this.gameBoard.setEnabled(true);
                         this.gui.setTurnLabel(this.gameView.getTurn());
                     } else {
-                        PlayerView winner = this.gameView.getWinnerView();
+                        Player winner = this.gameView.getWinner();
                         this.gui.setGameOverLabel(winner.getName() + " is the winner");
                     }
                 });

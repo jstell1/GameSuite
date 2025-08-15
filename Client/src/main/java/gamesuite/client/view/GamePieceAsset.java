@@ -8,8 +8,6 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
-import gamesuite.core.view.GamePieceView;
-
 public class GamePieceAsset extends JComponent {
     private Color color;
     private boolean isKing;

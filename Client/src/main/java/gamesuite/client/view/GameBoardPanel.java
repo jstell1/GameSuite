@@ -12,29 +12,28 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import gamesuite.client.control.UIListener;
+import gamesuite.core.model.CoordPair;
+import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.Move;
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GameBoardView;
-import gamesuite.core.view.GameStateView;
 
 public class GameBoardPanel extends JPanel {
 
-    private GameBoardView board;
+    private GameBoard board;
     private int size;
-    private List<CoordPairView> changed;
+    private List<CoordPair> changed;
     private CoordPairPanel[][] boardPanel;
     private UIListener listener;
     private Set<CoordPairPanel> yellowed;
 
-    public GameBoardPanel(GameBoardView board, int size, UIListener listener) {
+    public GameBoardPanel(GameBoard board, int size, UIListener listener) {
         super();
         //this.setOpaque(true);
+        this.listener = listener;
         this.boardPanel = new CoordPairPanel[size][size];
         this.yellowed = new HashSet<>();
         this.changed = null;
         this.board = board;
         this.size = size;
-        this.listener = listener;
         this.setLayout(new GridLayout(8, 8));
         this.setPreferredSize(new Dimension(size, size));
         this.setMaximumSize(new Dimension(size, size));
@@ -43,9 +42,9 @@ public class GameBoardPanel extends JPanel {
             for(int j = 0; j < 8; j++) {
                 CoordPairPanel pos = null;
                 if ((i + j) % 2 == 0) {
-                    pos = new CoordPairPanel(board.getPos(i, j), this.listener, Color.LIGHT_GRAY);
+                    pos = new CoordPairPanel(board.getBoardPos(i, j), this.listener, Color.LIGHT_GRAY);
                 } else {
-                    pos = new CoordPairPanel(board.getPos(i, j), this.listener, Color.DARK_GRAY);
+                    pos = new CoordPairPanel(board.getBoardPos(i, j), this.listener, Color.DARK_GRAY);
                 }
 
                 pos.setPreferredSize(new Dimension(size / 8, size / 8));
@@ -55,17 +54,22 @@ public class GameBoardPanel extends JPanel {
         }
     }
 
+    public void setListener(UIListener listener) {
+        if(this.listener == null)
+            this.listener = listener;
+    }
+
     public void removeYellowed(int x, int y) {
             this.yellowed.remove(this.boardPanel[x][y]);
     }
     
-    public void updateBoard(List<CoordPairView> changes) {
+    public void updateBoard(List<CoordPair> changes) {
         this.changed = changes;
         if(this.changed != null) {
             CoordPairPanel[] updateList = new CoordPairPanel[this.changed.size()];
             for(int i = 0; i < this.changed.size(); i++) {
                 updateList[i] = this.boardPanel[this.changed.get(i).getX()][this.changed.get(i).getY()];
-                updateList[i].setPiece(this.changed.get(i).getPieceView());
+                updateList[i].setPiece(this.changed.get(i).getPiece());
             }
             this.changed = null;        
         }

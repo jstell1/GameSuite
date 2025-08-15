@@ -1,8 +1,6 @@
 package gamesuite.core.model;
 
-import gamesuite.core.view.PlayerView;
-
-public class Player implements PlayerView {
+public class Player {
     private int points;
     private String name;
 
@@ -28,15 +26,9 @@ public class Player implements PlayerView {
             this.name = name;
     }
 
-    @Override
     public int getPoints() { return this.points; }
 
-    @Override
     public String getName() { return this.name; }
 
     public Player copy() { return new Player(this.name, this.points); }
-
-    public static PlayerView getPlayerView(Player player) { 
-        return player; 
-    }
 }

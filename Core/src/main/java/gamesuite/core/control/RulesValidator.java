@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gamesuite.core.model.CoordPair;
+import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GamePiece;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
@@ -14,10 +15,12 @@ public class RulesValidator {
     private HashSet<CoordPair> validKingMoves;
     private HashSet<CoordPair> validKingJumps;
     private GameState game;
+    private GameBoard board;
     private final String[] pieceNames = {"B", "R"};
 
-    public RulesValidator(GameState game) {
+    public RulesValidator(GameState game, GameBoard board) {
         this.game = game;
+        this.board = board;
         this.validMoves = new HashSet<>();
         this.validJumps = new HashSet<>();
         this.validKingMoves = new HashSet<>();
@@ -53,7 +56,7 @@ public class RulesValidator {
             return false;
 
         String name = end.getPiece().getName();
-        if(name == this.pieceNames[0] && end.getX() == this.game.getBoardSize() - 1) 
+        if(name == this.pieceNames[0] && end.getX() == this.board.getSideLength() - 1) 
             return true;
         else if(name == this.pieceNames[1] && end.getX() == 0)
             return true;
@@ -73,7 +76,7 @@ public class RulesValidator {
     public boolean isValidPos(CoordPair pos) {
         if(pos == null)
             return false;
-        int length = this.game.getBoardSize();
+        int length = this.board.getSideLength();
         int x = pos.getX();
         int y = pos.getY();
         
@@ -101,8 +104,8 @@ public class RulesValidator {
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.game.getBoardPos(sX, sY);
-        CoordPair end = this.game.getBoardPos(eX, eY);
+        CoordPair start = this.board.getBoardPos(sX, sY);
+        CoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false; 
         if(!isTurnPiece(start.getPiece()) || end.getPiece() != null) 
@@ -140,8 +143,8 @@ public class RulesValidator {
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.game.getBoardPos(sX, sY);
-        CoordPair end = this.game.getBoardPos(eX, eY);
+        CoordPair start = this.board.getBoardPos(sX, sY);
+        CoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false; 
         if(start.getPiece() == null || start.getPiece().getName() != pName || end.getPiece() != null) 
@@ -171,14 +174,14 @@ public class RulesValidator {
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.game.getBoardPos(sX, sY);
-        CoordPair end = this.game.getBoardPos(eX, eY);
+        CoordPair start = this.board.getBoardPos(sX, sY);
+        CoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false;
 
         int jumpedX = (start.getX() + end.getX()) >> 1;
         int jumpedY = (start.getY() + end.getY()) >> 1;
-        CoordPair pos = this.game.getBoardPos(jumpedX, jumpedY);
+        CoordPair pos = this.board.getBoardPos(jumpedX, jumpedY);
         GamePiece jumpedPiece = pos.getPiece();
         GamePiece piece = start.getPiece();
         GamePiece endPiece = end.getPiece();
@@ -201,7 +204,7 @@ public class RulesValidator {
     }
 
     public boolean hasValidMoves(String name) {
-        for(int i = 0; i < this.game.getBoardSize(); i++) {
+        for(int i = 0; i < this.board.getSideLength(); i++) {
             if(i % 2 == 0 && rowHasValidMoves(i, 1, name)) {
                return true;
             } else if(rowHasValidMoves(i, 0, name)) {
@@ -223,8 +226,8 @@ public class RulesValidator {
         int fact = -1;
         if(name == "R")
             fact = 1;
-        for(int j = start; j < this.game.getBoardSize(); j += 2) {
-            CoordPair pos = this.game.getBoardPos(row, j);
+        for(int j = start; j < this.board.getSideLength(); j += 2) {
+            CoordPair pos = this.board.getBoardPos(row, j);
             if(pos == null)
                 return false;
             GamePiece piece = pos.getPiece();
@@ -235,7 +238,7 @@ public class RulesValidator {
                     int x = pos.getX() + validDiff.getX() * fact;
                     int y = pos.getY() + validDiff.getY() * fact;
                     if(isValidPos(new CoordPair(x, y))) {
-                        CoordPair end = this.game.getBoardPos(x, y);
+                        CoordPair end = this.board.getBoardPos(x, y);
                         if(end == null)
                             end = new CoordPair(x, y);
     
@@ -259,7 +262,7 @@ public class RulesValidator {
         int startX = pos.getX();
         int startY = pos.getY();
 
-        if(!this.game.isValidPos(startX, startY) || piece == null)
+        if(!this.board.isValidPos(startX, startY) || piece == null)
             return false;
 
         int[][] validJumps = piece.getValidJumps();
@@ -278,22 +281,18 @@ public class RulesValidator {
                 y = startY + validJumps[i][1];
             }
 
-            if(isValidPos(this.game.getBoardPos(x, y))) {
+            if(isValidPos(this.board.getBoardPos(x, y))) {
                 jumpX = (startX + x) >> 1;
                 jumpY = (startY + y) >> 1;
 
-                CoordPair jumpPos = this.game.getBoardPos(jumpX, jumpY);
-                CoordPair end = this.game.getBoardPos(x, y);
+                CoordPair jumpPos = this.board.getBoardPos(jumpX, jumpY);
+                CoordPair end = this.board.getBoardPos(x, y);
                 GamePiece endPiece = null;
                 if(end != null)
                     endPiece = end.getPiece();
                 GamePiece jumpPiece = jumpPos.getPiece();
 
                 if(jumpPiece != null && name != jumpPiece.getName() && endPiece == null) {
-                    //if(this.game.isJustKinged(pos)) {
-                    //    this.game.removeJustKinged(pos);
-                    //    return false;
-                    //}
                     return true;
                 }
             }

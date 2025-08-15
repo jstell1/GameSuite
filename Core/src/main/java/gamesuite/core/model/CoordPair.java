@@ -1,9 +1,6 @@
 package gamesuite.core.model;
 
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GamePieceView;
-
-public class CoordPair implements CoordPairView {
+public class CoordPair{
     private int x;
     private int y;
     private GamePiece piece;
@@ -14,16 +11,11 @@ public class CoordPair implements CoordPairView {
         this.piece = null;
     }
 
-    @Override
     public int getX() { return this.x; }
 
-    @Override
     public int getY() { return this.y; }
 
     public GamePiece getPiece() { return this.piece; }
-
-    @Override
-    public GamePieceView getPieceView() { return this.piece; } 
 
     public void setPiece(GamePiece piece) { this.piece = piece; } 
 
@@ -55,6 +47,4 @@ public class CoordPair implements CoordPairView {
         }
         return null;
     }
-
-    public CoordPairView getCoordPairView() { return this; }
 }

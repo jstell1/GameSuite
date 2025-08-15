@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GamePiece;
-import gamesuite.core.view.CoordPairView;
-import gamesuite.core.view.GamePieceView;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,10 +86,10 @@ public class GameBoardTest {
         CoordPair pos = new CoordPair(0, 0);
         GamePiece piece = new GamePiece("B", "K", 1);
         this.board.setBoardPos(0, 0, piece);
-        CoordPairView posView = this.board.getPos(0, 0);
+        CoordPair posView = this.board.getBoardPos(0, 0);
         assertEquals(pos.getX(), posView.getX());
         assertEquals(pos.getY(), posView.getY());
-        GamePieceView pieceView = posView.getPieceView();
+        GamePiece pieceView = posView.getPiece();
         assertEquals(pieceView.getName(), piece.getName());
         assertEquals(pieceView.getType(), piece.getType());
         assertEquals(pieceView.getVal(), piece.getVal());

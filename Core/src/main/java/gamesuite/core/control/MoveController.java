@@ -7,7 +7,6 @@ import java.util.Set;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.view.CoordPairView;
 
 public class MoveController {
 
@@ -53,7 +52,7 @@ public class MoveController {
         return check3;
     }
 
-    public List<CoordPairView> makeMove(Move move) {
+    public List<CoordPair> makeMove(Move move) {
         if(move == null)
             return null;
         int x = move.getStartX();
@@ -87,10 +86,10 @@ public class MoveController {
         return null;
     }
 
-    public void updateState(List<CoordPairView> changed) {
+    public void updateState(List<CoordPair> changed) {
         if(changed != null) {
             int size = changed.size();
-            for(CoordPairView pos : changed) {
+            for(CoordPair pos : changed) {
                 int x = pos.getX();
                 int y = pos.getY();
                 CoordPair[] checks = { 
