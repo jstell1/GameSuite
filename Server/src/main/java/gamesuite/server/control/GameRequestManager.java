@@ -10,15 +10,22 @@ import org.springframework.web.bind.annotation.PatchMapping;
 
 import gamesuite.network.CreateGameRequest;
 import gamesuite.network.GameCreatedResponse;
+import gamesuite.network.GameReadyResponse;
 import gamesuite.network.JoinGameRequest;
+import gamesuite.network.MoveRequest;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import gamesuite.core.model.Move;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 
 @RestController
-@RequestMapping("/games")
 public class GameRequestManager {
     private ServerGameRepo gmRepo;
 
@@ -26,7 +33,7 @@ public class GameRequestManager {
         this.gmRepo = gmRepo;
     }
 
-    @PostMapping
+    @PostMapping("/games")
     public ResponseEntity<GameCreatedResponse> createGame(@RequestBody CreateGameRequest msg) {
         String name = msg.getName();
         if(name == null) 
@@ -45,7 +52,7 @@ public class GameRequestManager {
         }
     }
 
-    @PatchMapping("/players")
+    @PatchMapping("games/players")
     public ResponseEntity<GameCreatedResponse> joinGame(@RequestBody JoinGameRequest request) {
 
         Player player = request.getPlayer();
@@ -53,7 +60,7 @@ public class GameRequestManager {
         if(player == null)
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 
-        if(!gmRepo.contains(gameId))
+        if(!gmRepo.containsGame(gameId))
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
         try {
@@ -65,6 +72,8 @@ public class GameRequestManager {
                 GameState game = gmRepo.getGM(gameId).getGameState();
                 String userId = gmRepo.setUserToGame(gameId, 2);
                 GameCreatedResponse resp = new GameCreatedResponse(gameId, game, userId);
+                GameReadyResponse resp2 = new GameReadyResponse(board.getBoard(), gameId, game);
+                //this.msg.convertAndSend(resp2);
                 return new ResponseEntity<>(resp, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -72,10 +81,28 @@ public class GameRequestManager {
         }
     }
 
-    @PatchMapping
-    public ResponseEntity<GameState> makeMove(@RequestBody Move move) {
+    @PatchMapping("games/updates")
+    public ResponseEntity<GameCreatedResponse> makeMove(@RequestBody MoveRequest moveReq) {
 
+        try {
+            String gameId = moveReq.getGameId();
+            String userId = moveReq.getUserId();
+            Move move = moveReq.getMove();
+    
+            if(this.gmRepo.rightPlayer(gameId, userId)) {
+                GameManager gm = this.gmRepo.getGM(gameId);
+                gm.sendMove(move);
+                GameState game = gm.getGameState();
+                GameCreatedResponse resp = new GameCreatedResponse(gameId, game, userId);
 
-        return null;
+                //msg.convertAndSend(resp);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+            }
+    
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 }

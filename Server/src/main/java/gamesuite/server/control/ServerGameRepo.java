@@ -44,11 +44,22 @@ public class ServerGameRepo {
         return this.games.get(gameId).getGameState();
     }
 
-    public boolean contains(String gameId) {
+    public boolean containsGame(String gameId) {
         return this.games.containsKey(gameId);
     }
 
     public GameManager getGM(String id) { 
         return this.games.get(id);
+    }
+
+    public boolean rightPlayer(String gameId, String userId) {
+        if(!containsGame(gameId) || !this.userGameMap.containsKey(userId))
+            return false;
+            
+        Map<String, Integer> game = this.userGameMap.get(userId);
+        int currTurn = this.games.get(gameId).getTurn();
+        if(!game.get(gameId).equals(currTurn))
+            return false;
+        return true;
     }
 }
