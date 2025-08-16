@@ -12,12 +12,22 @@ import gamesuite.core.model.Player;
 @Service
 public class ServerGameRepo {
     private final Map<String, GameManager> games = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, Integer>> userGameMap = new ConcurrentHashMap<>();
 
     public String createGame(Player p1, GameBoard board) {
         GameManager gm = new GameManager(board, p1);
         String gameId = UUID.randomUUID().toString();
         this.games.put(gameId, gm);
         return gameId;
+    }
+
+    public String setUserToGame(String gameId, int num) {
+        String userId = UUID.randomUUID().toString();
+        Map<String, Integer> playerNumMap = new ConcurrentHashMap<>();
+        playerNumMap.put(gameId, num);
+        this.userGameMap.put(userId, playerNumMap);
+        return userId;
+        
     }
 
     public GameBoard joinGame(Player player, String gameId) {
@@ -36,5 +46,9 @@ public class ServerGameRepo {
 
     public boolean contains(String gameId) {
         return this.games.containsKey(gameId);
+    }
+
+    public GameManager getGM(String id) { 
+        return this.games.get(id);
     }
 }
