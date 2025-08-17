@@ -6,17 +6,13 @@ public class GameCreatedResponse {
 
     private String gameId;
     private GameState game;
-    private String userId;
 
-    public GameCreatedResponse(String gameId, GameState game, String userId) {
+    public GameCreatedResponse(String gameId, GameState game) {
         this.gameId = gameId;
         this.game = game;
-        this.userId = userId;
     }
 
     public String getGameId() { return this.gameId; }
 
     public GameState getGameState() { return this.game; }
-
-    public String getUserId() { return this.userId; }
 }

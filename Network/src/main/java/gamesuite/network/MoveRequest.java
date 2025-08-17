@@ -3,21 +3,20 @@ package gamesuite.network;
 import gamesuite.core.model.Move;
 
 public class MoveRequest {
-    private String userId;
     private String gameId;
+    private String sessionId;
     private Move move;
 
     public MoveRequest() {}
 
     public MoveRequest(String userId, String gameId, Move move) {
-        this.userId = userId;
         this.gameId = gameId;
         this.move = move;
     }
 
-    public void setUserId(String userId) {
-        if(this.userId == null)
-            this.userId = userId;
+    public void setSessionId(String sessionId) { 
+        if(this.sessionId == null)
+            this.sessionId = sessionId;
     }
 
     public void setGameId(String gameId) {
@@ -30,9 +29,9 @@ public class MoveRequest {
             this.move = move;
     }
 
-    public String getUserId() { return this.userId; }
-
     public String getGameId() { return this.gameId; }
 
     public Move getMove() { return this.move; }
+
+    public String getSessionId() { return this.sessionId; }
 }

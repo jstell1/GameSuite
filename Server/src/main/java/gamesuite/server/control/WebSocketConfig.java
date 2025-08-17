@@ -14,23 +14,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    /*/
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.setApplicationDestinationPrefixes("/app")
-        .enableSimpleBroker("/ingame");
+    private SocketConnectionHandler handler;
+
+    public WebSocketConfig(SocketConnectionHandler handler) {
+        this.handler = handler;
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("games/updates").withSockJS();
-    }
-    */
-     
-    @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         webSocketHandlerRegistry
-            .addHandler(new SocketConnectionHandler(),"/ingame")
+            .addHandler(this.handler,"/ingame")
             .setAllowedOrigins("*");
     }
     

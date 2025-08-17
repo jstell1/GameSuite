@@ -4,7 +4,10 @@ public class Move {
     int startX, startY;
     int endX, endY;
 
-    public Move() {}
+    public Move() {
+        this.startX = -1; this.startY = -1;
+        this.endX = -1; this.endY = -1;
+    }
 
     public Move(int startX, int startY, int endX, int endY) {
         this.startX = startX; this.startY = startY;
@@ -12,22 +15,22 @@ public class Move {
     }
 
     public void setStartX(int x) {
-        if( x >= 0) 
+        if( x >= 0 && this.startX == -1) 
             this.startX = x;
     }
 
     public void setStartY(int y) {
-        if( y >= 0) 
+        if( y >= 0 && this.startY == -1) 
             this.startY = y;
     }
 
     public void setEndX(int x) {
-        if( x >= 0) 
+        if( x >= 0 && this.endX == -1) 
             this.endX = x;
     }
 
     public void setEndY(int y) {
-        if( y >= 0) 
+        if( y >= 0 && this.endY == -1)  
             this.endY = y;
     }
 
