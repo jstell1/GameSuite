@@ -22,6 +22,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
+        System.out.println("Registering WebSocket handler at /ingame");
         webSocketHandlerRegistry
             .addHandler(this.handler,"/ingame")
             .setAllowedOrigins("*");
