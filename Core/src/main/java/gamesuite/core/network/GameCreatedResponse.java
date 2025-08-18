@@ -26,5 +26,5 @@ public class GameCreatedResponse {
     
     public String getGameId() { return this.gameId; }
 
-    public GameState getGameState() { return this.game; }
+    public GameState getGame() { return this.game; }
 }

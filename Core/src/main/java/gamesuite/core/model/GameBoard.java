@@ -27,7 +27,7 @@ public class GameBoard {
         for(CoordPair[] row: this.board)
             for(CoordPair pos : row) 
                 if(pos.getPiece() != null)
-                    board.setBoardPos(pos.getX(), pos.getY(), pos.getPiece().copy());
+                    board.setBoardPos(pos.getX(), pos.getY(), pos.getPiece());
                 else    
                     board.setBoardPos(pos.getX(), pos.getY(), null);      
         return board;

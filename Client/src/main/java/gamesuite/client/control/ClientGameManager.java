@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -27,7 +28,7 @@ import gamesuite.core.network.WebSockServerMessage;
 
 public class ClientGameManager implements GameManager {
     private final WebSocketClient client = new StandardWebSocketClient();
-    private final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate();
     private WebSocketSession session;
     private String sessionId;
     private String gameId;
@@ -39,6 +40,7 @@ public class ClientGameManager implements GameManager {
     public ClientGameManager(String ip, int port) {
         this.baseUrl = "http://" + ip + ":" + port;
         this.wsUrl = "ws://" + ip + ":" + port + "/ingame";
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
     }
 
     public void setGUIManager(GUIManager guiGM) {
@@ -63,13 +65,14 @@ public class ClientGameManager implements GameManager {
                 
                 if(servMsg.getResp1() != null) {
                     GameReadyResponse msg = servMsg.getResp1();
-                    ClientGameManager.this.guiGM.initGame(msg.getBoard(), msg.getGameState());
+                    ClientGameManager.this.guiGM.initGame(msg.getBoard(), msg.getGame());
                 } else if(servMsg.getResp2() != null) {
                     GameCreatedResponse msg = servMsg.getResp2();
-                    ClientGameManager.this.guiGM.setGameState(msg.getGameState());
+                    ClientGameManager.this.guiGM.setGameState(msg.getGame());
                     ClientGameManager.this.guiGM.update();
                 } else if(servMsg.getResp1() == null && servMsg.getResp2() == null) {
                     ClientGameManager.this.sessionId = servMsg.getSessionId();
+                    sessionIdFuture.complete(sessionId); 
                 }
 
             }
@@ -106,6 +109,17 @@ public class ClientGameManager implements GameManager {
 
     @Override
     public GameCreatedResponse createGame(String playerName) {
+       
+        try {
+            if (sessionId == null) {
+                sessionId = sessionIdFuture.get(); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+       
         String url = this.baseUrl + "/games";
 
        CreateGameRequest request = new CreateGameRequest(playerName, this.sessionId);

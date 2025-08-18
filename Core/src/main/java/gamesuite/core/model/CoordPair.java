@@ -5,10 +5,24 @@ public class CoordPair{
     private int y;
     private GamePiece piece;
 
+    public CoordPair() {
+        x = -1; y = -1;
+    }
+
     public CoordPair(int x, int y) {
         this.x = x;
         this.y = y;
         this.piece = null;
+    }
+
+    public void setX(int x) {
+        if(this.x == -1)
+            this.x = x;
+    }
+
+    public void setY(int y) {
+        if(this.y == -1)
+            this.y = y;
     }
 
     public int getX() { return this.x; }

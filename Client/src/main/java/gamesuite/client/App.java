@@ -30,6 +30,7 @@ public class App {
         try {
             cmg.connect();
             GameGUI ui = new GameGUI(guiGM);
+            guiGM.setGameGUI(ui);
             ui.activate();
         } catch (Exception e) {
             e.printStackTrace();

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import gamesuite.core.control.CoreGameManager;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Player;
@@ -65,6 +66,10 @@ public class ServerGameRepo {
 
     public CoreGameManager getGM(String id) { 
         return this.games.get(id);
+    }
+
+    public void setGame(String gameId, CoreGameManager gm) {
+        this.games.put(gameId, gm);
     }
 
     public boolean rightPlayer(String gameId, String sessionId) {

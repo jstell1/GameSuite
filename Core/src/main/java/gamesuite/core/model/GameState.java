@@ -1,10 +1,12 @@
 package gamesuite.core.model;
 
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GameState {
 
     private Player player1;
@@ -24,6 +26,8 @@ public class GameState {
     private boolean gameOver;
     private Set<CoordPair> justKinged;
 
+    public GameState() {}
+
     public GameState(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
@@ -39,6 +43,7 @@ public class GameState {
         this.gameOver = false;
         this.justKinged = new HashSet<>();
     }
+
 
     public GameState(Player player1) {
         this.player1 = player1;
@@ -184,7 +189,7 @@ public class GameState {
         return this.changedPos;
     }    
 
-	public void setChanged(List<CoordPair> changed) {
+	public void setChangedPos(List<CoordPair> changed) {
         this.changedPos = changed;
 	}
 

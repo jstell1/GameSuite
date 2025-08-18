@@ -123,12 +123,12 @@ public class GameGUI {
 
     public void disableGUI() { 
         this.centerPanel.setEnabled(false);
-        this.gameBoard.setEnabled(false);
+        //this.gameBoard.setEnabled(false);
     }
 
     public void enableGUI() {
         this.centerPanel.setEnabled(true);
-        this.gameBoard.setEnabled(true);
+        //this.gameBoard.setEnabled(true);
     }
 
     public void activate() {

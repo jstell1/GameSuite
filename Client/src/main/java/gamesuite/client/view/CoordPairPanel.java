@@ -85,15 +85,13 @@ public class CoordPairPanel extends JPanel {
     public void setPiece(GamePiece piece) {
         if(piece == null) {
             this.piece = null;
-        }
+        } else if(piece.getName().equals("B")) {
             //remove(this.piece);
-        else if(this.pos.getPiece().getName().equals("B")) {
-            //remove(this.piece);
-            this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPiece().isKing());
+            this.piece = new GamePieceAsset(Color.BLACK,piece.isKing());
             //add(this.piece);
         } else {
             //remove(this.piece);
-            this.piece = new GamePieceAsset(Color.RED,this.pos.getPiece().isKing());
+            this.piece = new GamePieceAsset(Color.RED,piece.isKing());
             //add(this.piece);
         }
         repaint();

@@ -47,7 +47,6 @@ public class GUIManager implements GameUI, UIListener {
     }
 
     public void setGameGUI(GameGUI gui) {
-        if(this.gui == null)
             this.gui = gui;
     }
 
@@ -121,12 +120,16 @@ public class GUIManager implements GameUI, UIListener {
     }
 
     public void initGame(CoordPair[][] board, GameState game) {
-        this.gui.closeWindow();
+        GameGUI old = this.gui;
+        SwingUtilities.invokeLater(() -> {
+            old.disableGUI();
+        });
         GameBoard gameBoard = new GameBoard(board);
         setGameState(game);
         GameBoardPanel panel = new GameBoardPanel(gameBoard, 600, this);
         setBoard(panel);
         this.gui = new GameGUI(game.getTurn(), panel);
+        old.closeWindow();
         if(!isPlayerTurn())
             this.gui.disableGUI();
         runGame();
@@ -154,7 +157,7 @@ public class GUIManager implements GameUI, UIListener {
                 this.playerTurn = 2;
                 SwingUtilities.invokeLater(() -> {
                     this.gui.disableGUI();
-                    this.gui.setGameOverLabel("Give to player 2, GameId: " + resp.getGameId());
+                    this.gui.setGameOverLabel(resp.getGameId());
                 });
             }
         }).start();

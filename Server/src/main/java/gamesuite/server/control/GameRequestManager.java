@@ -54,6 +54,8 @@ public class GameRequestManager {
             GameState game = this.gmRepo.getGameView(gameId);
             this.gmRepo.setUserNum(sessionId , 1);
             this.gmRepo.addWebSocketToGame(gameId, sessionId);
+            CoreGameManager gm = new CoreGameManager(board, player1);
+            this.gmRepo.setGame(gameId, gm);
             GameCreatedResponse resp = new GameCreatedResponse(gameId, game);
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -61,7 +63,7 @@ public class GameRequestManager {
         }
     }
 
-    @PatchMapping("games/players")
+    @PatchMapping("/games/players")
     public ResponseEntity<GameCreatedResponse> joinGame(@RequestBody JoinGameRequest request) {
 
         String player = request.getPlayer();
@@ -96,28 +98,4 @@ public class GameRequestManager {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-/* 
-    @PatchMapping("games/updates")
-    public ResponseEntity<GameCreatedResponse> makeMove(@RequestBody MoveRequest moveReq) {
-
-        try {
-            String gameId = moveReq.getGameId();
-            Move move = moveReq.getMove();
-    
-            if()//this.gmRepo.rightPlayer(gameId, sessionId)) {
-                GameManager gm = this.gmRepo.getGM(gameId);
-                gm.sendMove(move);
-                GameState game = gm.getGameState();
-                GameCreatedResponse resp = new GameCreatedResponse(gameId, game);
-
-                //msg.convertAndSend(resp);
-                return new ResponseEntity<>(resp, HttpStatus.OK);
-            }
-    
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    */
 }

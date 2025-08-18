@@ -144,7 +144,7 @@ public class GameStateManager {
     }
 
     public void setChanged(List<CoordPair> changed) {
-        this.game.setChanged(changed);
+        this.game.setChangedPos(changed);
     }
 
     public void addJustKinged(CoordPair pos) {

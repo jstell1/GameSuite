@@ -6,14 +6,35 @@ public class GamePiece {
     private String name;
     private String type;
     private int val;
+    private boolean king;
     private final int[][] validMoves = {{-1, -1}, {-1, 1}};
     private final int[][] validJumps = {{-2, -2}, {-2, 2}};
     private final int[][] validKingMoves = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
     private final int[][] validKingJumps = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
 
+    public GamePiece() {}
+
     public GamePiece(String name, String type, int val) {
         this.name = name;
         this.type = type;
+        this.val = val;
+    }
+
+    public void setKing(boolean king) {
+        this.king = king;
+    }
+
+    public void setName(String name) {
+        if(this.name == null)
+            this.name = name;
+    }
+
+    public void setType(String type) {
+        if(this.type == null) 
+            this.type = type;
+    }
+
+    public void setVal(int val) {
         this.val = val;
     }
 
