@@ -18,11 +18,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gamesuite.core.control.GameManager;
+import gamesuite.core.control.CoreGameManager;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
-import gamesuite.network.GameCreatedResponse;
-import gamesuite.network.MoveRequest;
+import gamesuite.core.network.GameCreatedResponse;
+import gamesuite.core.network.MoveRequest;
+import gamesuite.core.network.WebSockServerMessage;
 
 @Component
 public class SocketConnectionHandler extends TextWebSocketHandler {
@@ -42,7 +43,10 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         System.out.println(session.getId() + " Connected");
-        TextMessage msg = new TextMessage(session.getId());
+        WebSockServerMessage msg1 = new WebSockServerMessage(null, null, session.getId());
+        ObjectMapper mapper = new ObjectMapper();
+        String str = mapper.writeValueAsString(msg1);
+        TextMessage msg = new TextMessage(str);
         webSocketSessions.put(session.getId(), session);
         session.sendMessage(msg);
     }
@@ -78,15 +82,15 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         Move move = req.getMove();
         List<String> sessionList = this.gmRepo.getUserSessions(gameId);
 
-        GameManager gm = this.gmRepo.getGM(gameId);
+        CoreGameManager gm = this.gmRepo.getGM(gameId);
         gm.sendMove(move);
         GameState game = gm.getGameState();
         GameCreatedResponse resp = new GameCreatedResponse(gameId, game);
-        String str = mapper.writeValueAsString(resp);
+        WebSockServerMessage srvMsg = new WebSockServerMessage(null, resp, null);
+        String str = mapper.writeValueAsString(srvMsg);
         TextMessage msg = new TextMessage(str);
 
-        for(String user : sessionList) {
+        for(String user : sessionList)
             this.webSocketSessions.get(user).sendMessage(msg);
-        }
     }
 }

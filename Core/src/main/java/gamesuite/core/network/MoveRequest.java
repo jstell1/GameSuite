@@ -1,4 +1,4 @@
-package gamesuite.network;
+package gamesuite.core.network;
 
 import gamesuite.core.model.Move;
 
@@ -12,6 +12,7 @@ public class MoveRequest {
     public MoveRequest(String userId, String gameId, Move move) {
         this.gameId = gameId;
         this.move = move;
+        this.sessionId = userId;
     }
 
     public void setSessionId(String sessionId) { 

@@ -27,7 +27,6 @@ public class GameBoardPanel extends JPanel {
 
     public GameBoardPanel(GameBoard board, int size, UIListener listener) {
         super();
-        //this.setOpaque(true);
         this.listener = listener;
         this.boardPanel = new CoordPairPanel[size][size];
         this.yellowed = new HashSet<>();

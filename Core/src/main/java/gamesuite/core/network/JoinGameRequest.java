@@ -1,4 +1,4 @@
-package gamesuite.network;
+package gamesuite.core.network;
 
 import gamesuite.core.model.Player;
 

@@ -11,17 +11,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 
-import gamesuite.network.CreateGameRequest;
-import gamesuite.network.GameCreatedResponse;
-import gamesuite.network.GameReadyResponse;
-import gamesuite.network.JoinGameRequest;
-import gamesuite.network.MoveRequest;
-import gamesuite.core.control.GameManager;
+import gamesuite.core.control.CoreGameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
+import gamesuite.core.network.CreateGameRequest;
+import gamesuite.core.network.GameCreatedResponse;
+import gamesuite.core.network.GameReadyResponse;
+import gamesuite.core.network.JoinGameRequest;
+import gamesuite.core.network.MoveRequest;
+import gamesuite.core.network.WebSockServerMessage;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import gamesuite.core.model.Move;
@@ -84,8 +86,9 @@ public class GameRequestManager {
                 this.gmRepo.addWebSocketToGame(gameId, sessionId);
                 GameCreatedResponse resp = new GameCreatedResponse(gameId, game);
                 GameReadyResponse resp2 = new GameReadyResponse(board.getBoard(), gameId, game);
+                WebSockServerMessage servMsg = new WebSockServerMessage(resp2, null, sessionId);
                 ObjectMapper m = new ObjectMapper();
-                String str = m.writeValueAsString(resp2);
+                String str = m.writeValueAsString(servMsg);
                 this.handler.notifyPlayerJoined(gameId, str);
                 return new ResponseEntity<>(resp, HttpStatus.OK);
             }
