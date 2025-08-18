@@ -57,7 +57,7 @@ public class GUIManager implements GameUI, UIListener {
 
     @Override
     public boolean getIsBoardEnabled() {
-        return this.gameBoard.isEnabled();
+        return this.gui.isGUIEnabled();
     }
 
     @Override

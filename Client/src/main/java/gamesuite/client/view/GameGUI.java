@@ -121,6 +121,8 @@ public class GameGUI {
         this.window.dispose();
     }
 
+    public boolean isGUIEnabled() { return this.centerPanel.isEnabled(); }
+
     public void disableGUI() { 
         this.centerPanel.setEnabled(false);
         //this.gameBoard.setEnabled(false);
