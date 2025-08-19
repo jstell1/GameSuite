@@ -5,6 +5,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+
 import gamesuite.client.App;
 import gamesuite.client.control.UIListener;
 
@@ -19,7 +21,8 @@ import java.awt.event.ActionListener;
 public class GameGUI {
     private JFrame window;
     private GameBoardPanel gameBoard;
-    private JLabel turnLabel;
+    //private JLabel turnLabel;
+    private JTextPane turnLabel;
     private JPanel centerPanel;
     private UIListener listener;
 
@@ -29,7 +32,9 @@ public class GameGUI {
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.window.setLayout(new BorderLayout());
 
-        this.turnLabel = new JLabel("Player " + startTurn + "'s turn");
+        this.turnLabel = new JTextPane();//("Player " + startTurn + "'s turn");
+        this.turnLabel.setText("Player " + startTurn + "'s turn");
+        this.turnLabel.setEditable(false);
         this.window.add(this.turnLabel, BorderLayout.NORTH); 
         this.gameBoard = gameBoard;
         this.centerPanel = new JPanel();
@@ -46,7 +51,10 @@ public class GameGUI {
         this.window.setSize(800, 800);
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.window.setLayout(new BorderLayout());
-        this.turnLabel = new JLabel("Create new game or join game");
+        //this.turnLabel = new JLabel("Create new game or join game");
+        this.turnLabel = new JTextPane();
+        this.turnLabel.setText("Create new game or join game");
+        this.turnLabel.setEditable(false);
         this.window.add(this.turnLabel, BorderLayout.NORTH); 
 
         this.centerPanel = new JPanel();

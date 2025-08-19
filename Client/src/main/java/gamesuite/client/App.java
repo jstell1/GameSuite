@@ -36,6 +36,7 @@ public class App {
             uiType = "gui";
         if(ip == null || port == 0) {
             ip = "localhost";
+            port = 8080;
         }
 
         if(ip.equals("localhost") && port == 0) {
@@ -55,8 +56,6 @@ public class App {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     public static void runLocal(String uiType, String ip, int port, String player1, String player2, Scanner in) {
