@@ -51,23 +51,23 @@ public class GamePiece {
     }
 
     public void kingPiece() {
-        if(this.type == "C") 
+        if(this.type.equals("C")) 
             this.type = "K";
     }
 
     public int[][] getValidMoves() { 
-        if(this.type == "C")
+        if(this.type.equals("C"))
             return Arrays.copyOf(this.validMoves, this.validMoves.length);
         else 
             return Arrays.copyOf(this.validKingMoves, this.validKingMoves.length);
     }
 
     public int[][] getValidJumps() {
-        if(this.type == "C") 
+        if(this.type.equals("C")) 
             return Arrays.copyOf(this.validJumps, this.validJumps.length);
         else 
             return Arrays.copyOf(this.validKingJumps, this.validKingJumps.length);
     }
 
-    public boolean isKing() { return this.type == "K"; }
+    public boolean isKing() { return this.type.equals("K"); }
 }

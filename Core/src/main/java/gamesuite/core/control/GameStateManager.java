@@ -24,16 +24,16 @@ public class GameStateManager {
         int p1Points = players[0].getPoints();
         int p2Points = players[1].getPoints();
              if(p2HasMoves && !p1HasMoves) {
-            this.game.setWinner(2);
+            this.game.setWinnerNum(2);
             this.game.setGameOver(true);
         } else if(p1HasMoves && !p2HasMoves) {
-            this.game.setWinner(1);
+            this.game.setWinnerNum(1);
             this.game.setGameOver(true);
         } else if(!p1HasMoves && !p2HasMoves) {
             if(p1Points > p2Points) 
-                this.game.setWinner(1);
+                this.game.setWinnerNum(1);
             else if(p2Points > p1Points)
-                this.game.setWinner(2);
+                this.game.setWinnerNum(2);
             else
                 this.game.setDraw();
             this.game.setGameOver(true);
@@ -73,8 +73,8 @@ public class GameStateManager {
 
         GamePiece piece = pos.getPiece();
         String[] names = this.game.getPieceNames();
-        boolean check = piece.getName() == names[0] && pos.getX() == this.board.getSideLength() - 1;
-        check = check || piece.getName() == names[1] && pos.getX() == 0; 
+        boolean check = piece.getName().equals(names[0]) && pos.getX() == this.board.getSideLength() - 1;
+        check = check || piece.getName().equals(names[1]) && pos.getX() == 0; 
         if(check) 
             piece.kingPiece();
     }

@@ -38,6 +38,8 @@ public class Player {
 
     public int getPoints() { return this.points; }
 
+    public String getUserId() { return this.userId; }
+
     public String getName() { return this.name; }
 
     public Player copy() { return new Player(this.name, this.points); }

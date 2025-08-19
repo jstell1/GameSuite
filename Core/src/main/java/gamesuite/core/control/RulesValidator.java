@@ -56,9 +56,9 @@ public class RulesValidator {
             return false;
 
         String name = end.getPiece().getName();
-        if(name == this.pieceNames[0] && end.getX() == this.board.getSideLength() - 1) 
+        if(name.equals(this.pieceNames[0]) && end.getX() == this.board.getSideLength() - 1) 
             return true;
-        else if(name == this.pieceNames[1] && end.getX() == 0)
+        else if(name.equals(this.pieceNames[1]) && end.getX() == 0)
             return true;
         return false;
     }
@@ -68,7 +68,7 @@ public class RulesValidator {
             return false;
         int turn = this.game.getTurn();
         String name = this.pieceNames[turn - 1];
-        if(piece.getName() != name)
+        if(!piece.getName().equals(name))
             return true;
         return false;
     }
@@ -92,7 +92,7 @@ public class RulesValidator {
         int turn = this.game.getTurn();
         String name = this.pieceNames[turn - 1];
 
-        if(piece != null && piece.getName() == name)
+        if(piece != null && piece.getName().equals(name))
             return true;
         return false;
     }
@@ -113,7 +113,7 @@ public class RulesValidator {
 
         String name = start.getPiece().getName();
         int turnFactor = -1;
-        if(name == this.pieceNames[1])
+        if(name.equals(this.pieceNames[1]))
             turnFactor = 1;
 
         int[][] validMoves = start.getPiece().getValidMoves();
@@ -147,12 +147,12 @@ public class RulesValidator {
         CoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false; 
-        if(start.getPiece() == null || start.getPiece().getName() != pName || end.getPiece() != null) 
+        if(start.getPiece() == null || !start.getPiece().getName().equals(pName) || end.getPiece() != null) 
             return false;
 
         String name = start.getPiece().getName();
         int turnFactor = -1;
-        if(name == "R")
+        if(name.equals("R"))
             turnFactor = 1;
 
         int[][] validMoves = start.getPiece().getValidMoves();
@@ -190,7 +190,7 @@ public class RulesValidator {
 
         String name = piece.getName();
         int turnFactor = -1;
-        if(name == "R")
+        if(name.equals("R"))
             turnFactor = 1;
         int[][] validJumps = piece.getValidJumps();
         for(int[] pair : validJumps) {
@@ -217,21 +217,21 @@ public class RulesValidator {
     private Set<CoordPair> getValidMoves(GamePiece piece) {
         if(piece == null)
             return null;
-        if(piece.getType() == "K")
+        if(piece.getType().equals("K"))
             return this.validKingMoves;
         return this.validMoves;
     }
 
     private boolean rowHasValidMoves(int row, int start, String name) {
         int fact = -1;
-        if(name == "R")
+        if(name.equals("R"))
             fact = 1;
         for(int j = start; j < this.board.getSideLength(); j += 2) {
             CoordPair pos = this.board.getBoardPos(row, j);
             if(pos == null)
                 return false;
             GamePiece piece = pos.getPiece();
-            if(piece != null && piece.getName() == name) {
+            if(piece != null && piece.getName().equals(name)) {
                 Set<CoordPair> validMoves = getValidMoves(piece);
 
                 for(CoordPair validDiff : validMoves) {
@@ -273,7 +273,7 @@ public class RulesValidator {
 
         for(int i = 0; i < validJumps.length; i++) {
             
-            if(name == this.pieceNames[0]) {
+            if(name.equals(this.pieceNames[0])) {
                 x = startX + validJumps[i][0] * -1;
                 y = startY + validJumps[i][1] * -1;
             } else {
@@ -292,7 +292,7 @@ public class RulesValidator {
                     endPiece = end.getPiece();
                 GamePiece jumpPiece = jumpPos.getPiece();
 
-                if(jumpPiece != null && name != jumpPiece.getName() && endPiece == null) {
+                if(jumpPiece != null && !name.equals(jumpPiece.getName()) && endPiece == null) {
                     return true;
                 }
             }

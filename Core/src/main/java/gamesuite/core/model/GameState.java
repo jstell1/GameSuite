@@ -160,7 +160,11 @@ public class GameState {
     
     public Player getWinner() { return this.winner; }
 
-    public void setWinner(int playerNum) { 
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+
+    public void setWinnerNum(int playerNum) { 
         if(this.winner == null && playerNum == 1)
             this.winner = player1;
         else if(this.winner == null && playerNum == 2)

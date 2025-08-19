@@ -60,6 +60,7 @@ public class ClientGameManager implements GameManager {
             @Override
             public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
                 String payload = message.getPayload().toString();
+                System.out.println(payload);
                 ObjectMapper mapper = new ObjectMapper();
                 WebSockServerMessage servMsg = mapper.readValue(payload, WebSockServerMessage.class);
                 
