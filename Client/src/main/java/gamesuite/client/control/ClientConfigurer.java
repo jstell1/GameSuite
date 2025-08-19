@@ -20,11 +20,11 @@ public class ClientConfigurer {
             if(arg.contains("=")) {
                 String[] params = arg.split("=");
                 if(this.validArgs.contains(params[0])) {
-                    if(params[0] == "ui" && (params[1] == "cli" || params[1] == "gui")) {
+                    if(params[0].equals("ui") && (params[1].equals("cli") || params[1].equals("gui"))) {
                         ui = params[1];
-                    } else if(params[0] == "ip") {
+                    } else if(params[0].equals("ip")) {
                         ip = params[1];
-                    } else if(params[0] == "port") {
+                    } else if(params[0].equals("port")) {
                         try {
                             port = Integer.parseUnsignedInt(params[1]);
                         } catch (Exception e) {}
