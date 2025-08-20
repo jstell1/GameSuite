@@ -17,12 +17,9 @@ import gamesuite.client.view.TextGameCLI;
 
 public class App {
 
-
-    static String[] args1;
     public static void main(String[] args) {
-        args1 = args;
 
-        ClientConfigurer config = new ClientConfigurer(args1);
+        ClientConfigurer config = new ClientConfigurer(args);
         
         String uiType = config.getUI();
         String ip = config.getIP();
@@ -40,7 +37,7 @@ public class App {
         }
 
         if(ip.equals("localhost") && port == 0) {
-            runLocal(uiType, ip, port, player1, player2, in);
+            //runLocal(uiType, ip, port, player1, player2, in);
         } else {
             ClientGameManager cmg = new ClientGameManager(ip, port);
             GUIManager guiGM = new GUIManager();
@@ -56,6 +53,8 @@ public class App {
                 e.printStackTrace();
             }
         }
+
+
     }
 
     public static void runLocal(String uiType, String ip, int port, String player1, String player2, Scanner in) {

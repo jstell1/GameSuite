@@ -52,7 +52,7 @@ public class ClientGameManager implements GameManager {
         this.client.execute(new AbstractWebSocketHandler() {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
-                System.out.println("Connected to WebSocket");
+                //System.out.println("Connected to WebSocket");
                 ClientGameManager.this.session = session;
                 //ClientGameManager.this.sessionId = session.getId();
             }
@@ -60,7 +60,7 @@ public class ClientGameManager implements GameManager {
             @Override
             public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
                 String payload = message.getPayload().toString();
-                System.out.println(payload);
+                //System.out.println(payload);
                 ObjectMapper mapper = new ObjectMapper();
                 WebSockServerMessage servMsg = mapper.readValue(payload, WebSockServerMessage.class);
                 
@@ -80,7 +80,7 @@ public class ClientGameManager implements GameManager {
 
             @Override
             public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-                System.out.println("WebSocket closed");
+                //System.out.println("WebSocket closed");
             }
         }, this.wsUrl).get();
     }
