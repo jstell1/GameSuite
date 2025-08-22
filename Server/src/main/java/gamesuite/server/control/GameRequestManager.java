@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import gamesuite.core.model.Move;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.util.StreamUtils;
 
 
 @RestController
@@ -39,6 +44,13 @@ public class GameRequestManager {
         this.gmRepo = gmRepo;
         this.handler = handler;
     }
+
+    @GetMapping("/")
+    public String home() throws IOException {
+        ClassPathResource htmlFile = new ClassPathResource("static/index.html");
+        return StreamUtils.copyToString(htmlFile.getInputStream(), StandardCharsets.UTF_8);
+    }
+    
 
     @PostMapping("/games")
     public ResponseEntity<GameCreatedResponse> createGame(@RequestBody CreateGameRequest msg) {
