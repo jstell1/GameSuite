@@ -1,0 +1,9 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  grid-template-rows: repeat(8, 50px);
+}
+
+.square.dark { background-color: brown; }
+.square.light { background-color: lightgray; }
+.square.yellow { background-color: yellow;}
