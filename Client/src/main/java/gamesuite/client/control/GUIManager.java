@@ -110,10 +110,6 @@ public class GUIManager implements GameUI, UIListener {
             //this.gameBoard.setEnabled(false);
             new Thread(() -> {
                 this.gm.sendMove(new Move(this.tmpX, this.tmpY, x, y));
-
-                /* 
-                
-                */
             }).start();
 
         }

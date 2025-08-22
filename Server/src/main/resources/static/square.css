@@ -4,6 +4,23 @@
   grid-template-rows: repeat(8, 50px);
 }
 
-.square.dark { background-color: brown; }
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.square.dark {
+   background-color: rgba(99, 33, 5, 0.765); 
+  }
 .square.light { background-color: lightgray; }
 .square.yellow { background-color: yellow;}
+
+.piece {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+}
+
+.piece.red { background-color: red; }
+.piece.black { background-color: black; }
