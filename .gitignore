@@ -6,3 +6,13 @@ build/
 bin/
 *.class
 *.log
+
+node_modules/
+
+# Expo/React Native cache
+.expo/
+.expo-shared/
+
+# iOS/Android build artifacts
+ios/build/
+android/build/
