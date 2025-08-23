@@ -20,6 +20,7 @@ let endX = -1;
 let endY = -1;
 let turnNum = 1;
 let playerTurn;
+let gameTurn;
 
 // --- WebSocket setup ---
 window.addEventListener("DOMContentLoaded", () => {
@@ -40,12 +41,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if (data.resp1) {
             console.log("Game ready:", data.resp1);
+            gameTurn = data.resp1.game.turn;
             showGameBoard(gameId);
         }
 
         if (data.resp2) {
             if (data.resp2.game) {
                 // Initial render or updates
+                gameTurn = data.resp2.game.turn;
+                if(playerTurn === gameTurn)
+                    isClickable = true;
+                else
+                    isClickable = false;
                 renderBoard(data.resp2.game);
             }
         }
@@ -97,6 +104,8 @@ joinForm.addEventListener("submit", async (e) => {
 
 // --- SPA swap ---
 function showGameBoard(gameId) {
+    if(playerTurn !== gameTurn)
+        isClickable = false;
     lobby.style.display = "none";
     gameBoardDiv.style.display = "block";
     gameInfo.textContent = "Game ID: " + gameId;
@@ -155,7 +164,6 @@ function handleSquareClick(square, row, col) {
 
     if (numClicks === 2) {
         fetchData(startX, startY, endX, endY);
-        isClickable = false;
         const startSquare = document.querySelector(
                     `.square[data-row="${startX}"][data-col="${startY}"]`
                 );
@@ -233,9 +241,6 @@ function renderBoard(game) {
         // Always reset highlights when updating
         square.classList.remove("yellow");
         square.classList.add((pos.x + pos.y) % 2 === 0 ? "light" : "dark");
-        const turn = game.turn;
-        if(playerTurn === turn)
-            isClickable = true;
     });
 }
 
