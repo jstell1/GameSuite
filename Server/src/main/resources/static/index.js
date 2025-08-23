@@ -133,7 +133,7 @@ function initBoard() {
             if (row < 3 && square.classList.contains("dark")) addPiece(square, "black");
             if (row > 4 && square.classList.contains("dark")) addPiece(square, "red");
 
-            square.addEventListener("click", () => handleSquareClick(square, row, col));
+            square.addEventListener("mousedown", () => handleSquareClick(square, row, col));
             board.appendChild(square);
         }
     }
