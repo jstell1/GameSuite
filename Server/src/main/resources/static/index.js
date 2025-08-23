@@ -7,6 +7,8 @@ const gameBoardDiv = document.getElementById("gameBoard");
 const boardContainer = document.getElementById("boardContainer");
 const gameInfo = document.getElementById("gameInfo");
 
+let protocol;
+let host; // whatever was used to load the page
 let socket;
 let sessionId = null;
 let gameId = null;
@@ -21,7 +23,9 @@ let playerTurn;
 
 // --- WebSocket setup ---
 window.addEventListener("DOMContentLoaded", () => {
-    socket = new WebSocket("ws://localhost:8080/ingame");
+    protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    host = window.location.host; // whatever was used to load the page
+    socket = new WebSocket(`${protocol}//${host}/ingame`);
 
     socket.onopen = () => console.log("WebSocket connected");
 
