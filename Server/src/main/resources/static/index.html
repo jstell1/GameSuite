@@ -1,16 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <title>Checkers Bitch!</title>
-    <link rel="stylesheet" href="square.css" />
-    <script src="startGame.js" defer></script>
+    <title>GameSuite</title>
+    <link rel="stylesheet" href="index.css">
+    
   </head>
-  
-  <body>
-    <div class="board" id="board">
-    </div>
 
-</div>
-  </body>
+  <body>
+  <!-- Lobby -->
+  <div id="lobby">
+    <label id="top">Create or Join Game</label>
+    <form id="createForm">
+      <label>Name:</label>
+      <input type="text" id="createName">
+      <input type="submit" value="Create Game">
+    </form>
+
+    <form id="joinForm">
+      <label>Name:</label>
+      <input type="text" id="joinName">
+      <label>Game ID:</label>
+      <input type="text" id="joinGameId">
+      <input type="submit" value="Join Game">
+    </form>
+  </div>
+
+  <!-- Game board -->
+  <div id="gameBoard" style="display: none;">
+    <h2>Game Board</h2>
+    <p id="gameInfo"></p>
+    <div id="boardContainer"></div>
+  </div>
+  <script src="index.js" defer></script>
+</body>
+
 </html>
