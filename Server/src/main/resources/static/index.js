@@ -30,7 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("WS Message:", data);
 
         // Always check for sessionId
-        if (data.sessionId && !sessionId) {
+        if (data.sessionId && sessionId === null) {
             sessionId = data.sessionId;
         }
 
@@ -40,11 +40,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         if (data.resp2) {
-            gameId = data.resp2.gameId;
-
-            if (data.resp2.gameState) {
+            if (data.resp2.game) {
                 // Initial render or updates
-                renderBoard(data.resp2.gameState);
+                renderBoard(data.resp2.game);
             }
         }
     };
@@ -65,6 +63,7 @@ createForm.addEventListener("submit", async (e) => {
     });
     const data = await resp.json();
     topLabel.textContent = "Game ID: " + data.gameId;
+    gameId = data.gameId;
     //showGameBoard(data.gameId);
     playerTurn = 1;
 });
@@ -183,7 +182,6 @@ function handleSquareClick(square, row, col) {
 
 }
 
-// --- Placeholder for sending moves to server ---
 async function fetchData(startRow, startCol, endRow, endCol) {
 
     if (!socket || socket.readyState !== WebSocket.OPEN) {
@@ -205,10 +203,10 @@ async function fetchData(startRow, startCol, endRow, endCol) {
     socket.send(JSON.stringify(moveMessage));
 }
 
-function renderBoard(gameState) {
-    if (!gameState.changedPos) return;
+function renderBoard(game) {
+    if (!game.changedPos) return;
 
-    gameState.changedPos.forEach(pos => {
+    game.changedPos.forEach(pos => {
         const square = document.querySelector(
             `.square[data-row="${pos.x}"][data-col="${pos.y}"]`
         );
@@ -231,7 +229,7 @@ function renderBoard(gameState) {
         // Always reset highlights when updating
         square.classList.remove("yellow");
         square.classList.add((pos.x + pos.y) % 2 === 0 ? "light" : "dark");
-        const turn = gameState.turn;
+        const turn = game.turn;
         if(playerTurn === turn)
             isClickable = true;
     });
