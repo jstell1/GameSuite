@@ -1,12 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View, Button } from 'react-native';
+import { 
+  KeyboardAvoidingView, TouchableWithoutFeedback, 
+  Keyboard, Alert, 
+  StyleSheet, Text, 
+  TextInput, ScrollView, 
+  View, Button } from 'react-native';
 import Constants from "expo-constants";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
 let ws;
-let host; // whatever was used to load the page
-let socket;
 let sessionId = null;
 let numClicks = 0;
 let isClickable = true;
@@ -18,15 +23,67 @@ let turnNum = 1;
 let playerTurn;
 let gameTurn;
 
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="GameBoard" component={GameBoardScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+function HomeScreen({navigation}) {
   
   const [createName, setCreateName] = useState("");
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [gameId, setGameId] = useState("Create or Join Game");
 
-  useEffect(connectWebSocket, []);
+  const connectWebSocket = () => {
+    ws = new WebSocket(`${WS_HOST}`);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = e => {
+      
+      console.log(e.data);
+      const data = JSON.parse(e.data);
+        console.log("WS Message:", data);
+
+        // Always check for sessionId
+        if (data.sessionId && sessionId === null) {
+            sessionId = data.sessionId;
+        }
+
+        if (data.resp1) {
+            console.log("Game ready:", data.resp1);
+            gameTurn = data.resp1.game.turn;
+            navigation.navigate("GameBoard");
+            //showGameBoard(gameId);
+        }
+
+        if (data.resp2) {
+            if (data.resp2.game) {
+                // Initial render or updates
+                gameTurn = data.resp2.game.turn;
+                if(playerTurn === gameTurn)
+                    isClickable = true;
+                else
+                    isClickable = false;
+                //renderBoard(data.resp2.game);
+            }
+        }
+    };
+
+    ws.onerror = e => { console.log(e.message); };
+
+    ws.onclose = e => { console.log(e.code, e.reason); };
+  }
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
@@ -76,63 +133,43 @@ export default function App() {
     playerTurn = 2;
   }
 
+  useEffect(connectWebSocket, []);
+
   return (
-    <View style={styles.container}>
-      <Text>{gameId}</Text>
-      <Text>Name</Text>
-      <TextInput style={styles.input} onChangeText={setCreateName}/>
-      <Button title="Create Game" onPress={createGame}/>
-      <Text>Name</Text>
-      <TextInput style={styles.input} onChangeText={setJoinName}/>
-      <Text>GameId</Text>
-      <TextInput style={styles.input} onChangeText={setJoinGameId}/>
-      <Button title="Join Game" onPress={joinGame}/>
-      <StatusBar style="auto" />
+
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }} 
+    >
+      <TouchableWithoutFeedback 
+        onPress={Keyboard.dismiss} accessible={false}>
+      <ScrollView 
+          contentContainerStyle={styles.container} 
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text selectable={true}>{gameId}</Text>
+          <Text>Name</Text>
+          <TextInput style={styles.input} onChangeText={setCreateName}/>
+          <Button title="Create Game" onPress={createGame}/>
+          <Text>Name</Text>
+          <TextInput style={styles.input} onChangeText={setJoinName}/>
+          <Text>GameId</Text>
+          <TextInput style={styles.input} onChangeText={setJoinGameId}/>
+          <Button title="Join Game" onPress={joinGame}/>
+          <StatusBar style="auto" />
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+  );
+}
+
+function GameBoardScreen({navigation}) {
+  return(
+    <View>
+      <Text>GameBoard!</Text>
     </View>
   );
 }
 
-function connectWebSocket() {
-    ws = new WebSocket(`${WS_HOST}`);
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
-
-    ws.onmessage = e => {
-      
-      console.log(e.data);
-      const data = JSON.parse(e.data);
-        console.log("WS Message:", data);
-
-        // Always check for sessionId
-        if (data.sessionId && sessionId === null) {
-            sessionId = data.sessionId;
-        }
-
-        if (data.resp1) {
-            console.log("Game ready:", data.resp1);
-            gameTurn = data.resp1.game.turn;
-            showGameBoard(gameId);
-        }
-
-        if (data.resp2) {
-            if (data.resp2.game) {
-                // Initial render or updates
-                gameTurn = data.resp2.game.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
-                    isClickable = false;
-                renderBoard(data.resp2.game);
-            }
-        }
-    };
-
-    ws.onerror = e => { console.log(e.message); };
-
-    ws.onclose = e => { console.log(e.code, e.reason); };
-  }
 
 const styles = StyleSheet.create({
   container: {
