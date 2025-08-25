@@ -5,7 +5,8 @@ import {
   Keyboard, Alert, 
   StyleSheet, Text, 
   TextInput, ScrollView, 
-  View, Button } from 'react-native';
+  View, Button,
+  Pressable } from 'react-native';
 import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -13,12 +14,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
 let ws;
 let sessionId = null;
-let numClicks = 0;
 let isClickable = true;
-let startX = -1;
-let startY = -1;
-let endX = -1;
-let endY = -1;
 let turnNum = 1;
 let playerTurn;
 let gameTurn;
@@ -85,7 +81,7 @@ function HomeScreen({navigation}) {
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [gameId, setGameId] = useState("Create or Join Game");
-  useEffect(() => {connectWebSocket(navigation)}, []);
+  //useEffect(() => {connectWebSocket(navigation)}, []);
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
@@ -116,7 +112,9 @@ function HomeScreen({navigation}) {
       Alert.alert("Must have name and game id!");
       return;
     }
-    
+
+    navigation.navigate("GameBoard");
+    /*
     const resp = await fetch(`${API_HOST}/games/players`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -133,8 +131,9 @@ function HomeScreen({navigation}) {
     const data = await resp.json();
     setGameId(data.gameId);
     playerTurn = 2;
+    */
   }
-
+  //onPress={createGame}
   return (
 
     <KeyboardAvoidingView 
@@ -149,7 +148,7 @@ function HomeScreen({navigation}) {
           <Text selectable={true}>{gameId}</Text>
           <Text>Name</Text>
           <TextInput style={styles.input} onChangeText={setCreateName}/>
-          <Button title="Create Game" onPress={createGame}/>
+          <Button title="Create Game" />
           <Text>Name</Text>
           <TextInput style={styles.input} onChangeText={setJoinName}/>
           <Text>GameId</Text>
@@ -163,26 +162,93 @@ function HomeScreen({navigation}) {
 }
 
 
-function Square({ color }) {
-  return <View style={[styles.square, { backgroundColor: color }]} />;
+function Square({ row, col, piece, onPress, highlighted }) {
+  const isDark = (row + col) % 2 === 1;
+
+  return (
+    <Pressable
+      onPress={() => onPress(row, col)}
+      style={[
+        styles.square,
+        isDark ? styles.dark : styles.light,
+        highlighted && styles.yellow,
+      ]}
+    >
+      {piece && (
+        <View
+          style={[
+            styles.piece,
+            piece.color === "red" ? styles.red : styles.black,
+            piece.type === "K" && styles.king,
+          ]}
+        />
+      )}
+    </Pressable>
+  );
+}
+
+function renderBoard() {
+
 }
 
 function GameBoardScreen({navigation}) {
-  const squares = [];
+  const [board, setBoard] = useState(() => initBoardData());
+  const [highlights, setHighlights] = useState([]);
+  const [numClicks, setNumClicks] = useState(0);
+  const [start, setStart] = useState(null);
 
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const isDark = (row + col) % 2 === 1; 
-      squares.push(
-        <Square
-          key={`${row}-${col}`} 
-          color={isDark ? "black" : "red"}
-        />
-      );
+  function initBoardData() {
+    const arr = [];
+    for (let row = 0; row < 8; row++) {
+      const rowArr = [];
+      for (let col = 0; col < 8; col++) {
+        let piece = null;
+        if (row < 3 && (row + col) % 2 === 1) 
+          piece = { color: "black", type: "C" };
+        else if (row > 4 && (row + col) % 2 === 1) 
+          piece = { color: "red", type: "C" };
+        rowArr.push(piece);
+      }
+      arr.push(rowArr);
+    }
+    return arr;
+  }
+
+  function handlePress(row, col) {
+    if (numClicks === 0) {
+      setStart({ row, col });
+      setHighlights([{ row, col }]);
+      setNumClicks(1);
+    } else if (numClicks === 1) {
+      const end = { row, col };
+      // send move over WS here
+      console.log("Move:", start, "->", end);
+
+      setHighlights([]);
+      setNumClicks(0);
+      setStart(null);
     }
   }
 
-  return <View style={styles.board}>{squares}</View>;
+  return (
+    <View style={styles.board}>
+      {board.map((rowArr, row) =>
+        rowArr.map((piece, col) => {
+          const highlighted = highlights.some(h => h.row === row && h.col === col);
+          return ( 
+            <Square
+              key={`${row}-${col}`}
+              row={row}
+              col={col}
+              piece={piece}
+              onPress={handlePress}
+              highlighted={highlighted}
+            />
+          );
+        })
+      )}
+    </View>
+  );
 }
 
 
@@ -200,14 +266,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-    board: {
-    flexDirection: "row",
-    flexWrap: "wrap", // allows children to wrap into rows
-    width: 320, // 8 * 40px squares
+  board: {
+    width: 320,
     height: 320,
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   square: {
     width: 40,
     height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dark: { backgroundColor: "saddlebrown" },
+  light: { backgroundColor: "lightgray" },
+  yellow: { backgroundColor: "yellow" },
+  piece: {
+    width: "80%",
+    height: "80%",
+    borderRadius: 20,
+  },
+  red: { backgroundColor: "red" },
+  black: { backgroundColor: "black" },
+  king: {
+    borderWidth: 2,
+    borderColor: "gold",
   },
 });
