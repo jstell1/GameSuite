@@ -26,11 +26,12 @@ export default function App() {
   const [joinGameId, setJoinGameId] = useState("");
   const [gameId, setGameId] = useState("Create or Join Game");
 
+  useEffect(connectWebSocket, []);
+
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
     //Alert.alert("I'm here");
-    const resp = await fetch(`${API_HOST}/games`,
-      {
+    const resp = await fetch(`${API_HOST}/games`, {
         method: "POST",
         headers: {
         "Content-Type": "application/json", 
@@ -39,8 +40,7 @@ export default function App() {
           name: createName,
           sessionId: sessionId
         })
-      }
-    );
+      });
     //Alert.alert("I'm here too!");
     if(!resp.ok) {
       Alert.alert("Did not create game");
@@ -49,11 +49,33 @@ export default function App() {
     const data = await resp.json();
     setGameId(data.gameId);
     playerTurn = 1;
-    Alert.alert(gameId);
+    //Alert.alert(gameId);
   }
 
-  useEffect(connectWebSocket, []);
-  
+  const joinGame = async () => {
+    if(!joinName || !joinGameId) {
+      Alert.alert("Must have name and game id!");
+      return;
+    }
+    
+    const resp = await fetch(`${API_HOST}/games/players`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        player: joinName, 
+        gameId: joinGameId, 
+        sessionId: sessionId })
+    });
+
+    if(!resp.ok) {
+      Alert.alert("Did not join!");
+    }
+
+    const data = await resp.json();
+    setGameId(data.gameId);
+    playerTurn = 2;
+  }
+
   return (
     <View style={styles.container}>
       <Text>{gameId}</Text>
@@ -111,12 +133,6 @@ function connectWebSocket() {
 
     ws.onclose = e => { console.log(e.code, e.reason); };
   }
-
-
-
-async function joinGame() {
-
-}
 
 const styles = StyleSheet.create({
   container: {
