@@ -35,55 +35,57 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const connectWebSocket = (navigation) => {
+  ws = new WebSocket(`${WS_HOST}`);
+
+  ws.onopen = () => {
+    console.log("WebSocket connected");
+  };
+
+  ws.onmessage = e => {
+    
+    console.log(e.data);
+    const data = JSON.parse(e.data);
+      console.log("WS Message:", data);
+
+      // Always check for sessionId
+      if (data.sessionId && sessionId === null) {
+          sessionId = data.sessionId;
+      }
+
+      if (data.resp1) {
+          console.log("Game ready:", data.resp1);
+          gameTurn = data.resp1.game.turn;
+          navigation.navigate("GameBoard");
+          //showGameBoard(gameId);
+      }
+
+      if (data.resp2) {
+          if (data.resp2.game) {
+              // Initial render or updates
+              gameTurn = data.resp2.game.turn;
+              if(playerTurn === gameTurn)
+                  isClickable = true;
+              else
+                  isClickable = false;
+              //renderBoard(data.resp2.game);
+          }
+      }
+  };
+
+  ws.onerror = e => { console.log(e.message); };
+
+  ws.onclose = e => { console.log(e.code, e.reason); };
+}
+
 function HomeScreen({navigation}) {
   
   const [createName, setCreateName] = useState("");
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [gameId, setGameId] = useState("Create or Join Game");
-
-  const connectWebSocket = () => {
-    ws = new WebSocket(`${WS_HOST}`);
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
-
-    ws.onmessage = e => {
-      
-      console.log(e.data);
-      const data = JSON.parse(e.data);
-        console.log("WS Message:", data);
-
-        // Always check for sessionId
-        if (data.sessionId && sessionId === null) {
-            sessionId = data.sessionId;
-        }
-
-        if (data.resp1) {
-            console.log("Game ready:", data.resp1);
-            gameTurn = data.resp1.game.turn;
-            navigation.navigate("GameBoard");
-            //showGameBoard(gameId);
-        }
-
-        if (data.resp2) {
-            if (data.resp2.game) {
-                // Initial render or updates
-                gameTurn = data.resp2.game.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
-                    isClickable = false;
-                //renderBoard(data.resp2.game);
-            }
-        }
-    };
-
-    ws.onerror = e => { console.log(e.message); };
-
-    ws.onclose = e => { console.log(e.code, e.reason); };
-  }
+  useEffect(() => {connectWebSocket(navigation)}, []);
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
@@ -133,8 +135,6 @@ function HomeScreen({navigation}) {
     playerTurn = 2;
   }
 
-  useEffect(connectWebSocket, []);
-
   return (
 
     <KeyboardAvoidingView 
@@ -162,12 +162,27 @@ function HomeScreen({navigation}) {
   );
 }
 
+
+function Square({ color }) {
+  return <View style={[styles.square, { backgroundColor: color }]} />;
+}
+
 function GameBoardScreen({navigation}) {
-  return(
-    <View>
-      <Text>GameBoard!</Text>
-    </View>
-  );
+  const squares = [];
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const isDark = (row + col) % 2 === 1; 
+      squares.push(
+        <Square
+          key={`${row}-${col}`} 
+          color={isDark ? "black" : "red"}
+        />
+      );
+    }
+  }
+
+  return <View style={styles.board}>{squares}</View>;
 }
 
 
@@ -184,5 +199,15 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-  }
+  },
+    board: {
+    flexDirection: "row",
+    flexWrap: "wrap", // allows children to wrap into rows
+    width: 320, // 8 * 40px squares
+    height: 320,
+  },
+  square: {
+    width: 40,
+    height: 40,
+  },
 });
