@@ -6,11 +6,13 @@ import {
   StyleSheet, Text, 
   TextInput, ScrollView, 
   View, Button,
-  Pressable } from 'react-native';
+  Pressable, Dimensions } from 'react-native';
 import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+const { width } = Dimensions.get('window');
+const squareSize = width / 8;
 const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
 let ws;
 let sessionId = null;
@@ -221,7 +223,7 @@ function GameBoardScreen({navigation}) {
       setNumClicks(1);
     } else if (numClicks === 1) {
       const end = { row, col };
-      // send move over WS here
+      
       console.log("Move:", start, "->", end);
 
       setHighlights([]);
@@ -231,22 +233,24 @@ function GameBoardScreen({navigation}) {
   }
 
   return (
-    <View style={styles.board}>
-      {board.map((rowArr, row) =>
-        rowArr.map((piece, col) => {
-          const highlighted = highlights.some(h => h.row === row && h.col === col);
-          return ( 
-            <Square
-              key={`${row}-${col}`}
-              row={row}
-              col={col}
-              piece={piece}
-              onPress={handlePress}
-              highlighted={highlighted}
-            />
-          );
-        })
-      )}
+    <View style={styles.container}>
+      <View style={styles.board}>
+        {board.map((rowArr, row) =>
+          rowArr.map((piece, col) => {
+            const highlighted = highlights.some(h => h.row === row && h.col === col);
+            return ( 
+              <Square
+                key={`${row}-${col}`}
+                row={row}
+                col={col}
+                piece={piece}
+                onPress={handlePress}
+                highlighted={highlighted}
+              />
+            );
+          })
+        )}
+      </View>
     </View>
   );
 }
@@ -267,14 +271,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   board: {
-    width: 320,
-    height: 320,
+    width: '100%',
+    aspectRatio: 1,
     flexDirection: "row",
     flexWrap: "wrap",
   },
   square: {
-    width: 40,
-    height: 40,
+    height: squareSize,
+    width: squareSize,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -284,7 +288,7 @@ const styles = StyleSheet.create({
   piece: {
     width: "80%",
     height: "80%",
-    borderRadius: 20,
+    borderRadius: 50,
   },
   red: { backgroundColor: "red" },
   black: { backgroundColor: "black" },
