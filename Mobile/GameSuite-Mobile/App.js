@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import { 
   KeyboardAvoidingView, TouchableWithoutFeedback, 
   Keyboard, Alert, 
@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+const GameContext = createContext();
 const { width } = Dimensions.get('window');
 const squareSize = width / 8;
 const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
@@ -20,70 +21,83 @@ let isClickable = true;
 let turnNum = 1;
 let playerTurn;
 let gameTurn;
+let name;
+let game;
+let currGameId;
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  const [game, setGame] = useState(null);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="GameBoard" component={GameBoardScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GameContext.Provider value={{ game, setGame }}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="GameBoard" component={GameBoardScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GameContext.Provider>
   );
 }
 
-const connectWebSocket = (navigation) => {
-  ws = new WebSocket(`${WS_HOST}`);
 
-  ws.onopen = () => {
-    console.log("WebSocket connected");
-  };
-
-  ws.onmessage = e => {
-    
-    console.log(e.data);
-    const data = JSON.parse(e.data);
-      console.log("WS Message:", data);
-
-      // Always check for sessionId
-      if (data.sessionId && sessionId === null) {
-          sessionId = data.sessionId;
-      }
-
-      if (data.resp1) {
-          console.log("Game ready:", data.resp1);
-          gameTurn = data.resp1.game.turn;
-          navigation.navigate("GameBoard");
-          //showGameBoard(gameId);
-      }
-
-      if (data.resp2) {
-          if (data.resp2.game) {
-              // Initial render or updates
-              gameTurn = data.resp2.game.turn;
-              if(playerTurn === gameTurn)
-                  isClickable = true;
-              else
-                  isClickable = false;
-              //renderBoard(data.resp2.game);
-          }
-      }
-  };
-
-  ws.onerror = e => { console.log(e.message); };
-
-  ws.onclose = e => { console.log(e.code, e.reason); };
-}
 
 function HomeScreen({navigation}) {
   
+  const { setGame } = useContext(GameContext);
   const [createName, setCreateName] = useState("");
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [gameId, setGameId] = useState("Create or Join Game");
-  //useEffect(() => {connectWebSocket(navigation)}, []);
+  useEffect(() => {connectWebSocket()}, []);
+
+  function connectWebSocket() {
+    ws = new WebSocket(`${WS_HOST}`);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = e => {
+      
+      console.log(e.data);
+      const data = JSON.parse(e.data);
+        console.log("WS Message:", data);
+
+        // Always check for sessionId
+        if (data.sessionId && sessionId === null) {
+            sessionId = data.sessionId;
+        }
+
+        if (data.resp1) {
+            console.log("Game ready:", data.resp1);
+            gameTurn = data.resp1.game.turn;
+            id = data.resp1.gameId;
+            currGameId = data.resp1.gameId;
+            navigation.navigate("GameBoard",
+              {id, sessionId, name}
+            );
+        }
+
+        if (data.resp2) {
+            if (data.resp2.game) {
+                gameTurn = data.resp2.game.turn;
+                if(playerTurn === gameTurn)
+                    isClickable = true;
+                else
+                    isClickable = false;
+                setGame(data.resp2.game);
+            }
+        }
+    };
+
+    ws.onerror = e => { console.log(e.message); };
+
+    ws.onclose = e => { console.log(e.code, e.reason); };
+  }
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
@@ -105,6 +119,7 @@ function HomeScreen({navigation}) {
     }
     const data = await resp.json();
     setGameId(data.gameId);
+    name = createName;
     playerTurn = 1;
     //Alert.alert(gameId);
   }
@@ -114,9 +129,8 @@ function HomeScreen({navigation}) {
       Alert.alert("Must have name and game id!");
       return;
     }
-
-    navigation.navigate("GameBoard");
-    /*
+    name = joinName;
+    
     const resp = await fetch(`${API_HOST}/games/players`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -133,9 +147,8 @@ function HomeScreen({navigation}) {
     const data = await resp.json();
     setGameId(data.gameId);
     playerTurn = 2;
-    */
   }
-  //onPress={createGame}
+
   return (
 
     <KeyboardAvoidingView 
@@ -150,7 +163,7 @@ function HomeScreen({navigation}) {
           <Text selectable={true}>{gameId}</Text>
           <Text>Name</Text>
           <TextInput style={styles.input} onChangeText={setCreateName}/>
-          <Button title="Create Game" />
+          <Button title="Create Game" onPress={createGame}/>
           <Text>Name</Text>
           <TextInput style={styles.input} onChangeText={setJoinName}/>
           <Text>GameId</Text>
@@ -189,15 +202,37 @@ function Square({ row, col, piece, onPress, highlighted }) {
   );
 }
 
-function renderBoard() {
-
-}
-
-function GameBoardScreen({navigation}) {
+function GameBoardScreen({navigation, route}) {
+  const { game } = useContext(GameContext);
   const [board, setBoard] = useState(() => initBoardData());
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
+  const {gameId, sessionId, name} = route.params;
+
+  useEffect(() => {
+    if (game?.changedPos) {
+      applyChanges(game.changedPos);
+    }
+  }, [game]);
+
+  function applyChanges(changedPos) {
+    const newBoard = board.map(row => [...row]);
+    changedPos.forEach((pos) => {
+      if(pos.piece !== null) {
+        let color;
+        if(pos.piece.name === "R") 
+          color = "red";
+        else
+          color = "black"
+        
+        newBoard[pos.x][pos.y] = {color: color, type: pos.piece.type};
+      } else {
+        newBoard[pos.x][pos.y] = null;
+      }
+    });
+    setBoard(newBoard);
+  }
 
   function initBoardData() {
     const arr = [];
@@ -216,7 +251,8 @@ function GameBoardScreen({navigation}) {
     return arr;
   }
 
-  function handlePress(row, col) {
+  async function handlePress(row, col) {
+    if(isClickable === false) return;
     if (numClicks === 0) {
       setStart({ row, col });
       setHighlights([{ row, col }]);
@@ -224,11 +260,22 @@ function GameBoardScreen({navigation}) {
     } else if (numClicks === 1) {
       const end = { row, col };
       
-      console.log("Move:", start, "->", end);
-
+      //console.log("Move:", start, "->", end);
+      const movMessage = {
+        gameId: currGameId,
+        sessionId: sessionId,
+        move: {
+          startX: highlights[0].row,
+          startY: highlights[0].col,
+          endX: end.row,
+          endY: end.col
+        }
+      }
       setHighlights([]);
       setNumClicks(0);
       setStart(null);
+      isClickable = false;
+      ws.send(JSON.stringify(movMessage));
     }
   }
 
