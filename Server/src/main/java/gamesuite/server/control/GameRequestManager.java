@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 
-import gamesuite.core.control.CoreGameManager;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
@@ -66,7 +66,7 @@ public class GameRequestManager {
             GameState game = this.gmRepo.getGameView(gameId);
             this.gmRepo.setUserNum(sessionId , 1);
             this.gmRepo.addWebSocketToGame(gameId, sessionId);
-            CoreGameManager gm = new CoreGameManager(board, player1);
+            GameManager gm = new GameManager(board, player1);
             this.gmRepo.setGame(gameId, gm);
             GameCreatedResponse resp = new GameCreatedResponse(gameId, game);
             return new ResponseEntity<>(resp, HttpStatus.CREATED);

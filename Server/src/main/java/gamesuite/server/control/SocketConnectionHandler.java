@@ -18,7 +18,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gamesuite.core.control.CoreGameManager;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.network.GameCreatedResponse;
@@ -82,7 +82,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         Move move = req.getMove();
         List<String> sessionList = this.gmRepo.getUserSessions(gameId);
 
-        CoreGameManager gm = this.gmRepo.getGM(gameId);
+        GameManager gm = this.gmRepo.getGM(gameId);
         gm.sendMove(move);
         GameState game = gm.getGameState();
         GameCreatedResponse resp = new GameCreatedResponse(gameId, game);

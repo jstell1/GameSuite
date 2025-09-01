@@ -1,23 +1,17 @@
 package gamesuite.client.control;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import gamesuite.core.control.GameManager;
 import gamesuite.core.model.Move;
 import gamesuite.core.network.CreateGameRequest;
 import gamesuite.core.network.GameCreatedResponse;
@@ -26,7 +20,7 @@ import gamesuite.core.network.JoinGameRequest;
 import gamesuite.core.network.MoveRequest;
 import gamesuite.core.network.WebSockServerMessage;
 
-public class ClientGameManager implements GameManager {
+public class ClientManager {
     private final WebSocketClient client = new StandardWebSocketClient();
     private RestTemplate restTemplate = new RestTemplate();
     private WebSocketSession session;
@@ -37,7 +31,7 @@ public class ClientGameManager implements GameManager {
     private String wsUrl;
     private GUIManager guiGM;
     
-    public ClientGameManager(String ip, int port) {
+    public ClientManager(String ip, int port) {
         this.baseUrl = "http://" + ip + ":" + port;
         this.wsUrl = "ws://" + ip + ":" + port + "/ingame";
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
@@ -53,7 +47,7 @@ public class ClientGameManager implements GameManager {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
                 //System.out.println("Connected to WebSocket");
-                ClientGameManager.this.session = session;
+                ClientManager.this.session = session;
                 //ClientGameManager.this.sessionId = session.getId();
             }
 
@@ -66,13 +60,13 @@ public class ClientGameManager implements GameManager {
                 
                 if(servMsg.getResp1() != null) {
                     GameReadyResponse msg = servMsg.getResp1();
-                    ClientGameManager.this.guiGM.initGame(msg.getBoard(), msg.getGame());
+                    ClientManager.this.guiGM.initGame(msg.getBoard(), msg.getGame());
                 } else if(servMsg.getResp2() != null) {
                     GameCreatedResponse msg = servMsg.getResp2();
-                    ClientGameManager.this.guiGM.setGameState(msg.getGame());
-                    ClientGameManager.this.guiGM.update();
+                    ClientManager.this.guiGM.setGameState(msg.getGame());
+                    ClientManager.this.guiGM.update();
                 } else if(servMsg.getResp1() == null && servMsg.getResp2() == null) {
-                    ClientGameManager.this.sessionId = servMsg.getSessionId();
+                    ClientManager.this.sessionId = servMsg.getSessionId();
                     sessionIdFuture.complete(sessionId); 
                 }
 
@@ -89,7 +83,6 @@ public class ClientGameManager implements GameManager {
         return sessionIdFuture.get();
     }
 
-    @Override
     public void sendMove(Move move) {
         if (session != null && session.isOpen()) {
 
@@ -107,8 +100,6 @@ public class ClientGameManager implements GameManager {
         }
     }
 
-
-    @Override
     public GameCreatedResponse createGame(String playerName) {
        
         try {
@@ -135,7 +126,6 @@ public class ClientGameManager implements GameManager {
        return null;
     }
 
-    @Override
     public GameCreatedResponse joinGame(String name, String gameId) {
         String url = baseUrl + "/games/players";
 

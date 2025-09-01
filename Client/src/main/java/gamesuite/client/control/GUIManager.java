@@ -19,7 +19,7 @@ import gamesuite.core.network.GameCreatedResponse;
 
 public class GUIManager implements GameUI, UIListener {
     private GameState gameView;
-    private GameManager gm;
+    private ClientManager gm;
     private GameGUI gui;
     private GameBoardPanel gameBoard;
     private int tmpX, tmpY;
@@ -30,14 +30,14 @@ public class GUIManager implements GameUI, UIListener {
         this.tmpY = -1;
     }
 
-    public GUIManager(GameManager gm, GameState game) {
+    public GUIManager(ClientManager gm, GameState game) {
         this.gm = gm;
         this.tmpX = -1; 
         this.tmpY = -1;
         this.gameView = game;
     }
 
-    public void setGamManager(GameManager gm) {
+    public void setGamManager(ClientManager gm) {
         if(this.gm == null)
             this.gm = gm;
     } 

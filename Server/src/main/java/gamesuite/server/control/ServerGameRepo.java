@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import gamesuite.core.control.CoreGameManager;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
@@ -16,12 +16,12 @@ import gamesuite.core.model.Player;
 
 @Service
 public class ServerGameRepo {
-    public final Map<String, CoreGameManager> games = new ConcurrentHashMap<>();
+    public final Map<String, GameManager> games = new ConcurrentHashMap<>();
     public final Map<String, Integer> userPlayerNumMap = new ConcurrentHashMap<>();
     public final Map<String, List<String>> gameUserMap = new ConcurrentHashMap<>();
 
     public String createGame(Player p1, GameBoard board) {
-        CoreGameManager gm = new CoreGameManager(board, p1);
+        GameManager gm = new GameManager(board, p1);
         String gameId = UUID.randomUUID().toString();
         this.games.put(gameId, gm);
         return gameId;
@@ -47,7 +47,7 @@ public class ServerGameRepo {
     }
 
     public GameBoard joinGame(Player player, String gameId) {
-        CoreGameManager gm = this.games.get(gameId);
+        GameManager gm = this.games.get(gameId);
         boolean added = gm.addPlayer(player);
         if(added) {
             gm.initBoard();
@@ -64,11 +64,11 @@ public class ServerGameRepo {
         return this.games.containsKey(gameId);
     }
 
-    public CoreGameManager getGM(String id) { 
+    public GameManager getGM(String id) { 
         return this.games.get(id);
     }
 
-    public void setGame(String gameId, CoreGameManager gm) {
+    public void setGame(String gameId, GameManager gm) {
         this.games.put(gameId, gm);
     }
 

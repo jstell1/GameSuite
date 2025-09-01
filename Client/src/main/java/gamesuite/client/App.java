@@ -2,12 +2,12 @@ package gamesuite.client;
 
 import java.util.Scanner;
 
-import gamesuite.core.control.CoreGameManager;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Player;
 import gamesuite.client.control.ClientConfigurer;
-import gamesuite.client.control.ClientGameManager;
+import gamesuite.client.control.ClientManager;
 import gamesuite.client.control.GUIManager;
 import gamesuite.core.model.Player;
 import gamesuite.client.view.GameBoardPanel;
@@ -39,7 +39,7 @@ public class App {
         if(ip.equals("localhost") && port == 0) {
             //runLocal(uiType, ip, port, player1, player2, in);
         } else {
-            ClientGameManager cmg = new ClientGameManager(ip, port);
+            ClientManager cmg = new ClientManager(ip, port);
             GUIManager guiGM = new GUIManager();
             guiGM.setGamManager(cmg);
             cmg.setGUIManager(guiGM);
@@ -66,7 +66,7 @@ public class App {
             Player p1 = new Player(player1, 0);
             Player p2 = new Player(player2, 0);
             GameBoard board = new GameBoard(8);
-            CoreGameManager checkers = new CoreGameManager(board, p1, p2);
+            GameManager checkers = new GameManager(board, p1, p2);
             checkers.initBoard();
             GameState game = checkers.getGameState();
     
@@ -74,12 +74,12 @@ public class App {
             if(uiType.equals("cli")) 
                 ui = new TextGameCLI(game, board, in, checkers);   
             else {
-                GUIManager mang = new GUIManager(checkers, game);
-                GameBoardPanel gameBoard = new GameBoardPanel(board, 600, mang);
-                mang.setBoard(gameBoard);
-                GameGUI gui = new GameGUI(game.getTurn(), gameBoard);
-                mang.setGameGUI(gui);
-                ui = mang;
+                //GUIManager mang = new GUIManager(checkers, game);
+                //GameBoardPanel gameBoard = new GameBoardPanel(board, 600, mang);
+                //mang.setBoard(gameBoard);
+                //GameGUI gui = new GameGUI(game.getTurn(), gameBoard);
+                //mang.setGameGUI(gui);
+                //ui = mang;
             }
             ui.runGame();
         } else {
