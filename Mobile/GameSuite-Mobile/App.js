@@ -6,7 +6,8 @@ import {
   StyleSheet, Text, 
   TextInput, ScrollView, 
   View, Button,
-  Pressable, Dimensions } from 'react-native';
+  Pressable, Dimensions,
+  Platform, SafeAreaView } from 'react-native';
 import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -151,28 +152,31 @@ function HomeScreen({navigation}) {
 
   return (
 
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-    >
-      <TouchableWithoutFeedback 
-        onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView 
-          contentContainerStyle={styles.container} 
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text selectable={true}>{gameId}</Text>
-          <Text>Name</Text>
-          <TextInput style={styles.input} onChangeText={setCreateName}/>
-          <Button title="Create Game" onPress={createGame}/>
-          <Text>Name</Text>
-          <TextInput style={styles.input} onChangeText={setJoinName}/>
-          <Text>GameId</Text>
-          <TextInput style={styles.input} onChangeText={setJoinGameId}/>
-          <Button title="Join Game" onPress={joinGame}/>
-          <StatusBar style="auto" />
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    <SafeAreaView style={{flex: 1}}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <TouchableWithoutFeedback 
+          onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView 
+            contentContainerStyle={styles.container} 
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text selectable={true}>{gameId}</Text>
+            <Text>Name</Text>
+            <TextInput style={styles.input} onChangeText={setCreateName}/>
+            <Button title="Create Game" onPress={createGame}/>
+            <Text>Name</Text>
+            <TextInput style={styles.input} onChangeText={setJoinName}/>
+            <Text>GameId</Text>
+            <TextInput style={styles.input} onChangeText={setJoinGameId}/>
+            <Button title="Join Game" onPress={joinGame}/>
+            <StatusBar style="auto" />
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
