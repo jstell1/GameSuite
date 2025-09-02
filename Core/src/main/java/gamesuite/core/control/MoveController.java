@@ -3,10 +3,8 @@ package gamesuite.core.control;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
 
 public class MoveController {
 

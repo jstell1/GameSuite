@@ -3,21 +3,16 @@
 package gamesuite.server.control;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;

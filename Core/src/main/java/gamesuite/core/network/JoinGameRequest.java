@@ -1,7 +1,5 @@
 package gamesuite.core.network;
 
-import gamesuite.core.model.Player;
-
 public class JoinGameRequest {
 
     private String player;

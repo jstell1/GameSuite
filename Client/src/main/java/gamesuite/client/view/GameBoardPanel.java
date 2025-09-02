@@ -5,16 +5,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.HashSet;
 import java.util.List;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Set;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import gamesuite.client.control.UIListener;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.Move;
 
 public class GameBoardPanel extends JPanel {
 

@@ -2,16 +2,12 @@ package gamesuite.client.view;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-
 import java.util.regex.Matcher;
 
 public class TextGameCLI implements GameUI {

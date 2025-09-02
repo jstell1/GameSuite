@@ -5,7 +5,6 @@ import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.network.GameCreatedResponse;
 import gamesuite.core.model.CoordPair;
 
 public class GameManager {

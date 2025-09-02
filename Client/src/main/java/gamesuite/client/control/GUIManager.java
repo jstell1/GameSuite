@@ -1,15 +1,11 @@
 package gamesuite.client.control;
 
-import java.awt.Color;
-import java.awt.event.MouseAdapter;
 import java.util.List;
 import javax.swing.SwingUtilities;
-
 import gamesuite.client.view.CoordPairPanel;
 import gamesuite.client.view.GameBoardPanel;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
-import gamesuite.core.control.GameManager;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;

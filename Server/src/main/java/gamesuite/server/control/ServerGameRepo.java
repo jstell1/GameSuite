@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
-
-import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;

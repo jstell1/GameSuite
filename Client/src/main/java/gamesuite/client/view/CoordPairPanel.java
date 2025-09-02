@@ -8,11 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
 import gamesuite.client.control.UIListener;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GamePiece;

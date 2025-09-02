@@ -2,7 +2,6 @@ package gamesuite.core.control;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GamePiece;

@@ -1,37 +1,25 @@
 package gamesuite.server.control;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
-
 import gamesuite.core.control.GameManager;
-import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
 import gamesuite.core.network.CreateGameRequest;
 import gamesuite.core.network.GameCreatedResponse;
 import gamesuite.core.network.GameReadyResponse;
 import gamesuite.core.network.JoinGameRequest;
-import gamesuite.core.network.MoveRequest;
 import gamesuite.core.network.WebSockServerMessage;
-
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import gamesuite.core.model.Move;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.util.StreamUtils;
 
 
