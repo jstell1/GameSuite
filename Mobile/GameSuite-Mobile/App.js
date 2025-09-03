@@ -153,12 +153,8 @@ function HomeScreen({navigation}) {
   return (
 
     <SafeAreaView style={{flex: 1}}>
-      <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <TouchableWithoutFeedback 
-          onPress={Keyboard.dismiss} accessible={false}>
+      
+       
         <ScrollView 
             contentContainerStyle={styles.container} 
             keyboardShouldPersistTaps="handled"
@@ -174,8 +170,8 @@ function HomeScreen({navigation}) {
             <Button title="Join Game" onPress={joinGame}/>
             <StatusBar style="auto" />
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+       
+     
     </SafeAreaView>
   );
 }
