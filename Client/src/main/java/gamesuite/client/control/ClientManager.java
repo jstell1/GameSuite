@@ -32,8 +32,8 @@ public class ClientManager {
     private GUIManager guiGM;
     
     public ClientManager(String ip, int port) {
-        this.baseUrl = "http://" + ip + ":" + port;
-        this.wsUrl = "ws://" + ip + ":" + port + "/ingame";
+        this.baseUrl = "https://" + ip + ":" + port;
+        this.wsUrl = "wss://" + ip + ":" + port + "/ingame";
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
     }
 
