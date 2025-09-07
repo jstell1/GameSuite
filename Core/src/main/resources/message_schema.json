@@ -150,5 +150,9 @@
     "rejoinGame" : {
         "gameId" : "String",
         "sessionId" : "String"
+    },
+    "badRequestError" : {
+        "message" : "String"
     }
+    
 }

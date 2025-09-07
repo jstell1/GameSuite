@@ -104,15 +104,21 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+        String netWorkMsg = null;
+        NetworkMessage clientMsg = null;
+        String type = "";
+        JsonNode payload = null;
 
         super.handleMessage(session, message);
-        
-        String netWorkMsg = message.getPayload().toString();
+      
+        netWorkMsg = message.getPayload().toString();
         //System.out.println(payload);
         ObjectMapper mapper = new ObjectMapper();
-        NetworkMessage clientMsg = mapper.readValue(netWorkMsg, NetworkMessage.class);
-        String type = clientMsg.getMessageType();
-        JsonNode payload = clientMsg.getPayload();
+        try {
+            clientMsg = mapper.readValue(netWorkMsg, NetworkMessage.class);
+            type = clientMsg.getMessageType();
+            payload = clientMsg.getPayload();
+        } catch (Exception e) {}
 
         switch(type) {
             case "createGameRequest":
@@ -203,8 +209,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     } catch (Exception e) {}
                 }
                 break;
-            default:
-
+            case "moveRequest":
 
                 mapper = new ObjectMapper();
                 //MoveRequest req = mapper.readValue(message.getPayload().toString(), MoveRequest.class);
@@ -238,6 +243,19 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 for(String user : sessionList)
                     this.webSocketSessions.get(user).sendMessage(msg);
                 break;
+            default:
+                mapper = new ObjectMapper();
+                netMsg = new NetworkMessage();
+                msgType = "badRequestError";
+                JsonNode error = schemaRoot.get(msgType);
+                ObjectNode errorObj = error.deepCopy();
+                errorObj.put("message", "bad request: don't recognize message type");
+                netMsg = new NetworkMessage();
+                netMsg.setMessageType(msgType);
+                netMsg.setPayload(errorObj);
+                str = mapper.writeValueAsString(netMsg);
+                msg = new TextMessage(str);
+                session.sendMessage(msg);
         }
 
         /*

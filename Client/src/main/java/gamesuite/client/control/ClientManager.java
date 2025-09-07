@@ -111,7 +111,7 @@ public class ClientManager {
                         }
 
                         break;
-                    default:
+                    case "stateUpdateResponse":
                         JsonNode gameJson = mapper.valueToTree(payload.get("gameState"));
                         GameState game = mapper.treeToValue(gameJson, GameState.class);
 
@@ -119,6 +119,7 @@ public class ClientManager {
                         ClientManager.this.guiGM.setGameState(game);
                         ClientManager.this.guiGM.update();
                         break;
+                    default: break;
                 }
             }
 
