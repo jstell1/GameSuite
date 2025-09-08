@@ -2,7 +2,6 @@ package gamesuite.client.control;
 
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
@@ -12,8 +11,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,7 +19,6 @@ import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.network.*;
-import jakarta.websocket.Decoder.Text;
 
 public class ClientManager {
     private final WebSocketClient client = new StandardWebSocketClient();
@@ -68,10 +64,9 @@ public class ClientManager {
             public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
                 ObjectMapper mapper = new ObjectMapper();
                 String netWorkMsg = message.getPayload().toString();
-                //System.out.println(payload)
 
                 if(!JsonSchemaValidator.isValid(netWorkMsg)) {
-                    ObjectNode inner = mapper.createObjectNode();//ClientManager.this.schemaRoot.get("badRequestError").deepCopy();
+                    ObjectNode inner = mapper.createObjectNode();
                     ObjectNode err = mapper.createObjectNode();
                     inner.put("message", "don't recognize message type");
                     err.set("badRequestError", inner);
@@ -80,16 +75,13 @@ public class ClientManager {
                     return;
                 }
 
-                //NetworkMessage servMsg = mapper.readValue(netWorkMsg, NetworkMessage.class);
-                //String type = servMsg.getMessageType();
-                //JsonNode payload = servMsg.getPayload();
                 ObjectNode outer = null;
                 ObjectNode payload =null; 
 
                 try {
                     outer = (ObjectNode) mapper.readTree(netWorkMsg);
                 } catch (Exception e) {
-                    ObjectNode inner = mapper.createObjectNode();//ClientManager.this.schemaRoot.get("badRequestError").deepCopy();
+                    ObjectNode inner = mapper.createObjectNode();
                     ObjectNode err = mapper.createObjectNode();
                     inner.put("message", "don't recognize message type");
                     err.set("badRequestError", inner);
@@ -121,14 +113,12 @@ public class ClientManager {
                         if(ClientManager.this.gameId == null)
                             ClientManager.this.gameId = payload.get("gameId").asText();
                         ClientManager.this.guiGM.setGameState(game);
-                        //ClientManager.this.guiGM.setGameId(type);
                         ClientManager.this.guiGM.initGame(board, game);
                         break;
                     case "stateUpdateResponse":
                         gameJson = mapper.valueToTree(payload.get("gameState"));
                         game = mapper.treeToValue(gameJson, GameState.class);
 
-                        //ameCreatedResponse msg = servMsg.getResp2();
                         ClientManager.this.guiGM.setGameState(game);
                         ClientManager.this.guiGM.update();
                         break;
@@ -150,18 +140,14 @@ public class ClientManager {
     public void sendMove(Move move) {
         if (session != null && session.isOpen()) {
 
-            //MoveRequest request = new MoveRequest(this.sessionId, this.gameId, move);
             ObjectMapper mapper = new ObjectMapper();
-            //NetworkMessage netMsg = new NetworkMessage();
             String msgType = "moveRequest";
-            JsonNode tmp = mapper.createObjectNode();//this.schemaRoot.get(msgType);
+            JsonNode tmp = mapper.createObjectNode();
             JsonNode moveJson = mapper.valueToTree(move);
             ObjectNode payload = tmp.deepCopy();
 
-            //netMsg.setMessageType(msgTpye);
             payload.put("gameId", this.gameId);
             payload.set("move", moveJson);
-            //netMsg.setPayload(payload);
             ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
             
             try {
@@ -179,14 +165,11 @@ public class ClientManager {
         
         if(session != null && session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
-            //NetworkMessage netMsg = new NetworkMessage();
             String msgType = "createGameRequest";
-            ObjectNode inner = mapper.createObjectNode();//this.schemaRoot.get(msgType).deepCopy();
+            ObjectNode inner = mapper.createObjectNode();
             inner.put("name", playerName);
             ObjectNode payload = mapper.createObjectNode();
             payload.set(msgType, inner);
-            //netMsg.setMessageType(msgType);
-            //netMsg.setPayload(payload);
             String str = mapper.writeValueAsString(payload);
             TextMessage msg = new TextMessage(str);
             session.sendMessage(msg);
@@ -198,14 +181,11 @@ public class ClientManager {
     public String joinGame(String name, String gameId) {
         if(session != null && session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
-            //NetworkMessage netMsg = new NetworkMessage();
             String msgType = "joinGameRequest";
-            ObjectNode payload = mapper.createObjectNode();//this.schemaRoot.get(msgType).deepCopy();
+            ObjectNode payload = mapper.createObjectNode();
             payload.put("name", name);
             payload.put("gameId", gameId);
             ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
-            //netMsg.setMessageType(msgType);
-            //netMsg.setPayload(payload);
             try {
                 String str = mapper.writeValueAsString(outer);
                 TextMessage msg = new TextMessage(str);
@@ -218,24 +198,5 @@ public class ClientManager {
             return gameId;
         }
        return null;
-
-
-        /*
-         * 
-         String url = baseUrl + "/games/players";
- 
-         JoinGameRequest request = new JoinGameRequest();
-         request.setPlayer(name);
-         request.setGameId(gameId);
-         request.setSessionId(this.sessionId);
- 
-         try {
-             GameCreatedResponse response = restTemplate.patchForObject(url, request, GameCreatedResponse.class);
-             this.gameId = response.getGameId();
-             return response.getGameId();
-         } catch (Exception e) {}
-         return null;
-         * 
-         */
     }
 }
