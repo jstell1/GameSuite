@@ -153,6 +153,12 @@
     },
     "badRequestError" : {
         "message" : "String"
+    },
+    "missingNameError" : {
+        "message" : "String"
+    },
+    "serverError" : {
+        "message" : "String"
     }
     
 }

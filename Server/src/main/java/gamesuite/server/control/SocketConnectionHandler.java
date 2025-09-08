@@ -4,32 +4,22 @@ package gamesuite.server.control;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.network.GameCreatedResponse;
-import gamesuite.core.network.GameReadyResponse;
-import gamesuite.core.network.MoveRequest;
-import gamesuite.core.network.WebSockServerMessage;
 import gamesuite.core.network.NetworkMessage;
 
 @Component
@@ -72,14 +62,6 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         TextMessage txtMsg = new TextMessage(str);
         webSocketSessions.put(session.getId(), session);
         session.sendMessage(txtMsg);
-        /* 
-        WebSockServerMessage msg1 = new WebSockServerMessage(null, null, session.getId());
-        ObjectMapper mapper = new ObjectMapper();
-        String str = mapper.writeValueAsString(msg1);
-        TextMessage msg = new TextMessage(str);
-        webSocketSessions.put(session.getId(), session);
-        session.sendMessage(msg);
-        */
     }
 
     @Override
@@ -91,8 +73,8 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     }
 
     public void notifyPlayerJoined(String gameId, String msg) {
-        List<String> userSessions = this.gmRepo.getUserSessions(gameId);
-        for (String sessionId : userSessions) {
+        Map<String, Integer> userSessions = this.gmRepo.getUserSessions(gameId);
+        for (String sessionId : userSessions.keySet()) {
             try {
                 WebSocketSession s = this.webSocketSessions.get(sessionId);
                 s.sendMessage(new TextMessage(msg));
@@ -118,25 +100,54 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             clientMsg = mapper.readValue(netWorkMsg, NetworkMessage.class);
             type = clientMsg.getMessageType();
             payload = clientMsg.getPayload();
-        } catch (Exception e) {}
+        } catch (Exception e) {
 
+        }
+        if(type == null)
+            type = "";
         switch(type) {
             case "createGameRequest":
                 System.out.println("recieved");
-                
+
+                if(this.gmRepo.userSessions.contains(session.getId())) {
+                    NetworkMessage netMsg = new NetworkMessage();
+                    String msgType = "gameNotCreatedError";
+                    JsonNode tmp = this.schemaRoot.get(msgType);
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "This user session is already in a game");
+                    netMsg.setMessageType(msgType);
+                    netMsg.setPayload(respPayload);
+                    mapper = new ObjectMapper();
+                    String str = mapper.writeValueAsString(netMsg);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
+                System.out.println("passed the check");
                 if(payload.has("name")) {
                     String name = payload.get("name").asText();
 
-                    if(name == null) {
-
+                    if(name == null || name.equals("null")) {
+                        NetworkMessage netMsg = new NetworkMessage();
+                        String msgType = "missingNameError";
+                        JsonNode tmp = this.schemaRoot.get(msgType);
+                        ObjectNode respPayload = tmp.deepCopy();
+                        respPayload.put("message", "must have a name to create game");
+                        netMsg.setMessageType(msgType);
+                        netMsg.setPayload(respPayload);
+                        mapper = new ObjectMapper();
+                        String str = mapper.writeValueAsString(netMsg);
+                        TextMessage msg = new TextMessage(str);
+                        session.sendMessage(msg);
+                        break;
                     }
 
                     try {
                         Player player1 = new Player(name, 0);
                         GameBoard board = new GameBoard(8);
-                        String gameId = this.gmRepo.createGame(player1, board);
+                        String gameId = this.gmRepo.createGame(player1, board, session.getId());
                         GameState game = this.gmRepo.getGameView(gameId);
-                        this.gmRepo.setUserNum(session.getId() , 1);
+                        //this.gmRepo.setUserNum(session.getId() , 1);
                         this.gmRepo.addWebSocketToGame(gameId, session.getId());
                         GameManager gm = new GameManager(board, player1);
                         this.gmRepo.setGame(gameId, gm);
@@ -155,7 +166,17 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                         System.out.println("sent");
                         
                     } catch (Exception e) {
-
+                         NetworkMessage netMsg = new NetworkMessage();
+                        String msgType = "serverError";
+                        JsonNode tmp = this.schemaRoot.get(msgType);
+                        ObjectNode respPayload = tmp.deepCopy();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        netMsg.setMessageType(msgType);
+                        netMsg.setPayload(respPayload);
+                        mapper = new ObjectMapper();
+                        String str = mapper.writeValueAsString(netMsg);
+                        TextMessage msg = new TextMessage(str);
+                        session.sendMessage(msg);
                     }
                 } else {
                     System.err.println("Missing name in payload");
@@ -163,16 +184,53 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 break;
             case "joinGameRequest" :
 
+                if(this.gmRepo.userSessions.contains(session.getId())) {
+                    NetworkMessage netMsg = new NetworkMessage();
+                    String msgType = "gameNotJoinedError";
+                    JsonNode tmp = this.schemaRoot.get(msgType);
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "This user session is already in a game");
+                    netMsg.setMessageType(msgType);
+                    netMsg.setPayload(respPayload);
+                    mapper = new ObjectMapper();
+                    String str = mapper.writeValueAsString(netMsg);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
+
                 if(payload.has("name") && payload.has("gameId")) {
 
                     String player = payload.get("name").asText();
                     String gameId = payload.get("gameId").asText();
                     System.out.println(player + ",," + gameId);
-                    if(player == null || gameId == null) {
-
+                    if(player == null || player.equals("null") || gameId == null || gameId.equals("null")) {
+                        NetworkMessage netMsg = new NetworkMessage();
+                        String msgType = "gameNotJoinedError";
+                        JsonNode tmp = this.schemaRoot.get(msgType);
+                        ObjectNode respPayload = tmp.deepCopy();
+                        respPayload.put("message", "must have a name and gameId to join a game");
+                        netMsg.setMessageType(msgType);
+                        netMsg.setPayload(respPayload);
+                        mapper = new ObjectMapper();
+                        String str = mapper.writeValueAsString(netMsg);
+                        TextMessage msg = new TextMessage(str);
+                        session.sendMessage(msg);
+                        break;
                     }
                     if(!gmRepo.containsGame(gameId)) {
-
+                        NetworkMessage netMsg = new NetworkMessage();
+                        String msgType = "gameNotJoinedError";
+                        JsonNode tmp = this.schemaRoot.get(msgType);
+                        ObjectNode respPayload = tmp.deepCopy();
+                        respPayload.put("message", "gameId does not exist");
+                        netMsg.setMessageType(msgType);
+                        netMsg.setPayload(respPayload);
+                        mapper = new ObjectMapper();
+                        String str = mapper.writeValueAsString(netMsg);
+                        TextMessage msg = new TextMessage(str);
+                        session.sendMessage(msg);
+                        break;
                     }
 
                     try {
@@ -183,7 +241,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                         else {
                             JsonNode boardJson = mapper.valueToTree(board.getBoard());
                             GameState game = this.gmRepo.getGM(gameId).getGameState();
-                            this.gmRepo.setUserNum(session.getId(), 2);
+                            //this.gmRepo.setUserNum(session.getId(), 2);
                             this.gmRepo.addWebSocketToGame(gameId, session.getId());
 
                             NetworkMessage netMsg = new NetworkMessage();
@@ -206,7 +264,19 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                             //TextMessage msg = new TextMessage(str);
                             notifyPlayerJoined(gameId, str);
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                         NetworkMessage netMsg = new NetworkMessage();
+                        String msgType = "serverError";
+                        JsonNode tmp = this.schemaRoot.get(msgType);
+                        ObjectNode respPayload = tmp.deepCopy();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        netMsg.setMessageType(msgType);
+                        netMsg.setPayload(respPayload);
+                        mapper = new ObjectMapper();
+                        String str = mapper.writeValueAsString(netMsg);
+                        TextMessage msg = new TextMessage(str);
+                        session.sendMessage(msg);
+                    }
                 }
                 break;
             case "moveRequest":
@@ -217,9 +287,28 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 //String sessionId = req.getSessionId();
                 Move move = mapper.treeToValue(payload.get("move"), Move.class);//req.getMove();
                 String gameId = payload.get("gameId").asText();
-                List<String> sessionList = this.gmRepo.getUserSessions(gameId);
+                Map<String, Integer> sessionList = this.gmRepo.getUserSessions(gameId);
         
                 GameManager gm = this.gmRepo.getGM(gameId);
+
+                int currTurn = gm.getGameState().getTurn();
+                int userTurnNum = sessionList.get(session.getId());
+
+                if(currTurn != userTurnNum) {
+                     NetworkMessage netMsg = new NetworkMessage();
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = this.schemaRoot.get(msgType);
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "this user cannot make a move yet");
+                    netMsg.setMessageType(msgType);
+                    netMsg.setPayload(respPayload);
+                    mapper = new ObjectMapper();
+                    String str = mapper.writeValueAsString(netMsg);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
+
                 gm.sendMove(move);
                 GameState game = gm.getGameState();
 
@@ -240,7 +329,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 String str = mapper.writeValueAsString(netMsg);
                 TextMessage msg = new TextMessage(str);
         
-                for(String user : sessionList)
+                for(String user : sessionList.keySet())
                     this.webSocketSessions.get(user).sendMessage(msg);
                 break;
             default:
@@ -257,11 +346,5 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 msg = new TextMessage(str);
                 session.sendMessage(msg);
         }
-
-        /*
-         * 
-        
-         * 
-         */
     }
 }
