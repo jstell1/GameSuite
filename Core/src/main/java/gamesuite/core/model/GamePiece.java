@@ -1,7 +1,9 @@
 package gamesuite.core.model;
 
 import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GamePiece {
     private String name;
     private String type;

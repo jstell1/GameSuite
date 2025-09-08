@@ -103,7 +103,12 @@
     },
     "moveRequest" : {
         "gameId" : "String",
-        "move" : "Move"
+        "move" : {
+            "startX" : "Int",
+            "startY" : "Int",
+            "endX" : "Int",
+            "endY" : "Int"
+        }
     },
     "moveUpdateError" : {
         "message" : "String"
