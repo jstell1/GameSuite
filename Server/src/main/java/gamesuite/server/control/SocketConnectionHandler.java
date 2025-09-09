@@ -104,7 +104,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             session.sendMessage(new TextMessage(str));
             return;
         }
-        
+
         if(!JsonSchemaValidator.isValid(netWorkMsg)) {
             ObjectNode inner = mapper.createObjectNode();
             ObjectNode err = mapper.createObjectNode();
@@ -197,6 +197,19 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     break;
                 }
 
+                if(this.gmRepo.games.get(gameId).getGameState().isBoardInit()) {
+                    mapper = new ObjectMapper();
+                    String msgType = "gameNotJoinedError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "game is full");
+                    outer = mapper.createObjectNode().set(msgType, respPayload);
+                    String str = mapper.writeValueAsString(outer);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
+
                 try {
                     Player p2 = new Player(player, 0);
                     GameBoard board = this.gmRepo.joinGame(p2, gameId);
@@ -238,6 +251,43 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 Move move = null;
                 move = mapper.treeToValue(payload.get("move"), Move.class);//req.getMove();
                 gameId = payload.get("gameId").asText();
+
+
+                if(!this.gmRepo.rightPlayer(gameId, session.getId())) {
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "not in game or not your turn");
+                    outer = mapper.createObjectNode().set(msgType, respPayload);
+                    String str = mapper.writeValueAsString(outer);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
+
+                if(!this.gmRepo.games.containsKey(gameId)) {
+                    String msgType = "badRequestError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "game does not exist");
+                    outer = mapper.createObjectNode().set(msgType, respPayload);
+                    String str = mapper.writeValueAsString(outer);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
+
+                if(!this.gmRepo.getGameView(gameId).isBoardInit()) {
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "player 2 has not joined the game");
+                    outer = mapper.createObjectNode().set(msgType, respPayload);
+                    String str = mapper.writeValueAsString(outer);
+                    TextMessage msg = new TextMessage(str);
+                    session.sendMessage(msg);
+                    break;
+                }
                 Map<String, Integer> sessionList = this.gmRepo.getUserSessions(gameId);
         
                 GameManager gm = this.gmRepo.getGM(gameId);
