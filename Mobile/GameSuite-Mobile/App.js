@@ -11,6 +11,7 @@ import {
 import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Ajv from 'ajv';
 
 const GameContext = createContext();
 const { width } = Dimensions.get('window');
@@ -53,7 +54,20 @@ function HomeScreen({navigation}) {
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [gameId, setGameId] = useState("Create or Join Game");
+  const ajv = new Ajv();
+  let schema;
+  let validate;
+  useEffect(() => {getSchema()}, []);
   useEffect(() => {connectWebSocket()}, []);
+
+  async function getSchema() {
+    
+    const resp = await fetch("/schema");
+    //console.log(resp);
+    schema = await resp.json();
+    console.log(schema);
+    validate = ajv.compile(schema);
+  }
 
   function connectWebSocket() {
     ws = new WebSocket(`${WS_HOST}`);
@@ -67,42 +81,99 @@ function HomeScreen({navigation}) {
       console.log(e.data);
       const data = JSON.parse(e.data);
         console.log("WS Message:", data);
+      //const valid = validate(data);
 
-        // Always check for sessionId
-        if (data.sessionId && sessionId === null) {
-            sessionId = data.sessionId;
+      /*if (!valid) {
+        let msg = {
+          "badErrorRequest": {
+              "message": "don't recognize message type"
+          }
         }
+        ws.send(JSON.stringify(msg));
+        console.log(validate.errors);
+        return;
+      };*/
 
-        if (data.resp1) {
-            console.log("Game ready:", data.resp1);
-            gameTurn = data.resp1.game.turn;
-            id = data.resp1.gameId;
-            currGameId = data.resp1.gameId;
-            navigation.navigate("GameBoard",
-              {id, sessionId, name}
-            );
-        }
+      let type = Object.keys(data)[0];
+      let payload = data[type];
+      console.log(payload);
 
-        if (data.resp2) {
-            if (data.resp2.game) {
-                gameTurn = data.resp2.game.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
-                    isClickable = false;
-                setGame(data.resp2.game);
-            }
-        }
+      switch(type) {
+        case "sessionConnectedResponse":
+            sessionId = payload.sessionId;
+            break;
+        case "gameCreatedResponse":
+            setGameId(payload.gameId);
+            name = createName;
+            playerTurn = 1;
+            break;
+        case "gameReadyResponse":
+            
+          setGameId(data.gameId);
+          if(playerTurn == null) {
+            playerTurn = 2;
+            name = joinName;
+          }
+            
+          gameTurn = payload.gameState.turn;
+          id = payload.gameId;
+          currGameId = payload.gameId;
+          navigation.navigate("GameBoard",
+            {id, sessionId, name}
+          );
+          break;
+        case "stateUpdateResponse":
+          gameTurn = payload.gameState.turn;
+          if(playerTurn === gameTurn)
+              isClickable = true;
+          else
+              isClickable = false;
+          setGame(payload.gameState);
+          break;
+        default: 
+            console.log(data);
+            break;
+      }      
+
+      // Always check for sessionId
+      /*
+      if (data.sessionId && sessionId === null) {
+          sessionId = data.sessionId;
+      }
+
+      if (data.resp1) {
+          console.log("Game ready:", data.resp1);
+          gameTurn = data.resp1.game.turn;
+          id = data.resp1.gameId;
+          currGameId = data.resp1.gameId;
+          navigation.navigate("GameBoard",
+            {id, sessionId, name}
+          );
+      }
+
+      if (data.resp2) {
+          if (data.resp2.game) {
+              gameTurn = data.resp2.game.turn;
+              if(playerTurn === gameTurn)
+                  isClickable = true;
+              else
+                  isClickable = false;
+              setGame(data.resp2.game);
+          }
+      }
+          */
     };
-
     ws.onerror = e => { console.log(e.message); };
 
     ws.onclose = e => { console.log(e.code, e.reason); };
+
   }
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
-    //Alert.alert("I'm here");
+    //Alert.alert("I'm here"); 
+
+    /*
     const resp = await fetch(`${API_HOST}/games`, {
         method: "POST",
         headers: {
@@ -113,7 +184,15 @@ function HomeScreen({navigation}) {
           sessionId: sessionId
         })
       });
+    */
+    let msg = {
+      "createGameRequest": {
+          "name": createName
+      }
+    }
+    ws.send(JSON.stringify(msg));
     //Alert.alert("I'm here too!");
+    /*
     if(!resp.ok) {
       Alert.alert("Did not create game");
       return;
@@ -122,7 +201,9 @@ function HomeScreen({navigation}) {
     setGameId(data.gameId);
     name = createName;
     playerTurn = 1;
+    */
     //Alert.alert(gameId);
+    
   }
 
   const joinGame = async () => {
@@ -132,6 +213,14 @@ function HomeScreen({navigation}) {
     }
     name = joinName;
     
+    let payload = {
+        "joinGameRequest": {
+            "name": name,
+            "gameId": joinGameId
+        }
+    }
+    ws.send(JSON.stringify(payload));
+    /*
     const resp = await fetch(`${API_HOST}/games/players`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -148,6 +237,7 @@ function HomeScreen({navigation}) {
     const data = await resp.json();
     setGameId(data.gameId);
     playerTurn = 2;
+    */
   }
 
   return (
@@ -262,13 +352,14 @@ function GameBoardScreen({navigation, route}) {
       
       //console.log("Move:", start, "->", end);
       const movMessage = {
-        gameId: currGameId,
-        sessionId: sessionId,
-        move: {
-          startX: highlights[0].row,
-          startY: highlights[0].col,
-          endX: end.row,
-          endY: end.col
+        moveRequest: {
+          gameId: currGameId,
+          move: {
+            startX: highlights[0].row,
+            startY: highlights[0].col,
+            endX: end.row,
+            endY: end.col
+          }
         }
       }
       setHighlights([]);

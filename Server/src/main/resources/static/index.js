@@ -1,4 +1,4 @@
-// --- Elements ---
+
 const createForm = document.getElementById("createForm");
 const joinForm = document.getElementById("joinForm");
 const topLabel = document.getElementById("top");
@@ -21,20 +21,75 @@ let endY = -1;
 let turnNum = 1;
 let playerTurn;
 let gameTurn;
+let validate;
+const Ajv = window.ajv7;
+let ajv = new Ajv();
 
-// --- WebSocket setup ---
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
     protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     host = window.location.host; // whatever was used to load the page
-    socket = new WebSocket(`${protocol}//${host}/ingame`);
 
+    const resp = await fetch("/schema");
+    //console.log(resp);
+    schema = await resp.json();
+    console.log(schema);
+    validate = ajv.compile(schema);
+
+    socket = new WebSocket(`${protocol}//${host}/ingame`);
     socket.onopen = () => console.log("WebSocket connected");
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log("WS Message:", data);
+        let valid = validate(data);
+        console.log(valid);
 
-        // Always check for sessionId
+        if(!valid) {
+            let msg = {
+                "badErrorRequest": {
+                    "message": "don't recognize message type"
+                }
+            }
+            socket.send(JSON.stringify(msg));
+            return;
+        }
+
+        let type = Object.keys(data)[0];
+        let payload = data[type];
+        console.log(payload);
+
+        switch(type) {
+            case "sessionConnectedResponse":
+                sessionId = payload.sessionId;
+                break;
+            case "gameCreatedResponse":
+                gameId = payload.gameId;
+                let game = payload.gameState;
+                topLabel.textContent = "Game ID: " + payload.gameId;
+                showGameBoard(payload.gameId);
+                playerTurn = 1;
+                break;
+            case "gameReadyResponse":
+                gameId = payload.gameId;
+                if(playerTurn == null)
+                    playerTurn = 2;
+                gameTurn = payload.gameState.turn;
+                showGameBoard(gameId);
+                break;
+            case "stateUpdateResponse":
+                gameTurn = payload.gameState.turn;
+                if(playerTurn === gameTurn)
+                    isClickable = true;
+                else
+                    isClickable = false;
+                renderBoard(payload.gameState);
+                break;
+            default: 
+                console.log(data);
+                break;
+        }
+
+        /*
         if (data.sessionId && sessionId === null) {
             sessionId = data.sessionId;
         }
@@ -55,7 +110,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     isClickable = false;
                 renderBoard(data.resp2.game);
             }
-        }
+        }*/
     };
 
     socket.onclose = () => console.log("WebSocket disconnected");
@@ -67,16 +122,24 @@ createForm.addEventListener("submit", async (e) => {
     const name = document.getElementById("createName").value;
     if (!name) { alert("Name is required!"); return; }
 
+    let payload = {
+        "createGameRequest": {
+            "name": name
+        }
+    }
+    socket.send(JSON.stringify(payload));
+    /*
     const resp = await fetch("/games", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name , sessionId })
     });
-    const data = await resp.json();
-    topLabel.textContent = "Game ID: " + data.gameId;
-    gameId = data.gameId;
+    */
+    //const data = await resp.json();
+    //topLabel.textContent = "Game ID: " + data.gameId;
+    //gameId = data.gameId;
     //showGameBoard(data.gameId);
-    playerTurn = 1;
+    //playerTurn = 1;
 });
 
 joinForm.addEventListener("submit", async (e) => {
@@ -85,6 +148,14 @@ joinForm.addEventListener("submit", async (e) => {
     const joinGameId = document.getElementById("joinGameId").value;
     if (!player || !joinGameId) { alert("Name and Game ID are required!"); return; }
 
+    let payload = {
+        "joinGameRequest": {
+            "name": player,
+            "gameId": joinGameId
+        }
+    }
+    socket.send(JSON.stringify(payload));
+    /*
     const resp = await fetch("/games/players", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -99,6 +170,7 @@ joinForm.addEventListener("submit", async (e) => {
     const data = await resp.json();
     gameId = data.gameId;
     playerTurn = 2;
+    */
     //showGameBoard(gameId);
 });
 
@@ -203,11 +275,12 @@ async function fetchData(startRow, startCol, endRow, endCol) {
 
     // Package the move
     const moveMessage = {
-        gameId: gameId,
-        sessionId: sessionId,
-        move: {
-            startX: startRow, startY: startCol,
-            endX: endRow, endY: endCol  
+        "moveRequest": {
+            gameId: gameId,
+            move: {
+                startX: startRow, startY: startCol,
+                endX: endRow, endY: endCol  
+            }
         }
     };
 

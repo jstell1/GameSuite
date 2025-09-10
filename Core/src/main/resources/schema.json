@@ -1,0 +1,352 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "GamePiece": {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "val": {"type": "integer"}
+        }
+    },
+    "Move": {
+        "type": "object",
+        "properties": {
+            "startX": {"type": "integer"},
+            "startY": {"type": "integer"},
+            "endX": {"type": "integer"},
+            "endY": {"type": "integer"}
+        },
+        "required": ["startX", "startY", "endX", "endY"],
+        "additionalProperties": false
+    },
+    "CoordPair": {
+      "type": "object",
+      "properties": {
+        "x": {"type": "integer"},
+        "y": {"type": "integer"},
+        "piece": {"anyOf": [{"$ref": "#/definitions/GamePiece"}, {"type": "null"}]}
+      },
+      "required": ["x", "y"],
+      "additionalProperties": false
+    },
+    
+    "Player": {
+      "type": "object",
+      "properties": {
+        "points": {"type": "integer"},
+        "name": {"type": "string"},
+        "userId": {"anyOf": [{"type": "string"}, {"type": "null"}]}
+      },
+      "required": ["points", "name"],
+      "additionalProperties": false
+    },
+    
+    "GameState": {
+      "type": "object",
+      "properties": {
+        "numPlayers": {"type": "integer"},
+        "turn": {"type": "integer"},
+        "winner": {"anyOf": [{"$ref": "#/definitions/Player"},{"type":"null"}]},
+        "furtherJumps": {"anyOf": [{"$ref": "#/definitions/CoordPair"},{"type":"null"}]},
+         "turnFactor": {"type": "integer"},
+        "boardInit": {"type": "boolean"},
+        "pieceNames": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+       
+        "changedPos": {"anyOf": [
+            {
+              "type": "array",
+              "items": {"$ref": "#/definitions/CoordPair"}
+            },
+            {"type": "null"}
+        ]},
+        "gameOver": {"type": "boolean"},
+        "draw": {"type": "boolean"},
+        "players": {
+            "type": "array",
+            "items": {"anyOf": [
+                { "$ref": "#/definitions/Player" },
+                { "type": "null" }
+            ]}
+        }
+      },
+      "required": ["numPlayers", "turn", "draw", "turnFactor", "boardInit", "gameOver", "pieceNames"],
+      "additionalProperties": false
+    }
+  },
+  
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "sessionConnectedResponse": {
+          "type": "object",
+          "properties": {
+            "sessionId": {"type": "string"}
+          },
+          "required": ["sessionId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["sessionConnectedResponse"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "createGameRequest": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string"}
+          },
+          "required": ["name"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["createGameRequest"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gameCreatedResponse": {
+          "type": "object",
+          "properties": {
+            "gameId": {"type": "string"},
+            "gameState": {"$ref": "#/definitions/GameState"}
+          },
+          "required": ["gameId", "gameState"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gameCreatedResponse"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gameNotCreatedError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gameNotCreatedError"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "joinGameRequest": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string"},
+            "gameId": {"type": "string"}
+          },
+          "required": ["name", "gameId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["joinGameRequest"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gameJoinedResponse": {
+          "type": "object",
+          "properties": {
+            "gameId": {"type": "string"},
+            "sessionId": {"type": "string"}
+          },
+          "required": ["gameId", "sessionId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gameJoinedResponse"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gameNotJoinedError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gameNotJoinedError"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gameReadyResponse": {
+          "type": "object",
+          "properties": {
+            "board": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/CoordPair"}
+              }
+            },
+            "gameId": {"type": "string"},
+            "gameState": {"$ref": "#/definitions/GameState"}
+          },
+          "required": ["board", "gameId", "gameState"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gameReadyResponse"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gameReadyError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gameReadyError"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "moveRequest": {
+          "type": "object",
+          "properties": {
+            "gameId": {"type": "string"},
+            "move": {"$ref": "#/definitions/Move"}
+          },
+          "required": ["gameId", "move"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["moveRequest"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "moveUpdateError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["moveUpdateError"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "stateUpdateResponse": {
+          "type": "object",
+          "properties": {
+            "gameId": {"type": "string"},
+            "gameState": {"$ref": "#/definitions/GameState"}
+          },
+          "required": ["gameId", "gameState"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["stateUpdateResponse"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "quitGameRequest": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["quitGameRequest"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "rejoinGame": {
+          "type": "object",
+          "properties": {
+            "gameId": {"type": "string"},
+            "sessionId": {"type": "string"}
+          },
+          "required": ["gameId", "sessionId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["rejoinGame"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "badRequestError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["badRequestError"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "missingNameError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["missingNameError"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "serverError": {
+          "type": "object",
+          "properties": {
+            "message": {"type": "string"}
+          },
+          "required": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["serverError"],
+      "additionalProperties": false
+    }
+  ]
+}

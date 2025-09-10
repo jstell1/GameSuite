@@ -13,6 +13,7 @@ dependencies {
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'
     implementation 'org.apache.httpcomponents.core5:httpcore5:5.2'
     implementation 'com.google.guava:guava:33.0.0-jre'
+    implementation 'org.json:json:20240303'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 }
 

@@ -11,7 +11,6 @@ import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
-import gamesuite.core.network.GameCreatedResponse;
 
 public class GUIManager implements GameUI, UIListener {
     private GameState gameView;
@@ -127,33 +126,38 @@ public class GUIManager implements GameUI, UIListener {
         runGame();
     }
 
+    public void setGameId(String gameId) {
+        if(gameId != null) {
+            this.playerTurn = 1;
+            SwingUtilities.invokeLater(() -> {
+                this.gui.disableGUI();
+                this.gui.setGameOverLabel("Give to player 2, GameId: " + gameId);
+            });
+        }
+    }
+
     @Override
     public void createGame(String name) {
         new Thread(() -> {
-            GameCreatedResponse resp = this.gm.createGame(name);
-            if(resp != null) {
-                this.playerTurn = 1;
-                SwingUtilities.invokeLater(() -> {
-                    this.gui.disableGUI();
-                    this.gui.setGameOverLabel("Give to player 2, GameId: " + resp.getGameId());
-                });
+            try {
+                this.gm.createGame(name);
+            } catch (Exception e) {
+                // TODO: handle exception
             }
         }).start();
     }
 
     @Override
-    public GameCreatedResponse joinGame(String name, String gameId) {
+    public void joinGame(String name, String gameId) {
         new Thread(() -> {
-            GameCreatedResponse resp = this.gm.joinGame(name, gameId);
-            if(resp != null) {
+            String id = this.gm.joinGame(name, gameId);
+            if(id != null) {
                 this.playerTurn = 2;
                 SwingUtilities.invokeLater(() -> {
                     this.gui.disableGUI();
-                    this.gui.setGameOverLabel(resp.getGameId());
+                    this.gui.setGameOverLabel(id);
                 });
             }
         }).start();
-
-        return null;
     }
 }
