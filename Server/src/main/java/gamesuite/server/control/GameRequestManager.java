@@ -1,8 +1,14 @@
 package gamesuite.server.control;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.TextMessage;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -18,19 +24,31 @@ import gamesuite.core.network.CreateGameRequest;
 import gamesuite.core.network.GameCreatedResponse;
 import gamesuite.core.network.GameReadyResponse;
 import gamesuite.core.network.JoinGameRequest;
+import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.core.network.WebSockServerMessage;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
 public class GameRequestManager {
     private ServerGameRepo gmRepo;
     private SocketConnectionHandler handler;
+    private InputStream schemaStream;
+    private JsonNode schemaRoot;
 
     public GameRequestManager(ServerGameRepo gmRepo, SocketConnectionHandler handler) {
         this.gmRepo = gmRepo;
         this.handler = handler;
+        this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.schemaRoot = mapper.readTree(schemaStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @GetMapping("/")
@@ -38,6 +56,20 @@ public class GameRequestManager {
         ClassPathResource htmlFile = new ClassPathResource("static/index.html");
         return StreamUtils.copyToString(htmlFile.getInputStream(), StandardCharsets.UTF_8);
     }
+
+    @GetMapping("/schema")
+    public ResponseEntity<JsonNode> getSchema() {
+        ObjectMapper mapper = new ObjectMapper();
+        String str = null;
+        try {
+            
+            str = mapper.writeValueAsString(this.schemaRoot);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return new ResponseEntity<>(this.schemaRoot, HttpStatus.OK);
+    }
+    
     
 
     @PostMapping("/games")

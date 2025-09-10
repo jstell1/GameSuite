@@ -53,10 +53,6 @@ public class ClientManager {
 
     public void connect() throws Exception {
 
-
-        
-
-
         this.client.execute(new AbstractWebSocketHandler() {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
@@ -197,7 +193,7 @@ public class ClientManager {
                 System.out.println(str);
                 session.sendMessage(msg);
             } catch (Exception e) {
-                // TODO: handle exception
+               
             }
             System.out.println("Sent");
             return gameId;
