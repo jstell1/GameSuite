@@ -65,52 +65,43 @@ window.addEventListener("DOMContentLoaded", async () => {
             case "gameCreatedResponse":
                 gameId = payload.gameId;
                 let game = payload.gameState;
-                topLabel.textContent = "Game ID: " + payload.gameId;
+               // topLabel.textContent = `Game ID: + ${payload.gameId}`;
                 showGameBoard(payload.gameId);
                 playerTurn = 1;
+                isClickable = false;
                 break;
             case "gameReadyResponse":
                 gameId = payload.gameId;
                 if(playerTurn == null)
                     playerTurn = 2;
                 gameTurn = payload.gameState.turn;
+                isClickable = true;
                 showGameBoard(gameId);
+                gameInfo.textContent = `Player ${gameTurn}'s turn`;
                 break;
             case "stateUpdateResponse":
                 gameTurn = payload.gameState.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
+                
+
+                if(!payload.gameState.gameOver) {
+
+                    if(playerTurn === gameTurn)
+                        isClickable = true;
+                    else
+                        isClickable = false;
+                    gameInfo.textContent = `Player ${gameTurn}'s turn`;
+                } else {
+                    console.log(payload.gameState);
+                    //showGameBoard(payload.gameId);
+                    gameInfo.textContent = `Winner is: ${payload.gameState.winner.name}`
                     isClickable = false;
+                }
                 renderBoard(payload.gameState);
                 break;
             default: 
                 console.log(data);
                 break;
         }
-
-        /*
-        if (data.sessionId && sessionId === null) {
-            sessionId = data.sessionId;
-        }
-
-        if (data.resp1) {
-            console.log("Game ready:", data.resp1);
-            gameTurn = data.resp1.game.turn;
-            showGameBoard(gameId);
-        }
-
-        if (data.resp2) {
-            if (data.resp2.game) {
-                // Initial render or updates
-                gameTurn = data.resp2.game.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
-                    isClickable = false;
-                renderBoard(data.resp2.game);
-            }
-        }*/
     };
 
     socket.onclose = () => console.log("WebSocket disconnected");
@@ -128,18 +119,6 @@ createForm.addEventListener("submit", async (e) => {
         }
     }
     socket.send(JSON.stringify(payload));
-    /*
-    const resp = await fetch("/games", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name , sessionId })
-    });
-    */
-    //const data = await resp.json();
-    //topLabel.textContent = "Game ID: " + data.gameId;
-    //gameId = data.gameId;
-    //showGameBoard(data.gameId);
-    //playerTurn = 1;
 });
 
 joinForm.addEventListener("submit", async (e) => {
@@ -155,23 +134,6 @@ joinForm.addEventListener("submit", async (e) => {
         }
     }
     socket.send(JSON.stringify(payload));
-    /*
-    const resp = await fetch("/games/players", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ player, gameId: joinGameId, sessionId })
-    });
-
-    if (!resp.ok) {
-        alert("Failed to join game: " + resp.statusText);
-        return;
-    }
-
-    const data = await resp.json();
-    gameId = data.gameId;
-    playerTurn = 2;
-    */
-    //showGameBoard(gameId);
 });
 
 // --- SPA swap ---

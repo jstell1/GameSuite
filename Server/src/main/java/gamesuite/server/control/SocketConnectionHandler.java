@@ -73,17 +73,24 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
 
             super.afterConnectionClosed(session, status);
             System.out.println(session.getId() + " DisConnected");
-            
-            if(status.equals(CloseStatus.NORMAL)) {
-                String gameId = this.gmRepo.userSessions.get(session.getId());
+            String gameId = null;
+            //if(status.equals(CloseStatus.NORMAL)) {
+            //if(this.gmRepo.userSessions.containsKey(session.getId())) {
+                gameId = this.gmRepo.userSessions.get(session.getId());
+
+               // GameManager gm = this.gmRepo.getGM(gameId);
+
+            //}
+
                 GameState game = this.gmRepo.removePlayer(session.getId());
                 webSocketSessions.remove(session.getId());
-                if(gameId != null && this.gmRepo.games.containsKey(gameId)) {
+                if(gameId != null && this.gmRepo.games.containsKey(gameId) && game.isGameOver()) {
                     notifyGameOver(game, gameId);
                 }
+                
                 System.out.println("Active sessions: " + webSocketSessions.size());
                 System.out.println("NumGames: " + this.gmRepo.games.size());
-            }
+            //}
         }
     }
 
@@ -117,7 +124,15 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 for (String sessionId : this.gmRepo.gameUserMap.get(gameId).keySet()) {
                     
                     WebSocketSession s = this.webSocketSessions.get(sessionId);
-                    s.sendMessage(msg);
+                    
+                    if(s.isOpen()) {
+                        try {
+                            
+                            s.sendMessage(msg);
+                        } catch (Exception e) {
+                            System.out.println("no socket connection");
+                        }
+                    }
                     
                 }
             } catch (Exception e) {
