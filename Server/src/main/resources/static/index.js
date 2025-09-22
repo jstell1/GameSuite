@@ -107,6 +107,88 @@ window.addEventListener("DOMContentLoaded", async () => {
     socket.onclose = () => console.log("WebSocket disconnected");
 });
 
+async function setupSocket() {
+     protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    host = window.location.host; // whatever was used to load the page
+
+    const resp = await fetch("/schema");
+    //console.log(resp);
+    schema = await resp.json();
+    console.log(schema);
+    validate = ajv.compile(schema);
+
+    socket = new WebSocket(`${protocol}//${host}/ingame`);
+    socket.onopen = () => console.log("WebSocket connected");
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("WS Message:", data);
+        let valid = validate(data);
+        console.log(valid);
+
+        if(!valid) {
+            let msg = {
+                "badErrorRequest": {
+                    "message": "don't recognize message type"
+                }
+            }
+            socket.send(JSON.stringify(msg));
+            return;
+        }
+
+        let type = Object.keys(data)[0];
+        let payload = data[type];
+        console.log(payload);
+
+        switch(type) {
+            case "sessionConnectedResponse":
+                sessionId = payload.sessionId;
+                break;
+            case "gameCreatedResponse":
+                gameId = payload.gameId;
+                let game = payload.gameState;
+               // topLabel.textContent = `Game ID: + ${payload.gameId}`;
+                showGameBoard(payload.gameId);
+                playerTurn = 1;
+                isClickable = false;
+                break;
+            case "gameReadyResponse":
+                gameId = payload.gameId;
+                if(playerTurn == null)
+                    playerTurn = 2;
+                gameTurn = payload.gameState.turn;
+                isClickable = true;
+                showGameBoard(gameId);
+                gameInfo.textContent = `Player ${gameTurn}'s turn`;
+                break;
+            case "stateUpdateResponse":
+                gameTurn = payload.gameState.turn;
+                
+
+                if(!payload.gameState.gameOver) {
+
+                    if(playerTurn === gameTurn)
+                        isClickable = true;
+                    else
+                        isClickable = false;
+                    gameInfo.textContent = `Player ${gameTurn}'s turn`;
+                } else {
+                    console.log(payload.gameState);
+                    //showGameBoard(payload.gameId);
+                    gameInfo.textContent = `Winner is: ${payload.gameState.winner.name}`
+                    isClickable = false;
+                }
+                renderBoard(payload.gameState);
+                break;
+            default: 
+                console.log(data);
+                break;
+        }
+    };
+
+    socket.onclose = () => console.log("WebSocket disconnected");
+}
+
 // --- Lobby handlers ---
 createForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -134,6 +216,15 @@ joinForm.addEventListener("submit", async (e) => {
         }
     }
     socket.send(JSON.stringify(payload));
+});
+
+document.getElementById("quit").addEventListener("click", (e) => {
+    e.preventDefault();
+    socket.close();
+    setupSocket();
+    gameBoardDiv.style.display = "none";
+    lobby.style.display = "block";
+    isClickable = true;
 });
 
 // --- SPA swap ---

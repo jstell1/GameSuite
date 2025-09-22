@@ -121,7 +121,7 @@ public class ServerGameRepo {
             gameId = this.userSessions.get(sessionId);
             gm = this.games.get(gameId);
             synchronized(gm) {
-                if(gm.getGameState().getWinner() == null) {
+                if(gm.getGameState().getWinner() == null && gm.getGameState().getNumPlayers() > 1) {
                     
                     Map<String, Integer> playerNums = this.gameUserMap.get(gameId);
                     int playerNum = playerNums.get(sessionId).intValue();
