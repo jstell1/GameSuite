@@ -1,11 +1,7 @@
 package gamesuite.server.control;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
@@ -13,12 +9,11 @@ import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Player;
-import java.util.HashMap;
 
 @Service
 public class ServerGameRepo {
     public final Map<String, GameManager> games = new ConcurrentHashMap<>();
-    public final Set<String> userSessions = new HashSet<>();
+    public final Map<String, String> userSessions = new ConcurrentHashMap<>();
     public final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
 
     public String createGame(Player p1, GameBoard board, String sessionId) {
@@ -31,7 +26,7 @@ public class ServerGameRepo {
             Map<String, Integer> users = new HashMap<>();
             users.put(sessionId, 1);
             this.gameUserMap.put(gameId, users);
-            this.userSessions.add(sessionId);
+            this.userSessions.put(sessionId, gameId);
             System.out.println("numGames: " + this.games.size());
             System.out.println("numSessions: " + this.userSessions.size());
             System.out.println("PlayerNumMap: " + this.gameUserMap.get(gameId).size());
@@ -39,7 +34,8 @@ public class ServerGameRepo {
         return gameId;
     }
 
-    public Map<String, Integer> getUserSessions(String gameId) {
+
+    public Map<String, Integer> getGameUserMap(String gameId) {
         return this.gameUserMap.get(gameId);
     }
 
@@ -51,10 +47,10 @@ public class ServerGameRepo {
                 Map<String, Integer> sessionList = new HashMap<>();
                 sessionList.put(sessionId, 1);
                 this.gameUserMap.put(gameId, sessionList);
-                this.userSessions.add(sessionId);
+                this.userSessions.put(sessionId, gameId);
             } else {
                 this.gameUserMap.get(gameId).put(sessionId, 2);
-                this.userSessions.add(sessionId);
+                this.userSessions.put(sessionId, gameId);
             }
         }
 
@@ -114,10 +110,36 @@ public class ServerGameRepo {
                 return false;
             return true;
         }
-            
     }
 
-    public void removePlayer(String sessionId) {
+    public GameState removePlayer(String sessionId) {
+        String gameId = null;
+        GameManager gm = null;
+        GameState game = null;
+
+        try {
+            gameId = this.userSessions.get(sessionId);
+            gm = this.games.get(gameId);
+            synchronized(gm) {
+                if(gm.getGameState().getWinner() == null) {
+                    
+                    Map<String, Integer> playerNums = this.gameUserMap.get(gameId);
+                    int playerNum = playerNums.get(sessionId).intValue();
+                    game = gm.quitGame(playerNum);
+                    this.userSessions.remove(sessionId);
+                    this.gameUserMap.get(gameId).remove(sessionId);
+                    
+                } else {
+                    this.gameUserMap.remove(gameId);
+                    this.games.remove(gameId);
+                    this.userSessions.remove(sessionId);
+                }
+                System.out.println("numGames: " + this.games.size());
+                System.out.println("numSessions: " + this.userSessions.size());
+                System.out.println("PlayerNumMap: " + this.gameUserMap.size());
+            }
+        } catch (Exception e) {}
         
+        return game;
     }
 }

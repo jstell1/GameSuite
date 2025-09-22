@@ -8,6 +8,6 @@ public interface UIListener {
     public void sendYellowedPanel(CoordPairPanel pos);
     public void createGame(String name);
     public void joinGame(String name, String gameId);
-    public void quitGame();
+    public void quitGame(boolean hardQuit);
     public boolean isPlayerTurn();
 }

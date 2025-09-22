@@ -13,6 +13,9 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class GameGUI {
     private JFrame window;
@@ -23,10 +26,21 @@ public class GameGUI {
     private UIListener listener;
     private JButton quitButton;
 
-    public GameGUI(int startTurn, GameBoardPanel gameBoard) {
+    public GameGUI(int startTurn, GameBoardPanel gameBoard, UIListener listener) {
+        this.listener = listener;
         this.window = new JFrame("GameSuite");
+
+        this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                listener.quitGame(true);
+                window.dispose();
+                System.exit(0);
+            }
+        });
+
         this.window.setSize(800, 800);
-        this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         GridBagLayout gridbag = new GridBagLayout();
         this.window.setLayout(gridbag);
 
@@ -63,7 +77,7 @@ public class GameGUI {
         this.quitButton = new JButton("Quit");
 
         this.quitButton.addActionListener(a -> {
-            this.listener.quitGame();
+            listener.quitGame(false);
         });
         
         // Constraints for the quit button on the right
@@ -84,7 +98,15 @@ public class GameGUI {
         this.listener = listener;
         this.window = new JFrame("GameSuite");
         this.window.setSize(800, 800);
-        this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                listener.quitGame(true);
+                window.dispose();
+                System.exit(0);
+            }
+        });
         this.window.setLayout(new BorderLayout());
         //this.turnLabel = new JLabel("Create new game or join game");
         this.turnLabel = new JTextPane();

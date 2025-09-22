@@ -72,4 +72,11 @@ public class GameManager {
     public GameState getGameState() {
         return this.game;
     }
+
+    public GameState quitGame(int playerNum) {
+        if(this.stateManager.getWinner() == null) {
+            this.stateManager.setWinner(playerNum % 2 + 1);
+        }
+        return getGameState();
+    }
 }

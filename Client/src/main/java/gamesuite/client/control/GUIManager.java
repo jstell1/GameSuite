@@ -119,7 +119,7 @@ public class GUIManager implements GameUI, UIListener {
         setGameState(game);
         GameBoardPanel panel = new GameBoardPanel(gameBoard, 600, this);
         setBoard(panel);
-        this.gui = new GameGUI(game.getTurn(), panel);
+        this.gui = new GameGUI(game.getTurn(), panel, this);
         old.closeWindow();
         if(!isPlayerTurn())
             this.gui.disableGUI();
@@ -171,12 +171,12 @@ public class GUIManager implements GameUI, UIListener {
     }
 
     @Override
-    public void quitGame() {
+    public void quitGame(boolean hardQuit) {
         this.gui.disableGUI();
         new Thread(() -> {
             try {
                 
-                this.gm.quitGame();
+                this.gm.quitGame(hardQuit);
             } catch (Exception e) {
                 // TODO: handle exception
             }

@@ -151,7 +151,7 @@ public class ClientManager {
             public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
                 //System.out.println("WebSocket closed");
             }
-        }, wsUrl).get();
+        }, this.wsUrl).get();
     }
 
     public String awaitSessionId() throws Exception {
@@ -221,7 +221,7 @@ public class ClientManager {
        return null;
     }
 
-    public synchronized void quitGame() {
+    public synchronized void quitGame(boolean hardQuit) {
         
         try {
             this.session.close();
@@ -232,9 +232,10 @@ public class ClientManager {
             e.printStackTrace();
         }
 
-        if(this.session == null) {
+        if(!hardQuit && this.session == null) {
             try {
                 connect();
+                this.guiGM.resetGUI();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
