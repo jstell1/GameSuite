@@ -136,13 +136,22 @@ public class GUIManager implements GameUI, UIListener {
         }
     }
 
+    public void resetGUI() {
+         GameGUI old = this.gui;
+        SwingUtilities.invokeLater(() -> {
+            old.disableGUI();
+        });
+        this.gui = new GameGUI(this);
+        old.closeWindow();
+        this.gui.activate();
+    }
+
     @Override
     public void createGame(String name) {
         new Thread(() -> {
             try {
                 this.gm.createGame(name);
             } catch (Exception e) {
-                // TODO: handle exception
             }
         }).start();
     }
@@ -157,6 +166,19 @@ public class GUIManager implements GameUI, UIListener {
                     this.gui.disableGUI();
                     this.gui.setGameOverLabel(id);
                 });
+            }
+        }).start();
+    }
+
+    @Override
+    public void quitGame() {
+        this.gui.disableGUI();
+        new Thread(() -> {
+            try {
+                
+                this.gm.quitGame();
+            } catch (Exception e) {
+                // TODO: handle exception
             }
         }).start();
     }

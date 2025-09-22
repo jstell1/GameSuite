@@ -32,14 +32,14 @@ public class GameManager {
         this.moveController = new MoveController(validator, stateManager);
     }
 
-    public void sendMove(Move move) {
+    public synchronized void sendMove(Move move) {
         if(this.moveController.checkMove(move)) {
             List<CoordPair> changed = this.moveController.makeMove(move);
             this.moveController.updateState(changed);
         }
     }
 
-    public boolean addPlayer(Player player) {
+    public synchronized boolean addPlayer(Player player) {
         return this.stateManager.addPlayer(player);
     }
 
