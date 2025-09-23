@@ -25,87 +25,23 @@ let validate;
 const Ajv = window.ajv7;
 let ajv = new Ajv();
 
-window.addEventListener("DOMContentLoaded", async () => {
-    protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    host = window.location.host; // whatever was used to load the page
 
-    const resp = await fetch("/schema");
-    //console.log(resp);
-    schema = await resp.json();
-    console.log(schema);
-    validate = ajv.compile(schema);
+function resetGameState() {
+    gameId = null;
+    numClicks = 0;
+    isClickable = true;
+    startX = -1;
+    startY = -1;
+    endX = -1;
+    endY = -1;
+    playerTurn = null;
+    gameTurn = null;
+    sessionId = null;
 
-    socket = new WebSocket(`${protocol}//${host}/ingame`);
-    socket.onopen = () => console.log("WebSocket connected");
+}
 
-    socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log("WS Message:", data);
-        let valid = validate(data);
-        console.log(valid);
+window.addEventListener("DOMContentLoaded", setupSocket);
 
-        if(!valid) {
-            let msg = {
-                "badErrorRequest": {
-                    "message": "don't recognize message type"
-                }
-            }
-            socket.send(JSON.stringify(msg));
-            return;
-        }
-
-        let type = Object.keys(data)[0];
-        let payload = data[type];
-        console.log(payload);
-
-        switch(type) {
-            case "sessionConnectedResponse":
-                sessionId = payload.sessionId;
-                break;
-            case "gameCreatedResponse":
-                gameId = payload.gameId;
-                let game = payload.gameState;
-               // topLabel.textContent = `Game ID: + ${payload.gameId}`;
-                showGameBoard(payload.gameId);
-                playerTurn = 1;
-                isClickable = false;
-                break;
-            case "gameReadyResponse":
-                gameId = payload.gameId;
-                if(playerTurn == null)
-                    playerTurn = 2;
-                gameTurn = payload.gameState.turn;
-                isClickable = true;
-                showGameBoard(gameId);
-                gameInfo.textContent = `Player ${gameTurn}'s turn`;
-                break;
-            case "stateUpdateResponse":
-                gameTurn = payload.gameState.turn;
-                
-
-                if(!payload.gameState.gameOver) {
-
-                    if(playerTurn === gameTurn)
-                        isClickable = true;
-                    else
-                        isClickable = false;
-                    gameInfo.textContent = `Player ${gameTurn}'s turn`;
-                } else {
-                    console.log(payload.gameState);
-                    //showGameBoard(payload.gameId);
-                    gameInfo.textContent = `Winner is: ${payload.gameState.winner.name}`
-                    isClickable = false;
-                }
-                renderBoard(payload.gameState);
-                break;
-            default: 
-                console.log(data);
-                break;
-        }
-    };
-
-    socket.onclose = () => console.log("WebSocket disconnected");
-});
 
 async function setupSocket() {
      protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -145,20 +81,24 @@ async function setupSocket() {
                 sessionId = payload.sessionId;
                 break;
             case "gameCreatedResponse":
+                //resetGameState();
                 gameId = payload.gameId;
                 let game = payload.gameState;
                // topLabel.textContent = `Game ID: + ${payload.gameId}`;
                 showGameBoard(payload.gameId);
+                renderInitialBoard(payload.gameState);
                 playerTurn = 1;
                 isClickable = false;
                 break;
             case "gameReadyResponse":
+                //resetGameState();
                 gameId = payload.gameId;
                 if(playerTurn == null)
                     playerTurn = 2;
                 gameTurn = payload.gameState.turn;
                 isClickable = true;
                 showGameBoard(gameId);
+                renderInitialBoard(payload.gameState);
                 gameInfo.textContent = `Player ${gameTurn}'s turn`;
                 break;
             case "stateUpdateResponse":
@@ -188,7 +128,6 @@ async function setupSocket() {
 
     socket.onclose = () => console.log("WebSocket disconnected");
 }
-
 // --- Lobby handlers ---
 createForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -218,25 +157,29 @@ joinForm.addEventListener("submit", async (e) => {
     socket.send(JSON.stringify(payload));
 });
 
-document.getElementById("quit").addEventListener("click", (e) => {
+document.getElementById("quit").addEventListener("click", async (e) => {
     e.preventDefault();
     socket.close();
-    setupSocket();
+    resetGameState();
+    //gameBoardDiv.innerHTML = '';
     gameBoardDiv.style.display = "none";
     lobby.style.display = "block";
-    isClickable = true;
+    setupSocket();
+    //await showGameBoard(gameId);
 });
 
 // --- SPA swap ---
-function showGameBoard(gameId) {
-    if(playerTurn !== gameTurn)
-        isClickable = false;
+async function showGameBoard(gameId) {
+    //if(playerTurn !== gameTurn)
+    //    isClickable = false;
     lobby.style.display = "none";
     gameBoardDiv.style.display = "block";
     gameInfo.textContent = "Game ID: " + gameId;
 
     // create board if not already created
-    if (!boardContainer.hasChildNodes()) initBoard();
+    //if (!boardContainer.hasChildNodes()) 
+    boardContainer.innerHTML = '';
+        initBoard();
 }
 
 // --- Board setup ---
@@ -260,6 +203,34 @@ function initBoard() {
 
             square.addEventListener("mousedown", () => handleSquareClick(square, row, col));
             board.appendChild(square);
+        }
+    }
+}
+
+function renderInitialBoard(gameState) {
+    console.log("Rendering initial board from server:", gameState);
+    
+    if (gameState && gameState.board) {
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = gameState.board[row][col];
+                const square = document.querySelector(
+                    `.square[data-row="${row}"][data-col="${col}"]`
+                );
+                
+                if (square) {
+                    // Clear any existing pieces
+                    square.innerHTML = '';
+                    
+                    if (piece) {
+                        const color = piece.name === "B" ? "black" : "red";
+                        addPiece(square, color);
+                        if (piece.type === "K") {
+                            square.firstChild.classList.add("king");
+                        }
+                    }
+                }
+            }
         }
     }
 }
