@@ -106,13 +106,16 @@ function HomeScreen({navigation}) {
             break;
         case "gameCreatedResponse":
             setGameId(payload.gameId);
+            currGameId = payload.gameId;
             name = createName;
             playerTurn = 1;
             turnNum = payload.gameState.turn;
+            isClickable = false;
             break;
         case "gameReadyResponse":
             
           setGameId(data.gameId);
+          currGameId = payload.gameId;
           if(playerTurn == null) {
             playerTurn = 2;
             name = joinName;
@@ -122,12 +125,14 @@ function HomeScreen({navigation}) {
           turnNum = payload.gameState.turn;
           //id = payload.gameId;
           currGameId = payload.gameId;
+          isClickable = false;
           navigation.navigate("GameBoard",
             {currGameId, sessionId, name}
           );
           break;
         case "stateUpdateResponse":
           gameTurn = `Player ${payload.gameState.turn}'s turn`;
+          turnNum = payload.gameState.turn;
           if(payload.gameState.winner == null) {
 
             if(playerTurn === turnNum)
