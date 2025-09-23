@@ -39,7 +39,9 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="GameBoard" component={GameBoardScreen} />
+          <Stack.Screen name="GameBoard" component={GameBoardScreen} 
+            
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </GameContext.Provider>
@@ -127,7 +129,11 @@ function HomeScreen({navigation}) {
           currGameId = payload.gameId;
           isClickable = false;
           navigation.navigate("GameBoard",
-            {currGameId, sessionId, name}
+            {currGameId, sessionId, name,
+              resetSocket: () => {
+                getSchema().then(() => connectWebSocket());
+              }
+            }
           );
           break;
         case "stateUpdateResponse":
@@ -242,8 +248,22 @@ function GameBoardScreen({navigation, route}) {
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
-  const {gameId, sessionId, name} = route.params;
+  const {gameId, sessionId, name, resetSocket} = route.params;
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Button
+          title="Home"
+          onPress={async () => {
+            await ws.close();
+            //await resetSocket();
+            await navigation.navigate('Home');
+          }}
+        />
+      )
+    });
+  }, [navigation, resetSocket]);
 
   useEffect(() => {
     if (game?.changedPos) {
