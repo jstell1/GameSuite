@@ -268,6 +268,7 @@ function GameBoardScreen({navigation, route}) {
             
             await resetSocket();
             await navigation.pop();
+            playerTurn = null;
             //setGame(null);
           }}
         />

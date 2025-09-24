@@ -166,6 +166,7 @@ document.getElementById("quit").addEventListener("click", async (e) => {
     //gameBoardDiv.innerHTML = '';
     gameBoardDiv.style.display = "none";
     lobby.style.display = "block";
+    playerTurn = null;
     setupSocket();
     //await showGameBoard(gameId);
 });
