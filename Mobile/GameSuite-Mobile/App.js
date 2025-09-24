@@ -38,10 +38,8 @@ export default function App() {
     <GameContext.Provider value={{ game, setGame }}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="GameBoard" component={GameBoardScreen} 
-            
-          />
+          <Stack.Screen name="Home" component={HomeScreen}/>
+          <Stack.Screen name="GameBoard" component={GameBoardScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </GameContext.Provider>
@@ -122,12 +120,13 @@ function HomeScreen({navigation}) {
             playerTurn = 2;
             name = joinName;
           }
-            
+          
           gameTurn = `Player ${payload.gameState.turn}'s turn`;
           turnNum = payload.gameState.turn;
           //id = payload.gameId;
           currGameId = payload.gameId;
           isClickable = false;
+          setGame(payload.gameState);
           navigation.navigate("GameBoard",
             {currGameId, sessionId, name,
               resetSocket: () => {
@@ -244,12 +243,18 @@ function Square({ row, col, piece, onPress, highlighted }) {
 
 function GameBoardScreen({navigation, route}) {
   const { game } = useContext(GameContext);
-  const [board, setBoard] = useState(() => initBoardData());
+  const [board,setBoard] = useState(() => initBoardData());
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
   const {gameId, sessionId, name, resetSocket} = route.params;
 
+  if(turnNum === playerTurn) {
+    isClickable = true;
+  }
+
+  //setBoard(() => initBoardData());
+  
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -257,8 +262,10 @@ function GameBoardScreen({navigation, route}) {
           title="Home"
           onPress={async () => {
             await ws.close();
-            //await resetSocket();
-            await navigation.navigate('Home');
+            
+            await resetSocket();
+            await navigation.pop();
+            //setGame(null);
           }}
         />
       )
