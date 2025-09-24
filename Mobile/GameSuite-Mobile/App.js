@@ -130,8 +130,9 @@ function HomeScreen({navigation}) {
           if(playerTurn === turnNum)
             isClickable = true;
           setGame(payload.gameState);
+          const gameBoard = payload.board;
           navigation.navigate("GameBoard",
-            {currGameId, sessionId, name,
+            {currGameId, sessionId, name, gameBoard,
               resetSocket: () => {
                 getSchema().then(() => connectWebSocket());
               }
@@ -246,11 +247,11 @@ function Square({ row, col, piece, onPress, highlighted }) {
 
 function GameBoardScreen({navigation, route}) {
   const { game } = useContext(GameContext);
-  const [board,setBoard] = useState(() => initBoardData());
+  const {gameId, sessionId, name, gameBoard, resetSocket} = route.params;
+  const [board,setBoard] = useState(() => initBoardData(gameBoard));
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
-  const {gameId, sessionId, name, resetSocket} = route.params;
 
   if(turnNum === playerTurn) {
     isClickable = true;
@@ -300,16 +301,20 @@ function GameBoardScreen({navigation, route}) {
     setBoard(newBoard);
   }
 
-  function initBoardData() {
+  function initBoardData(gameBoard) {
     const arr = [];
     for (let row = 0; row < 8; row++) {
       const rowArr = [];
       for (let col = 0; col < 8; col++) {
         let piece = null;
-        if (row < 3 && (row + col) % 2 === 1) 
+        let tmp = gameBoard[row][col]["piece"];
+        let name = tmp != null ? tmp["name"] : null;
+
+        if(name != null && name === "B")
           piece = { color: "black", type: "C" };
-        else if (row > 4 && (row + col) % 2 === 1) 
+        else if(name != null && name === "R")
           piece = { color: "red", type: "C" };
+
         rowArr.push(piece);
       }
       arr.push(rowArr);
