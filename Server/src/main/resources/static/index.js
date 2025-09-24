@@ -81,17 +81,13 @@ async function setupSocket() {
                 sessionId = payload.sessionId;
                 break;
             case "gameCreatedResponse":
-                //resetGameState();
                 gameId = payload.gameId;
                 let game = payload.gameState;
-               // topLabel.textContent = `Game ID: + ${payload.gameId}`;
                isClickable = false;
                playerTurn = 1;
-                showGameBoard(payload.gameId);
-                renderInitialBoard(payload.gameState);
+                showGameBoard(payload);
                 break;
             case "gameReadyResponse":
-                //resetGameState();
                 gameId = payload.gameId;
                 if(playerTurn == null)
                     playerTurn = 2;
@@ -99,8 +95,7 @@ async function setupSocket() {
                 isClickable = false;
                 if(gameTurn === playerTurn)
                     isClickable = true;
-                showGameBoard(gameId);
-                renderInitialBoard(payload.gameState);
+                showGameBoard(payload);
                 gameInfo.textContent = `Player ${gameTurn}'s turn`;
                 break;
             case "stateUpdateResponse":
@@ -116,7 +111,6 @@ async function setupSocket() {
                     gameInfo.textContent = `Player ${gameTurn}'s turn`;
                 } else {
                     console.log(payload.gameState);
-                    //showGameBoard(payload.gameId);
                     gameInfo.textContent = `Winner is: ${payload.gameState.winner.name}`
                     isClickable = false;
                 }
@@ -163,30 +157,25 @@ document.getElementById("quit").addEventListener("click", async (e) => {
     e.preventDefault();
     socket.close();
     resetGameState();
-    //gameBoardDiv.innerHTML = '';
     gameBoardDiv.style.display = "none";
     lobby.style.display = "block";
     playerTurn = null;
     setupSocket();
-    //await showGameBoard(gameId);
 });
 
 // --- SPA swap ---
-async function showGameBoard(gameId) {
-    //if(playerTurn !== gameTurn)
-    //    isClickable = false;
+async function showGameBoard(payload) {
     lobby.style.display = "none";
     gameBoardDiv.style.display = "block";
-    gameInfo.textContent = "Game ID: " + gameId;
+    gameInfo.textContent = "Game ID: " + payload.gameId;
 
-    // create board if not already created
-    //if (!boardContainer.hasChildNodes()) 
     boardContainer.innerHTML = '';
-        initBoard();
+    if(payload.board != null)
+        initBoard(payload.board);
 }
 
 // --- Board setup ---
-function initBoard() {
+function initBoard(gameBoard) {
     const board = document.createElement("div");
     board.classList.add("board");
     boardContainer.appendChild(board);
@@ -197,43 +186,19 @@ function initBoard() {
             square.classList.add("square");
             square.dataset.row = row;
             square.dataset.col = col;
-
+            
             if ((row + col) % 2 === 0) square.classList.add("light");
             else square.classList.add("dark");
 
-            if (row < 3 && square.classList.contains("dark")) addPiece(square, "black");
-            if (row > 4 && square.classList.contains("dark")) addPiece(square, "red");
+            console.log(gameBoard[row][col]);
+            let piece = gameBoard[row][col]["piece"];
+            let name = piece != null ? piece["name"] : null;
+
+            if(name != null && name === "B") addPiece(square, "black");
+            if(name != null && name === "R") addPiece(square, "red");
 
             square.addEventListener("mousedown", () => handleSquareClick(square, row, col));
             board.appendChild(square);
-        }
-    }
-}
-
-function renderInitialBoard(gameState) {
-    console.log("Rendering initial board from server:", gameState);
-    
-    if (gameState && gameState.board) {
-        for (let row = 0; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
-                const piece = gameState.board[row][col];
-                const square = document.querySelector(
-                    `.square[data-row="${row}"][data-col="${col}"]`
-                );
-                
-                if (square) {
-                    // Clear any existing pieces
-                    square.innerHTML = '';
-                    
-                    if (piece) {
-                        const color = piece.name === "B" ? "black" : "red";
-                        addPiece(square, color);
-                        if (piece.type === "K") {
-                            square.firstChild.classList.add("king");
-                        }
-                    }
-                }
-            }
         }
     }
 }
