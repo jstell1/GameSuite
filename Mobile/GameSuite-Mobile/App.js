@@ -126,6 +126,9 @@ function HomeScreen({navigation}) {
           //id = payload.gameId;
           currGameId = payload.gameId;
           isClickable = false;
+
+          if(playerTurn === turnNum)
+            isClickable = true;
           setGame(payload.gameState);
           navigation.navigate("GameBoard",
             {currGameId, sessionId, name,

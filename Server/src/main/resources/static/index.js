@@ -85,10 +85,10 @@ async function setupSocket() {
                 gameId = payload.gameId;
                 let game = payload.gameState;
                // topLabel.textContent = `Game ID: + ${payload.gameId}`;
+               isClickable = false;
+               playerTurn = 1;
                 showGameBoard(payload.gameId);
                 renderInitialBoard(payload.gameState);
-                playerTurn = 1;
-                isClickable = false;
                 break;
             case "gameReadyResponse":
                 //resetGameState();
@@ -96,7 +96,9 @@ async function setupSocket() {
                 if(playerTurn == null)
                     playerTurn = 2;
                 gameTurn = payload.gameState.turn;
-                isClickable = true;
+                isClickable = false;
+                if(gameTurn === playerTurn)
+                    isClickable = true;
                 showGameBoard(gameId);
                 renderInitialBoard(payload.gameState);
                 gameInfo.textContent = `Player ${gameTurn}'s turn`;
