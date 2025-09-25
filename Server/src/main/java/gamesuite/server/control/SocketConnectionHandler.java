@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Server;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,25 +45,43 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
 
     }
 
-    public boolean hasSocket(String sessionId) {
+    public SocketConnectionHandler() {
+         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.schemaRoot = mapper.readTree(schemaStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+
+    public void setGmRepo(ServerGameRepo gmRepo) {
+        this.gmRepo = gmRepo;
+    }
+
+	public boolean hasSocket(String sessionId) {
         return this.webSocketSessions.containsKey(sessionId);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        super.afterConnectionEstablished(session);
-        System.out.println(session.getId() + " Connected");
-        String msgType = "sessionConnectedResponse";
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode inner = mapper.createObjectNode();
-        inner.put("sessionId", session.getId());
-        ObjectNode payload = mapper.createObjectNode().set(msgType, inner);
-        String str = mapper.writeValueAsString(payload);
-        TextMessage txtMsg = new TextMessage(str);
-        webSocketSessions.put(session.getId(), session);
-        System.out.println("Session connected: " + session.getId());
-        System.out.println("Active Sessions: " + webSocketSessions.size());
-        session.sendMessage(txtMsg);
+
+        synchronized(session) {
+
+            super.afterConnectionEstablished(session);
+            System.out.println(session.getId() + " Connected");
+            String msgType = "sessionConnectedResponse";
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode inner = mapper.createObjectNode();
+            inner.put("sessionId", session.getId());
+            ObjectNode payload = mapper.createObjectNode().set(msgType, inner);
+            String str = mapper.writeValueAsString(payload);
+            TextMessage txtMsg = new TextMessage(str);
+            webSocketSessions.put(session.getId(), session);
+            System.out.println("Session connected: " + session.getId());
+            System.out.println("Active Sessions: " + webSocketSessions.size());
+            session.sendMessage(txtMsg);
+        }
     }
 
     @Override
@@ -76,7 +94,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             String gameId = null;
             //if(status.equals(CloseStatus.NORMAL)) {
             //if(this.gmRepo.userSessions.containsKey(session.getId())) {
-                gameId = this.gmRepo.userSessions.get(session.getId());
+                gameId = this.gmRepo.getUserSessionGame(session.getId());
 
                // GameManager gm = this.gmRepo.getGM(gameId);
 
@@ -84,12 +102,12 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
 
                 GameState game = this.gmRepo.removePlayer(session.getId());
                 webSocketSessions.remove(session.getId());
-                if(gameId != null && this.gmRepo.games.containsKey(gameId) && game.isGameOver()) {
+                if(gameId != null && this.gmRepo.containsGame(gameId) && game.isGameOver()) {
                     notifyGameOver(game, gameId);
                 }
                 
                 System.out.println("Active sessions: " + webSocketSessions.size());
-                System.out.println("NumGames: " + this.gmRepo.games.size());
+                System.out.println("NumGames: " + this.gmRepo.getNumGames());
             //}
         }
     }
@@ -121,7 +139,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 String str = mapper.writeValueAsString(outer);
                 TextMessage msg = new TextMessage(str);
         
-                for (String sessionId : this.gmRepo.gameUserMap.get(gameId).keySet()) {
+                for (String sessionId : this.gmRepo.getGameUsers(gameId)) {
                     
                     WebSocketSession s = this.webSocketSessions.get(sessionId);
                     
@@ -185,7 +203,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 case "createGameRequest":
                     System.out.println("recieved");
     
-                    if(this.gmRepo.userSessions.containsKey(session.getId())) {
+                    if(this.gmRepo.hasUserSession(session.getId())) {
                         mapper = new ObjectMapper();
                         String msgType = "gameNotCreatedError";
                         ObjectNode inner = mapper.createObjectNode();
@@ -234,7 +252,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 case "joinGameRequest" :
                     
                     
-                    if(this.gmRepo.userSessions.containsKey(session.getId())) {
+                    if(this.gmRepo.hasUserSession(session.getId())) {
                         mapper = new ObjectMapper();
                         String msgType = "gameNotJoinedError";
                         JsonNode tmp = mapper.createObjectNode();
@@ -320,7 +338,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     move = mapper.treeToValue(payload.get("move"), Move.class);//req.getMove();
                     gameId = payload.get("gameId").asText();
     
-                    if(!this.gmRepo.games.containsKey(gameId)) {
+                    if(!this.gmRepo.containsGame(gameId)) {
                         String msgType = "badRequestError";
                         JsonNode tmp = mapper.createObjectNode();
                         ObjectNode respPayload = tmp.deepCopy();

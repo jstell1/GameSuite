@@ -2,6 +2,7 @@ package gamesuite.server.control;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,9 @@ import gamesuite.core.model.Player;
 
 @Service
 public class ServerGameRepo {
-    public final Map<String, GameManager> games = new ConcurrentHashMap<>();
-    public final Map<String, String> userSessions = new ConcurrentHashMap<>();
-    public final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
+    private final Map<String, GameManager> games = new ConcurrentHashMap<>();
+    private final Map<String, String> userSessions = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
 
     public String createGame(Player p1, GameBoard board, String sessionId) {
         GameManager gm = new GameManager(board, p1);
@@ -34,6 +35,13 @@ public class ServerGameRepo {
         return gameId;
     }
 
+    public boolean hasUserSession(String id) {
+        return this.userSessions.containsKey(id);
+    }
+
+    public String getUserSessionGame(String id) {
+        return this.userSessions.get(id);
+    }
 
     public Map<String, Integer> getGameUserMap(String gameId) {
         return this.gameUserMap.get(gameId);
@@ -58,6 +66,12 @@ public class ServerGameRepo {
         System.out.println("numSessions: " + this.userSessions.size());
         System.out.println("PlayerNumMap: " + this.gameUserMap.get(gameId).size());
     }
+
+    public Set<String> getGameUsers(String gameId) {
+        return this.gameUserMap.get(gameId).keySet();
+    }
+
+    public int getNumGames() { return this.games.size(); }
 
     //public void setUserNum(String sessionId, int num) {
         //this.userPlayerNumMap.put(sessionId, num);
@@ -111,6 +125,8 @@ public class ServerGameRepo {
             return true;
         }
     }
+
+    
 
     public GameState removePlayer(String sessionId) {
         String gameId = null;
