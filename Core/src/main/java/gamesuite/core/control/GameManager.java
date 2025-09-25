@@ -43,6 +43,10 @@ public class GameManager {
         return this.stateManager.addPlayer(player);
     }
 
+    public synchronized boolean isGameReady() {
+        return getGameState().isBoardInit();
+    }
+
     public String getBoardString() { return this.stateManager.getBoardString(); }
 
     public Player getWinner() { 

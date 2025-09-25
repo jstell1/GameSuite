@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Server;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -33,6 +34,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private InputStream schemaStream;
     private JsonNode schemaRoot;
 
+    @Autowired
     public SocketConnectionHandler(ServerGameRepo gmRepo) {
         this.gmRepo = gmRepo;
         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
@@ -284,7 +286,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     
                     synchronized(gm) {
                     
-                        if(gm.getGameState().isBoardInit()) {
+                        if(gm.isGameReady()) {
                             mapper = new ObjectMapper();
                             String msgType = "gameNotJoinedError";
                             JsonNode tmp = mapper.createObjectNode();
