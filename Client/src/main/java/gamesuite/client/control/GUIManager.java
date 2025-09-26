@@ -46,7 +46,7 @@ public class GUIManager implements GameUI, UIListener {
     }
 
     public void setBoard(GameBoardPanel boardPanel) {
-        if(this.gameBoard == null)
+        //if(this.gameBoard == null)
             this.gameBoard = boardPanel;
     }
 
@@ -115,12 +115,12 @@ public class GUIManager implements GameUI, UIListener {
         SwingUtilities.invokeLater(() -> {
             old.disableGUI();
         });
+        old.closeWindow();
         GameBoard gameBoard = new GameBoard(board);
         setGameState(game);
         GameBoardPanel panel = new GameBoardPanel(gameBoard, 600, this);
         setBoard(panel);
-        this.gui = new GameGUI(game.getTurn(), panel);
-        old.closeWindow();
+        this.gui = new GameGUI(game.getTurn(), panel, this);
         if(!isPlayerTurn())
             this.gui.disableGUI();
         runGame();
@@ -128,7 +128,7 @@ public class GUIManager implements GameUI, UIListener {
 
     public void setGameId(String gameId) {
         if(gameId != null) {
-            this.playerTurn = 1;
+            //this.playerTurn = 1;
             SwingUtilities.invokeLater(() -> {
                 this.gui.disableGUI();
                 this.gui.setGameOverLabel("Give to player 2, GameId: " + gameId);
@@ -136,13 +136,24 @@ public class GUIManager implements GameUI, UIListener {
         }
     }
 
+    public void resetGUI() {
+            this.tmpX = -1; this.tmpY = -1;
+         GameGUI old = this.gui;
+        SwingUtilities.invokeLater(() -> {
+            old.disableGUI();
+        });
+        this.gui = new GameGUI(this);
+        old.closeWindow();
+        this.gui.activate();
+    }
+
     @Override
     public void createGame(String name) {
+        this.playerTurn = 1;
         new Thread(() -> {
             try {
                 this.gm.createGame(name);
             } catch (Exception e) {
-                // TODO: handle exception
             }
         }).start();
     }
@@ -157,6 +168,19 @@ public class GUIManager implements GameUI, UIListener {
                     this.gui.disableGUI();
                     this.gui.setGameOverLabel(id);
                 });
+            }
+        }).start();
+    }
+
+    @Override
+    public void quitGame(boolean hardQuit) {
+        this.gui.disableGUI();
+        new Thread(() -> {
+            try {
+                
+                this.gm.quitGame(hardQuit);
+            } catch (Exception e) {
+                // TODO: handle exception
             }
         }).start();
     }

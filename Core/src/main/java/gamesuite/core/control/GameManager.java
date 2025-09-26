@@ -32,15 +32,19 @@ public class GameManager {
         this.moveController = new MoveController(validator, stateManager);
     }
 
-    public void sendMove(Move move) {
+    public synchronized void sendMove(Move move) {
         if(this.moveController.checkMove(move)) {
             List<CoordPair> changed = this.moveController.makeMove(move);
             this.moveController.updateState(changed);
         }
     }
 
-    public boolean addPlayer(Player player) {
+    public synchronized boolean addPlayer(Player player) {
         return this.stateManager.addPlayer(player);
+    }
+
+    public synchronized boolean isGameReady() {
+        return getGameState().isBoardInit();
     }
 
     public String getBoardString() { return this.stateManager.getBoardString(); }
@@ -71,5 +75,12 @@ public class GameManager {
 
     public GameState getGameState() {
         return this.game;
+    }
+
+    public GameState quitGame(int playerNum) {
+        if(this.stateManager.getWinner() == null) {
+            this.stateManager.setWinner(playerNum % 2 + 1);
+        }
+        return getGameState();
     }
 }

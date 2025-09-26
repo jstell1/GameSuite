@@ -25,8 +25,26 @@ let validate;
 const Ajv = window.ajv7;
 let ajv = new Ajv();
 
-window.addEventListener("DOMContentLoaded", async () => {
-    protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+function resetGameState() {
+    gameId = null;
+    numClicks = 0;
+    isClickable = true;
+    startX = -1;
+    startY = -1;
+    endX = -1;
+    endY = -1;
+    playerTurn = null;
+    gameTurn = null;
+    sessionId = null;
+
+}
+
+window.addEventListener("DOMContentLoaded", setupSocket);
+
+
+async function setupSocket() {
+     protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     host = window.location.host; // whatever was used to load the page
 
     const resp = await fetch("/schema");
@@ -65,57 +83,47 @@ window.addEventListener("DOMContentLoaded", async () => {
             case "gameCreatedResponse":
                 gameId = payload.gameId;
                 let game = payload.gameState;
-                topLabel.textContent = "Game ID: " + payload.gameId;
-                showGameBoard(payload.gameId);
-                playerTurn = 1;
+               isClickable = false;
+               playerTurn = 1;
+                showGameBoard(payload);
                 break;
             case "gameReadyResponse":
                 gameId = payload.gameId;
                 if(playerTurn == null)
                     playerTurn = 2;
                 gameTurn = payload.gameState.turn;
-                showGameBoard(gameId);
+                isClickable = false;
+                if(gameTurn === playerTurn)
+                    isClickable = true;
+                showGameBoard(payload);
+                gameInfo.textContent = `Player ${gameTurn}'s turn`;
                 break;
             case "stateUpdateResponse":
                 gameTurn = payload.gameState.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
+                
+
+                if(!payload.gameState.gameOver) {
+
+                    if(playerTurn === gameTurn)
+                        isClickable = true;
+                    else
+                        isClickable = false;
+                    gameInfo.textContent = `Player ${gameTurn}'s turn`;
+                } else {
+                    console.log(payload.gameState);
+                    gameInfo.textContent = `Winner is: ${payload.gameState.winner.name}`
                     isClickable = false;
+                }
                 renderBoard(payload.gameState);
                 break;
             default: 
                 console.log(data);
                 break;
         }
-
-        /*
-        if (data.sessionId && sessionId === null) {
-            sessionId = data.sessionId;
-        }
-
-        if (data.resp1) {
-            console.log("Game ready:", data.resp1);
-            gameTurn = data.resp1.game.turn;
-            showGameBoard(gameId);
-        }
-
-        if (data.resp2) {
-            if (data.resp2.game) {
-                // Initial render or updates
-                gameTurn = data.resp2.game.turn;
-                if(playerTurn === gameTurn)
-                    isClickable = true;
-                else
-                    isClickable = false;
-                renderBoard(data.resp2.game);
-            }
-        }*/
     };
 
     socket.onclose = () => console.log("WebSocket disconnected");
-});
-
+}
 // --- Lobby handlers ---
 createForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -128,18 +136,6 @@ createForm.addEventListener("submit", async (e) => {
         }
     }
     socket.send(JSON.stringify(payload));
-    /*
-    const resp = await fetch("/games", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name , sessionId })
-    });
-    */
-    //const data = await resp.json();
-    //topLabel.textContent = "Game ID: " + data.gameId;
-    //gameId = data.gameId;
-    //showGameBoard(data.gameId);
-    //playerTurn = 1;
 });
 
 joinForm.addEventListener("submit", async (e) => {
@@ -155,39 +151,31 @@ joinForm.addEventListener("submit", async (e) => {
         }
     }
     socket.send(JSON.stringify(payload));
-    /*
-    const resp = await fetch("/games/players", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ player, gameId: joinGameId, sessionId })
-    });
+});
 
-    if (!resp.ok) {
-        alert("Failed to join game: " + resp.statusText);
-        return;
-    }
-
-    const data = await resp.json();
-    gameId = data.gameId;
-    playerTurn = 2;
-    */
-    //showGameBoard(gameId);
+document.getElementById("quit").addEventListener("click", async (e) => {
+    e.preventDefault();
+    socket.close();
+    resetGameState();
+    gameBoardDiv.style.display = "none";
+    lobby.style.display = "block";
+    playerTurn = null;
+    setupSocket();
 });
 
 // --- SPA swap ---
-function showGameBoard(gameId) {
-    if(playerTurn !== gameTurn)
-        isClickable = false;
+async function showGameBoard(payload) {
     lobby.style.display = "none";
     gameBoardDiv.style.display = "block";
-    gameInfo.textContent = "Game ID: " + gameId;
+    gameInfo.textContent = "Game ID: " + payload.gameId;
 
-    // create board if not already created
-    if (!boardContainer.hasChildNodes()) initBoard();
+    boardContainer.innerHTML = '';
+    if(payload.board != null)
+        initBoard(payload.board);
 }
 
 // --- Board setup ---
-function initBoard() {
+function initBoard(gameBoard) {
     const board = document.createElement("div");
     board.classList.add("board");
     boardContainer.appendChild(board);
@@ -198,12 +186,16 @@ function initBoard() {
             square.classList.add("square");
             square.dataset.row = row;
             square.dataset.col = col;
-
+            
             if ((row + col) % 2 === 0) square.classList.add("light");
             else square.classList.add("dark");
 
-            if (row < 3 && square.classList.contains("dark")) addPiece(square, "black");
-            if (row > 4 && square.classList.contains("dark")) addPiece(square, "red");
+            console.log(gameBoard[row][col]);
+            let piece = gameBoard[row][col]["piece"];
+            let name = piece != null ? piece["name"] : null;
+
+            if(name != null && name === "B") addPiece(square, "black");
+            if(name != null && name === "R") addPiece(square, "red");
 
             square.addEventListener("mousedown", () => handleSquareClick(square, row, col));
             board.appendChild(square);

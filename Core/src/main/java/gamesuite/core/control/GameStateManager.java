@@ -162,4 +162,11 @@ public class GameStateManager {
     public boolean addPlayer(Player player) {
         return this.game.addPlayer(player);
     }
+
+    public void setWinner(int playerNum) {
+        if(playerNum > 0 && playerNum <= 2) {
+            this.game.setWinnerNum(playerNum);
+            this.game.setGameOver(true);
+        }
+    }
 }

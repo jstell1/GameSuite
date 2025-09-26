@@ -7,7 +7,8 @@ import {
   TextInput, ScrollView, 
   View, Button,
   Pressable, Dimensions,
-  Platform, SafeAreaView } from 'react-native';
+  Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -37,7 +38,7 @@ export default function App() {
     <GameContext.Provider value={{ game, setGame }}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Home" component={HomeScreen}/>
           <Stack.Screen name="GameBoard" component={GameBoardScreen} />
         </Stack.Navigator>
       </NavigationContainer>
@@ -57,19 +58,20 @@ function HomeScreen({navigation}) {
   const ajv = new Ajv();
   let schema;
   let validate;
-  useEffect(() => {getSchema()}, []);
-  useEffect(() => {connectWebSocket()}, []);
+  useEffect(() => {
+    getSchema().then(() => connectWebSocket());
+  }, []);
 
   async function getSchema() {
     
-    const resp = await fetch("/schema");
+    const resp = await fetch(`${API_HOST}/schema`);
     //console.log(resp);
     schema = await resp.json();
     console.log(schema);
     validate = ajv.compile(schema);
   }
 
-  function connectWebSocket() {
+  async function connectWebSocket() {
     ws = new WebSocket(`${WS_HOST}`);
 
     ws.onopen = () => {
@@ -81,9 +83,9 @@ function HomeScreen({navigation}) {
       console.log(e.data);
       const data = JSON.parse(e.data);
         console.log("WS Message:", data);
-      //const valid = validate(data);
+      const valid = validate(data);
 
-      /*if (!valid) {
+      if (!valid) {
         let msg = {
           "badErrorRequest": {
               "message": "don't recognize message type"
@@ -92,11 +94,11 @@ function HomeScreen({navigation}) {
         ws.send(JSON.stringify(msg));
         console.log(validate.errors);
         return;
-      };*/
+      };
 
       let type = Object.keys(data)[0];
       let payload = data[type];
-      console.log(payload);
+      //console.log(payload);
 
       switch(type) {
         case "sessionConnectedResponse":
@@ -104,64 +106,58 @@ function HomeScreen({navigation}) {
             break;
         case "gameCreatedResponse":
             setGameId(payload.gameId);
+            currGameId = payload.gameId;
             name = createName;
             playerTurn = 1;
+            turnNum = payload.gameState.turn;
+            isClickable = false;
             break;
         case "gameReadyResponse":
             
           setGameId(data.gameId);
+          currGameId = payload.gameId;
           if(playerTurn == null) {
             playerTurn = 2;
             name = joinName;
           }
-            
-          gameTurn = payload.gameState.turn;
-          id = payload.gameId;
+          
+          gameTurn = `Player ${payload.gameState.turn}'s turn`;
+          turnNum = payload.gameState.turn;
+          //id = payload.gameId;
           currGameId = payload.gameId;
+          isClickable = false;
+
+          if(playerTurn === turnNum)
+            isClickable = true;
+          setGame(payload.gameState);
+          const gameBoard = payload.board;
           navigation.navigate("GameBoard",
-            {id, sessionId, name}
+            {currGameId, sessionId, name, gameBoard,
+              resetSocket: () => {
+                getSchema().then(() => connectWebSocket());
+              }
+            }
           );
           break;
         case "stateUpdateResponse":
-          gameTurn = payload.gameState.turn;
-          if(playerTurn === gameTurn)
-              isClickable = true;
-          else
-              isClickable = false;
+          gameTurn = `Player ${payload.gameState.turn}'s turn`;
+          turnNum = payload.gameState.turn;
+          if(payload.gameState.winner == null) {
+
+            if(playerTurn === turnNum)
+                isClickable = true;
+            else
+                isClickable = false;
+          } else {
+            isClickable = false;
+            gameTurn = `${payload.gameState.winner.name} is the winner`;
+          }
           setGame(payload.gameState);
           break;
         default: 
-            console.log(data);
+            //console.log(data);
             break;
       }      
-
-      // Always check for sessionId
-      /*
-      if (data.sessionId && sessionId === null) {
-          sessionId = data.sessionId;
-      }
-
-      if (data.resp1) {
-          console.log("Game ready:", data.resp1);
-          gameTurn = data.resp1.game.turn;
-          id = data.resp1.gameId;
-          currGameId = data.resp1.gameId;
-          navigation.navigate("GameBoard",
-            {id, sessionId, name}
-          );
-      }
-
-      if (data.resp2) {
-          if (data.resp2.game) {
-              gameTurn = data.resp2.game.turn;
-              if(playerTurn === gameTurn)
-                  isClickable = true;
-              else
-                  isClickable = false;
-              setGame(data.resp2.game);
-          }
-      }
-          */
     };
     ws.onerror = e => { console.log(e.message); };
 
@@ -171,38 +167,13 @@ function HomeScreen({navigation}) {
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
-    //Alert.alert("I'm here"); 
 
-    /*
-    const resp = await fetch(`${API_HOST}/games`, {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json", 
-        },
-        body: JSON.stringify({
-          name: createName,
-          sessionId: sessionId
-        })
-      });
-    */
     let msg = {
       "createGameRequest": {
           "name": createName
       }
     }
     ws.send(JSON.stringify(msg));
-    //Alert.alert("I'm here too!");
-    /*
-    if(!resp.ok) {
-      Alert.alert("Did not create game");
-      return;
-    }
-    const data = await resp.json();
-    setGameId(data.gameId);
-    name = createName;
-    playerTurn = 1;
-    */
-    //Alert.alert(gameId);
     
   }
 
@@ -220,24 +191,6 @@ function HomeScreen({navigation}) {
         }
     }
     ws.send(JSON.stringify(payload));
-    /*
-    const resp = await fetch(`${API_HOST}/games/players`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        player: joinName, 
-        gameId: joinGameId, 
-        sessionId: sessionId })
-    });
-
-    if(!resp.ok) {
-      Alert.alert("Did not join!");
-    }
-
-    const data = await resp.json();
-    setGameId(data.gameId);
-    playerTurn = 2;
-    */
   }
 
   return (
@@ -294,11 +247,35 @@ function Square({ row, col, piece, onPress, highlighted }) {
 
 function GameBoardScreen({navigation, route}) {
   const { game } = useContext(GameContext);
-  const [board, setBoard] = useState(() => initBoardData());
+  const {gameId, sessionId, name, gameBoard, resetSocket} = route.params;
+  const [board,setBoard] = useState(() => initBoardData(gameBoard));
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
-  const {gameId, sessionId, name} = route.params;
+
+  if(turnNum === playerTurn) {
+    isClickable = true;
+  }
+
+  //setBoard(() => initBoardData());
+  
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Button
+          title="Home"
+          onPress={async () => {
+            await ws.close();
+            
+            await resetSocket();
+            await navigation.pop();
+            playerTurn = null;
+            //setGame(null);
+          }}
+        />
+      )
+    });
+  }, [navigation, resetSocket]);
 
   useEffect(() => {
     if (game?.changedPos) {
@@ -324,16 +301,20 @@ function GameBoardScreen({navigation, route}) {
     setBoard(newBoard);
   }
 
-  function initBoardData() {
+  function initBoardData(gameBoard) {
     const arr = [];
     for (let row = 0; row < 8; row++) {
       const rowArr = [];
       for (let col = 0; col < 8; col++) {
         let piece = null;
-        if (row < 3 && (row + col) % 2 === 1) 
+        let tmp = gameBoard[row][col]["piece"];
+        let name = tmp != null ? tmp["name"] : null;
+
+        if(name != null && name === "B")
           piece = { color: "black", type: "C" };
-        else if (row > 4 && (row + col) % 2 === 1) 
+        else if(name != null && name === "R")
           piece = { color: "red", type: "C" };
+
         rowArr.push(piece);
       }
       arr.push(rowArr);
@@ -372,6 +353,7 @@ function GameBoardScreen({navigation, route}) {
 
   return (
     <View style={styles.container}>
+      <Text>{gameTurn}</Text>
       <View style={styles.board}>
         {board.map((rowArr, row) =>
           rowArr.map((piece, col) => {

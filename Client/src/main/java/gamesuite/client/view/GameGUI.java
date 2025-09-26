@@ -13,6 +13,9 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class GameGUI {
     private JFrame window;
@@ -21,22 +24,72 @@ public class GameGUI {
     private JTextPane turnLabel;
     private JPanel centerPanel;
     private UIListener listener;
+    private JButton quitButton;
 
-    public GameGUI(int startTurn, GameBoardPanel gameBoard) {
+    public GameGUI(int startTurn, GameBoardPanel gameBoard, UIListener listener) {
+        this.listener = listener;
         this.window = new JFrame("GameSuite");
-        this.window.setSize(800,800);
-        this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.window.setLayout(new BorderLayout());
 
-        this.turnLabel = new JTextPane();//("Player " + startTurn + "'s turn");
+        this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                listener.quitGame(true);
+                window.dispose();
+                System.exit(0);
+            }
+        });
+
+        this.window.setSize(800, 800);
+        GridBagLayout gridbag = new GridBagLayout();
+        this.window.setLayout(gridbag);
+
+        this.turnLabel = new JTextPane();
         this.turnLabel.setText("Player " + startTurn + "'s turn");
         this.turnLabel.setEditable(false);
-        this.window.add(this.turnLabel, BorderLayout.NORTH); 
+        
+        
+        GridBagConstraints labelConstraints = new GridBagConstraints();
+        labelConstraints.gridx = 0;
+        labelConstraints.gridy = 0;
+        labelConstraints.gridwidth = 2; 
+        labelConstraints.fill = GridBagConstraints.HORIZONTAL;
+        labelConstraints.weightx = 1.0;
+        labelConstraints.weighty = 0.0; 
+        labelConstraints.insets = new Insets(5, 5, 5, 5); 
+        this.window.add(this.turnLabel, labelConstraints);
+
         this.gameBoard = gameBoard;
         this.centerPanel = new JPanel();
         this.centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         this.centerPanel.add(gameBoard);
-        this.window.add(this.centerPanel, BorderLayout.CENTER);
+        
+        // Constraints for the game board
+        GridBagConstraints boardConstraints = new GridBagConstraints();
+        boardConstraints.gridx = 0;
+        boardConstraints.gridy = 1;
+        boardConstraints.weightx = 1.0; 
+        boardConstraints.weighty = 1.0; 
+        boardConstraints.fill = GridBagConstraints.BOTH; 
+        boardConstraints.insets = new Insets(0, 5, 5, 5); 
+        this.window.add(this.centerPanel, boardConstraints);
+
+        this.quitButton = new JButton("Quit");
+
+        this.quitButton.addActionListener(a -> {
+            listener.quitGame(false);
+        });
+        
+        // Constraints for the quit button on the right
+        GridBagConstraints buttonConstraints = new GridBagConstraints();
+        buttonConstraints.gridx = 1; 
+        buttonConstraints.gridy = 1; 
+        buttonConstraints.weightx = 0.0;
+        buttonConstraints.weighty = 0.0; 
+        buttonConstraints.anchor = GridBagConstraints.NORTH; 
+        buttonConstraints.insets = new Insets(5, 0, 5, 5); 
+        this.window.add(this.quitButton, buttonConstraints);
+
         this.window.setMinimumSize(new Dimension(800, 800));
         this.window.setResizable(true);
     }
@@ -45,7 +98,15 @@ public class GameGUI {
         this.listener = listener;
         this.window = new JFrame("GameSuite");
         this.window.setSize(800, 800);
-        this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                listener.quitGame(true);
+                window.dispose();
+                System.exit(0);
+            }
+        });
         this.window.setLayout(new BorderLayout());
         //this.turnLabel = new JLabel("Create new game or join game");
         this.turnLabel = new JTextPane();
@@ -78,7 +139,7 @@ public class GameGUI {
                 this.listener.joinGame(joinName.getText(), joinGameId.getText());
             }
         });
-        // --- Row 0: Create Game ---
+        // Row 0: Create Game
         gridC.gridx = 0;
         gridC.gridy = 0;
         this.centerPanel.add(createGameBtn, gridC);
@@ -89,7 +150,7 @@ public class GameGUI {
         gridC.gridx = 2;
         this.centerPanel.add(createName, gridC);
 
-        // --- Row 1: Join Game (with Name field) ---
+        // Row 1: Join Game (with Name field)
         gridC.gridx = 0;
         gridC.gridy = 1;
         gridC.gridheight = 2; // spans 2 rows vertically
@@ -106,7 +167,7 @@ public class GameGUI {
         gridC.gridx = 2;
         this.centerPanel.add(joinName, gridC);
 
-        // --- Row 2: Game ID field ---
+        // Row 2: Game ID field
         gridC.gridx = 1;
         gridC.gridy = 2;
         this.centerPanel.add(new JLabel("GameID:"), gridC);

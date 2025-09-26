@@ -1,5 +1,6 @@
 package gamesuite.client.control;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -32,17 +33,21 @@ public class ClientManager {
     private GUIManager guiGM;
     private InputStream schemaStream;
     private JsonNode schemaRoot;
+    private String ip;
+    private int port;
     
     public ClientManager(String ip, int port) {
-        this.baseUrl = "http://" + ip + ":" + port;
-        this.wsUrl = "ws://" + ip + ":" + port + "/ingame";
+        this.ip = ip;
+        this.port = port;
+        this.baseUrl = "https://" + ip + ":" + port;
+        this.wsUrl = "wss://" + ip + ":" + port + "/ingame";
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.schemaRoot = mapper.readTree(schemaStream);
         } catch (Exception e) {
-            // TODO: handle exception
+            
         }
     }
 
@@ -52,7 +57,19 @@ public class ClientManager {
     }
 
     public void connect() throws Exception {
+        try {
+            connect(this.wsUrl);
+        } catch (Exception e) {
+            System.out.println("no ssl");
+            try {
+                this.wsUrl = "ws://" + this.ip + ":" + this.port + "/ingame";
+                connect(this.wsUrl);
+            } catch (Exception e2) {}
+        }
+        
+    }
 
+    private void connect(String wsUrl) throws Exception {
         this.client.execute(new AbstractWebSocketHandler() {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
@@ -63,67 +80,72 @@ public class ClientManager {
 
             @Override
             public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-                ObjectMapper mapper = new ObjectMapper();
-                String netWorkMsg = message.getPayload().toString();
+                synchronized(ClientManager.this) {
 
-                if(!JsonSchemaValidator.isValid(netWorkMsg)) {
-                    ObjectNode inner = mapper.createObjectNode();
-                    ObjectNode err = mapper.createObjectNode();
-                    inner.put("message", "don't recognize message type");
-                    err.set("badRequestError", inner);
-                    String str = mapper.writeValueAsString(err);
-                    session.sendMessage(new TextMessage(str));
-                    return;
-                }
-
-                ObjectNode outer = null;
-                ObjectNode payload =null; 
-
-                try {
-                    outer = (ObjectNode) mapper.readTree(netWorkMsg);
-                } catch (Exception e) {
-                    ObjectNode inner = mapper.createObjectNode();
-                    ObjectNode err = mapper.createObjectNode();
-                    inner.put("message", "don't recognize message type");
-                    err.set("badRequestError", inner);
-                    String str = mapper.writeValueAsString(err);
-                    session.sendMessage(new TextMessage(str));
-                    return;
-                }
-                
-                String type = outer.fieldNames().next();
-                payload = outer.get(type).deepCopy();
-
-                switch(type) {
-                    case "sessionConnectedResponse":
-                        ClientManager.this.sessionId = payload.get("sessionId").asText();
-                        System.out.println("Parsed sessionId: " + sessionId);
-                        break;
-                    case "gameCreatedResponse":
-                        ClientManager.this.gameId = payload.get("gameId").asText();
-                        ClientManager.this.guiGM.setGameId(ClientManager.this.gameId);
-                        JsonNode gameJson = payload.get("gameState");
-                        GameState game = mapper.treeToValue(gameJson, GameState.class);
-                        ClientManager.this.guiGM.setGameState(game);
-                        break;
-                    case "gameReadyResponse":
-                        JsonNode boardJson = mapper.valueToTree(payload.get("board"));
-                        gameJson = mapper.valueToTree(payload.get("gameState"));
-                        CoordPair[][] board = mapper.treeToValue(boardJson, CoordPair[][].class);
-                        game = mapper.treeToValue(gameJson, GameState.class);
-                        if(ClientManager.this.gameId == null)
+                    ObjectMapper mapper = new ObjectMapper();
+                    String netWorkMsg = message.getPayload().toString();
+    
+                    if(!JsonSchemaValidator.isValid(netWorkMsg)) {
+                        ObjectNode inner = mapper.createObjectNode();
+                        ObjectNode err = mapper.createObjectNode();
+                        inner.put("message", "don't recognize message type");
+                        err.set("badRequestError", inner);
+                        String str = mapper.writeValueAsString(err);
+                        session.sendMessage(new TextMessage(str));
+                        return;
+                    }
+    
+                    ObjectNode outer = null;
+                    ObjectNode payload =null; 
+    
+                    try {
+                        outer = (ObjectNode) mapper.readTree(netWorkMsg);
+                    } catch (Exception e) {
+                        ObjectNode inner = mapper.createObjectNode();
+                        ObjectNode err = mapper.createObjectNode();
+                        inner.put("message", "don't recognize message type");
+                        err.set("badRequestError", inner);
+                        String str = mapper.writeValueAsString(err);
+                        session.sendMessage(new TextMessage(str));
+                        return;
+                    }
+                    
+                    String type = outer.fieldNames().next();
+                    payload = outer.get(type).deepCopy();
+    
+                    switch(type) {
+                        case "sessionConnectedResponse":
+                            ClientManager.this.sessionId = payload.get("sessionId").asText();
+                            System.out.println("Parsed sessionId: " + sessionId);
+                            break;
+                        case "gameCreatedResponse":
                             ClientManager.this.gameId = payload.get("gameId").asText();
-                        ClientManager.this.guiGM.setGameState(game);
-                        ClientManager.this.guiGM.initGame(board, game);
-                        break;
-                    case "stateUpdateResponse":
-                        gameJson = mapper.valueToTree(payload.get("gameState"));
-                        game = mapper.treeToValue(gameJson, GameState.class);
+                            ClientManager.this.guiGM.setGameId(ClientManager.this.gameId);
+                            JsonNode gameJson = payload.get("gameState");
+                            GameState game = mapper.treeToValue(gameJson, GameState.class);
+                            ClientManager.this.guiGM.setGameState(game);
+                            break;
+                        case "gameReadyResponse":
+                            JsonNode boardJson = mapper.valueToTree(payload.get("board"));
+                            gameJson = mapper.valueToTree(payload.get("gameState"));
+                            CoordPair[][] board = mapper.treeToValue(boardJson, CoordPair[][].class);
+                            game = mapper.treeToValue(gameJson, GameState.class);
+                            if(ClientManager.this.gameId == null) {
+                                ClientManager.this.gameId = payload.get("gameId").asText();
+                                ClientManager.this.guiGM.setGameId(payload.get("gameId").asText());
+                            }
+                            ClientManager.this.guiGM.setGameState(game);
+                            ClientManager.this.guiGM.initGame(board, game);
+                            break;
+                        case "stateUpdateResponse":
+                            gameJson = mapper.valueToTree(payload.get("gameState"));
+                            game = mapper.treeToValue(gameJson, GameState.class);
 
-                        ClientManager.this.guiGM.setGameState(game);
-                        ClientManager.this.guiGM.update();
-                        break;
-                    default: break;
+                            ClientManager.this.guiGM.setGameState(game);
+                            ClientManager.this.guiGM.update();
+                            break;
+                        default: break;
+                    }
                 }
             }
 
@@ -138,7 +160,7 @@ public class ClientManager {
         return sessionIdFuture.get();
     }
 
-    public void sendMove(Move move) {
+    public synchronized void sendMove(Move move) {
         if (session != null && session.isOpen()) {
 
             ObjectMapper mapper = new ObjectMapper();
@@ -162,7 +184,7 @@ public class ClientManager {
         }
     }
 
-    public String createGame(String playerName) throws Exception {
+    public synchronized String createGame(String playerName) throws Exception {
         
         if(session != null && session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +201,7 @@ public class ClientManager {
        return null;
     }
 
-    public String joinGame(String name, String gameId) {
+    public synchronized String joinGame(String name, String gameId) {
         if(session != null && session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "joinGameRequest";
@@ -199,5 +221,30 @@ public class ClientManager {
             return gameId;
         }
        return null;
+    }
+
+    public synchronized void quitGame(boolean hardQuit) {
+        
+        try {
+            this.session.close();
+            System.out.println("Sent");
+            this.session = null;
+            this.gameId = null;
+            this.sessionId = null;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if(!hardQuit && this.session == null) {
+            try {
+                connect();
+                this.guiGM.resetGUI();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
     }
 }
