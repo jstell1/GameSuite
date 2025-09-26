@@ -130,15 +130,17 @@ public class ClientManager {
                             gameJson = mapper.valueToTree(payload.get("gameState"));
                             CoordPair[][] board = mapper.treeToValue(boardJson, CoordPair[][].class);
                             game = mapper.treeToValue(gameJson, GameState.class);
-                            if(ClientManager.this.gameId == null)
+                            if(ClientManager.this.gameId == null) {
                                 ClientManager.this.gameId = payload.get("gameId").asText();
+                                ClientManager.this.guiGM.setGameId(payload.get("gameId").asText());
+                            }
                             ClientManager.this.guiGM.setGameState(game);
                             ClientManager.this.guiGM.initGame(board, game);
                             break;
                         case "stateUpdateResponse":
                             gameJson = mapper.valueToTree(payload.get("gameState"));
                             game = mapper.treeToValue(gameJson, GameState.class);
-    
+
                             ClientManager.this.guiGM.setGameState(game);
                             ClientManager.this.guiGM.update();
                             break;
@@ -227,6 +229,8 @@ public class ClientManager {
             this.session.close();
             System.out.println("Sent");
             this.session = null;
+            this.gameId = null;
+            this.sessionId = null;
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
