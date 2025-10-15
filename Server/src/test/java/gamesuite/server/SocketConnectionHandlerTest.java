@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.Player;
 import gamesuite.server.control.ServerGameRepo;
-import gamesuite.server.control.SocketConnectionHandler;
+import gamesuite.server.control.WebSocketMessageHandler;
 import gamesuite.server.control.WebSocketConfig;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ class SocketConnectionHandlerTest {
 	private ServerGameRepo mockRepo;
 
 	//@InjectMocks
-	private SocketConnectionHandler handler;
+	private WebSocketMessageHandler handler;
 
 	private String game;
 	private Set<String> sessions;
@@ -66,7 +66,7 @@ class SocketConnectionHandlerTest {
 		sessions = Collections.synchronizedSet(new HashSet<>());
 		responses = Collections.synchronizedSet(new HashSet<>());
 		userMap = new ConcurrentHashMap<>();
-		handler = new SocketConnectionHandler(mockRepo);
+		handler = new WebSocketMessageHandler(mockRepo);
 
 		lenient().when(mockRepo.hasUserSession(any())).thenAnswer(invocation -> {
 			

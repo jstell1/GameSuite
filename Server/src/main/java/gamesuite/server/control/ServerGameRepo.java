@@ -6,19 +6,19 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
-import gamesuite.core.control.GameManager;
+import gamesuite.core.control.GameManagerImpl;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Player;
 
 @Service
 public class ServerGameRepo {
-    private final Map<String, GameManager> games = new ConcurrentHashMap<>();
+    private final Map<String, GameManagerImpl> games = new ConcurrentHashMap<>();
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
     private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
 
     public String createGame(Player p1, GameBoard board, String sessionId) {
-        GameManager gm = new GameManager(board, p1);
+        GameManagerImpl gm = new GameManagerImpl(board, p1);
 
         
         String gameId = UUID.randomUUID().toString();
@@ -48,7 +48,7 @@ public class ServerGameRepo {
     }
 
     public void addWebSocketToGame(String gameId, String sessionId) {
-        GameManager gm = games.get(gameId);
+        GameManagerImpl gm = games.get(gameId);
 
         synchronized(gm) {
             if(!this.gameUserMap.containsKey(gameId)) {
@@ -78,7 +78,7 @@ public class ServerGameRepo {
     //}
 
     public GameBoard joinGame(Player player, String gameId) {
-        GameManager gm = this.games.get(gameId);
+        GameManagerImpl gm = this.games.get(gameId);
         synchronized(gm) {
             if(gm.getGameState().getPlayer(2) == null) {
 
@@ -100,18 +100,18 @@ public class ServerGameRepo {
         return this.games.containsKey(gameId);
     }
 
-    public GameManager getGM(String id) { 
+    public GameManagerImpl getGM(String id) { 
         return this.games.get(id);
     }
 
-    public void setGame(String gameId, GameManager gm) {
+    public void setGame(String gameId, GameManagerImpl gm) {
         this.games.put(gameId, gm);
     }
 
     public boolean rightPlayer(String gameId, String sessionId) {
         if(!containsGame(gameId) || !this.gameUserMap.get(gameId).containsKey(sessionId))
             return false;
-        GameManager gm = this.games.get(gameId);
+        GameManagerImpl gm = this.games.get(gameId);
         synchronized(gm) {
 
             Map<String, Integer> sessionList = this.gameUserMap.get(gameId);
@@ -130,7 +130,7 @@ public class ServerGameRepo {
 
     public GameState removePlayer(String sessionId) {
         String gameId = null;
-        GameManager gm = null;
+        GameManagerImpl gm = null;
         GameState game = null;
 
         try {

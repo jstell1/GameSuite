@@ -1,7 +1,7 @@
 package gamesuite.client;
 
 import java.util.Scanner;
-import gamesuite.core.control.GameManager;
+import gamesuite.core.control.GameManagerImpl;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Player;
@@ -63,7 +63,7 @@ public class App {
             Player p1 = new Player(player1, 0);
             Player p2 = new Player(player2, 0);
             GameBoard board = new GameBoard(8);
-            GameManager checkers = new GameManager(board, p1, p2);
+            GameManagerImpl checkers = new GameManagerImpl(board, p1, p2);
             checkers.initBoard();
             GameState game = checkers.getGameState();
     

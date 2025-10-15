@@ -2,7 +2,7 @@ package gamesuite.client.view;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import gamesuite.core.control.GameManager;
+import gamesuite.core.control.GameManagerImpl;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
@@ -18,9 +18,9 @@ public class TextGameCLI implements GameUI {
     private GameBoard board;
     private int sideLength;
     private GameState game;
-    private GameManager gm;
+    private GameManagerImpl gm;
 
-    public TextGameCLI(GameState game, GameBoard board, Scanner in, GameManager gm) {
+    public TextGameCLI(GameState game, GameBoard board, Scanner in, GameManagerImpl gm) {
         this.gm = gm;
         this.game = game;
         this.board = board;
