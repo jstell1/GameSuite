@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.Player;
-import gamesuite.server.control.ServerGameRepo;
 import gamesuite.server.control.WebSocketMessageHandler;
+import gamesuite.server.model.ServerGameRepo;
 import gamesuite.server.control.WebSocketConfig;
 
 import org.junit.jupiter.api.BeforeEach;

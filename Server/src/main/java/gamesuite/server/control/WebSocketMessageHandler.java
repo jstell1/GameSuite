@@ -24,6 +24,7 @@ import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
 import gamesuite.core.network.JsonSchemaValidator;
+import gamesuite.server.model.ServerGameRepo;
 
 @Component
 public class WebSocketMessageHandler extends TextWebSocketHandler {
