@@ -196,19 +196,37 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 case "createGameRequest":
                     try {
                         createGame(session, payload);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                         mapper = new ObjectMapper();
+                        String msgType = "serverError";
+                        ObjectNode respPayload = mapper.createObjectNode();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        sendMessage(msgType, respPayload, session);
+                    }
                     
                     break;
                 case "joinGameRequest":
                     try {
                         joinGame(session, payload);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        mapper = new ObjectMapper();
+                        String msgType = "serverError";
+                        ObjectNode respPayload = mapper.createObjectNode();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        sendMessage(msgType, respPayload, session);
+                    }
                    
                     break;
                 case "moveRequest":
                     try {
                         makeMove(session, payload);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                         mapper = new ObjectMapper();
+                        String msgType = "serverError";
+                        ObjectNode respPayload = mapper.createObjectNode();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        sendMessage(msgType, respPayload, session);
+                    }
                     break;
                 default:
                     mapper = new ObjectMapper();

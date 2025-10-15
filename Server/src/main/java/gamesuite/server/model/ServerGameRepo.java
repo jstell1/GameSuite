@@ -1,4 +1,4 @@
-package gamesuite.server.control;
+package gamesuite.server.model;
 
 import java.util.HashMap;
 import java.util.Map;
