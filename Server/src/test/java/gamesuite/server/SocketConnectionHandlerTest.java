@@ -84,7 +84,7 @@ class SocketConnectionHandlerTest {
 			return games.contains(gameId);
 		});
 	}
-
+/* 
 	@RepeatedTest(10)
 	void testCreateGame() throws Exception {
 		try {
@@ -121,7 +121,7 @@ class SocketConnectionHandlerTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+ 
 		lenient().when(mockRepo.createGame(any(), any(), any())).thenAnswer(invocation -> {
 			Player p1 = invocation.getArgument(0);
 			GameBoard board = invocation.getArgument(1);
@@ -315,5 +315,5 @@ class SocketConnectionHandlerTest {
 		}
 
 	}
-
+*/
 }

@@ -1,23 +1,24 @@
-package gamesuite.core.control;
+package checkers.control;
 
 import java.util.HashSet;
 import java.util.Set;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GamePiece;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
+
+import checkers.model.CheckersCoordPair;
+import checkers.model.CheckersGameBoard;
+import checkers.model.CheckersGamePiece;
+import checkers.model.CheckersGameState;
+import checkers.model.CheckersMove;
 
 public class RulesValidator {
-    private HashSet<CoordPair> validMoves;
-    private HashSet<CoordPair> validJumps;
-    private HashSet<CoordPair> validKingMoves;
-    private HashSet<CoordPair> validKingJumps;
-    private GameState game;
-    private GameBoard board;
+    private HashSet<CheckersCoordPair> validMoves;
+    private HashSet<CheckersCoordPair> validJumps;
+    private HashSet<CheckersCoordPair> validKingMoves;
+    private HashSet<CheckersCoordPair> validKingJumps;
+    private CheckersGameState game;
+    private CheckersGameBoard board;
     private final String[] pieceNames = {"B", "R"};
 
-    public RulesValidator(GameState game, GameBoard board) {
+    public RulesValidator(CheckersGameState game, CheckersGameBoard board) {
         this.game = game;
         this.board = board;
         this.validMoves = new HashSet<>();
@@ -25,30 +26,30 @@ public class RulesValidator {
         this.validKingMoves = new HashSet<>();
         this.validKingJumps = new HashSet<>();
 
-        CoordPair pos = new CoordPair(-1, -1);
+        CheckersCoordPair pos = new CheckersCoordPair(-1, -1);
         this.validMoves.add(pos);
         this.validKingMoves.add(pos);
-        pos = new CoordPair(-1, 1);
+        pos = new CheckersCoordPair(-1, 1);
         this.validMoves.add(pos);
         this.validKingMoves.add(pos);
-        pos = new CoordPair(1, -1);
+        pos = new CheckersCoordPair(1, -1);
         this.validKingMoves.add(pos);
-        pos = new CoordPair(1, 1);
+        pos = new CheckersCoordPair(1, 1);
         this.validKingMoves.add(pos);
 
-        pos = new CoordPair(-2, -2);
+        pos = new CheckersCoordPair(-2, -2);
         this.validJumps.add(pos);
         this.validKingJumps.add(pos);
-        pos = new CoordPair(-2, 2);
+        pos = new CheckersCoordPair(-2, 2);
         this.validJumps.add(pos);
         this.validKingJumps.add(pos);
-        pos = new CoordPair(2, -2);
+        pos = new CheckersCoordPair(2, -2);
         this.validKingJumps.add(pos);
-        pos = new CoordPair(2, 2);
+        pos = new CheckersCoordPair(2, 2);
         this.validKingJumps.add(pos);
     }
 
-    public boolean isKingable(CoordPair end) {
+    public boolean isKingable(CheckersCoordPair end) {
         boolean check = end == null || end.getPiece() == null;
         check = check || !isValidPos(end) || end.getPiece().getType() == "K";  
         if(check)
@@ -62,7 +63,7 @@ public class RulesValidator {
         return false;
     }
 
-    private boolean isValidJumpedPiece(GamePiece piece) {
+    private boolean isValidJumpedPiece(CheckersGamePiece piece) {
         if(piece == null)
             return false;
         int turn = this.game.getTurn();
@@ -72,7 +73,7 @@ public class RulesValidator {
         return false;
     }
 
-    public boolean isValidPos(CoordPair pos) {
+    public boolean isValidPos(CheckersCoordPair pos) {
         if(pos == null)
             return false;
         int length = this.board.getSideLength();
@@ -87,7 +88,7 @@ public class RulesValidator {
         return false;
     }
 
-    public boolean isTurnPiece(GamePiece piece) {
+    public boolean isTurnPiece(CheckersGamePiece piece) {
         int turn = this.game.getTurn();
         String name = this.pieceNames[turn - 1];
 
@@ -96,15 +97,15 @@ public class RulesValidator {
         return false;
     }
 
-    public boolean isValidMove(Move move) {
+    public boolean isValidMove(CheckersMove move) {
         if(move == null)
             return false;
         int sX = move.getStartX();
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.board.getBoardPos(sX, sY);
-        CoordPair end = this.board.getBoardPos(eX, eY);
+        CheckersCoordPair start = this.board.getBoardPos(sX, sY);
+        CheckersCoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false; 
         if(!isTurnPiece(start.getPiece()) || end.getPiece() != null) 
@@ -130,11 +131,11 @@ public class RulesValidator {
         return !this.game.getJumps(playerNum).isEmpty();
     }
 
-    public boolean isPlayerJump(int playerNum, CoordPair pos) {
+    public boolean isPlayerJump(int playerNum, CheckersCoordPair pos) {
         return this.game.getJumps(playerNum).contains(pos);
     }
 
-     public boolean isValidMove(Move move, String pName) {
+     public boolean isValidMove(CheckersMove move, String pName) {
         if(move == null)
             return false;
 
@@ -142,8 +143,8 @@ public class RulesValidator {
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.board.getBoardPos(sX, sY);
-        CoordPair end = this.board.getBoardPos(eX, eY);
+        CheckersCoordPair start = this.board.getBoardPos(sX, sY);
+        CheckersCoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false; 
         if(start.getPiece() == null || !start.getPiece().getName().equals(pName) || end.getPiece() != null) 
@@ -165,7 +166,7 @@ public class RulesValidator {
         return false;
     }
 
-    public boolean isValidJump(Move move) {
+    public boolean isValidJump(CheckersMove move) {
         if(move == null)
             return false;
 
@@ -173,17 +174,17 @@ public class RulesValidator {
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.board.getBoardPos(sX, sY);
-        CoordPair end = this.board.getBoardPos(eX, eY);
+        CheckersCoordPair start = this.board.getBoardPos(sX, sY);
+        CheckersCoordPair end = this.board.getBoardPos(eX, eY);
         if(start == null || end == null)
             return false;
 
         int jumpedX = (start.getX() + end.getX()) >> 1;
         int jumpedY = (start.getY() + end.getY()) >> 1;
-        CoordPair pos = this.board.getBoardPos(jumpedX, jumpedY);
-        GamePiece jumpedPiece = pos.getPiece();
-        GamePiece piece = start.getPiece();
-        GamePiece endPiece = end.getPiece();
+        CheckersCoordPair pos = this.board.getBoardPos(jumpedX, jumpedY);
+        CheckersGamePiece jumpedPiece = pos.getPiece();
+        CheckersGamePiece piece = start.getPiece();
+        CheckersGamePiece endPiece = end.getPiece();
         if(!isTurnPiece(piece) ||  endPiece != null || !isValidJumpedPiece(jumpedPiece)) 
             return false;
 
@@ -213,7 +214,7 @@ public class RulesValidator {
         return false;
     }
 
-    private Set<CoordPair> getValidMoves(GamePiece piece) {
+    private Set<CheckersCoordPair> getValidMoves(CheckersGamePiece piece) {
         if(piece == null)
             return null;
         if(piece.getType().equals("K"))
@@ -226,22 +227,22 @@ public class RulesValidator {
         if(name.equals("R"))
             fact = 1;
         for(int j = start; j < this.board.getSideLength(); j += 2) {
-            CoordPair pos = this.board.getBoardPos(row, j);
+            CheckersCoordPair pos = this.board.getBoardPos(row, j);
             if(pos == null)
                 return false;
-            GamePiece piece = pos.getPiece();
+            CheckersGamePiece piece = pos.getPiece();
             if(piece != null && piece.getName().equals(name)) {
-                Set<CoordPair> validMoves = getValidMoves(piece);
+                Set<CheckersCoordPair> validMoves = getValidMoves(piece);
 
-                for(CoordPair validDiff : validMoves) {
+                for(CheckersCoordPair validDiff : validMoves) {
                     int x = pos.getX() + validDiff.getX() * fact;
                     int y = pos.getY() + validDiff.getY() * fact;
-                    if(isValidPos(new CoordPair(x, y))) {
-                        CoordPair end = this.board.getBoardPos(x, y);
+                    if(isValidPos(new CheckersCoordPair(x, y))) {
+                        CheckersCoordPair end = this.board.getBoardPos(x, y);
                         if(end == null)
-                            end = new CoordPair(x, y);
+                            end = new CheckersCoordPair(x, y);
     
-                        Move move = new Move(pos.getX(), pos.getY(), end.getX(), end.getY());
+                        CheckersMove move = new CheckersMove(pos.getX(), pos.getY(), end.getX(), end.getY());
                         if(isValidMove(move, piece.getName()))
                             return true;
                     }
@@ -253,10 +254,10 @@ public class RulesValidator {
         return false;
     }
 
-    public boolean hasFurtherJumps(CoordPair pos) {
+    public boolean hasFurtherJumps(CheckersCoordPair pos) {
         if(pos == null || pos.getPiece() == null)
             return false;
-        GamePiece piece = pos.getPiece();
+        CheckersGamePiece piece = pos.getPiece();
         String name = piece.getName();
         int startX = pos.getX();
         int startY = pos.getY();
@@ -284,12 +285,12 @@ public class RulesValidator {
                 jumpX = (startX + x) >> 1;
                 jumpY = (startY + y) >> 1;
 
-                CoordPair jumpPos = this.board.getBoardPos(jumpX, jumpY);
-                CoordPair end = this.board.getBoardPos(x, y);
-                GamePiece endPiece = null;
+                CheckersCoordPair jumpPos = this.board.getBoardPos(jumpX, jumpY);
+                CheckersCoordPair end = this.board.getBoardPos(x, y);
+                CheckersGamePiece endPiece = null;
                 if(end != null)
                     endPiece = end.getPiece();
-                GamePiece jumpPiece = jumpPos.getPiece();
+                CheckersGamePiece jumpPiece = jumpPos.getPiece();
 
                 if(jumpPiece != null && !name.equals(jumpPiece.getName()) && endPiece == null) {
                     return true;

@@ -2,12 +2,13 @@ package gamesuite.client.view;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import gamesuite.core.control.GameManagerImpl;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
+import checkers.control.CheckersGameManager;
+import checkers.model.CoordPair;
+import checkers.model.GameBoard;
+import checkers.model.GameState;
+import checkers.model.Move;
+import checkers.model.Player;
+
 import java.util.regex.Matcher;
 
 public class TextGameCLI implements GameUI {
@@ -18,9 +19,9 @@ public class TextGameCLI implements GameUI {
     private GameBoard board;
     private int sideLength;
     private GameState game;
-    private GameManagerImpl gm;
+    private CheckersGameManager gm;
 
-    public TextGameCLI(GameState game, GameBoard board, Scanner in, GameManagerImpl gm) {
+    public TextGameCLI(GameState game, GameBoard board, Scanner in, CheckersGameManager gm) {
         this.gm = gm;
         this.game = game;
         this.board = board;

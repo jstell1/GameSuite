@@ -1,4 +1,3 @@
-// Program to eastablish the socket connection
 
 package gamesuite.server.control;
 
@@ -13,16 +12,13 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gamesuite.core.control.GameManagerImpl;
+
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
+import gamesuite.core.control.GameManager;
 import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.server.model.ServerGameRepo;
 
@@ -126,14 +122,14 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     public void notifyGameOver(GameState game, String gameId) {
         
-        GameManagerImpl gm = this.gmRepo.getGM(gameId);
+        GameManager gm = this.gmRepo.getGM(gameId);
         synchronized(gm) {
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "stateUpdateResponse";
             ObjectNode outer = mapper.createObjectNode();
             ObjectNode inner = mapper.createObjectNode();
             inner.put("gameId", gameId);
-            inner.set("gameState", mapper.valueToTree(game));
+            inner.set("gameState", game.getObjectNode());
             outer = mapper.createObjectNode().set(msgType, inner);
             try {
                 String str = mapper.writeValueAsString(outer);
@@ -249,22 +245,22 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             ObjectNode inner = mapper.createObjectNode();
             inner.put("message", "This user session is already in a game");
             sendMessage(msgType, inner, session);
-            return;//break;
+            return;
         }
         System.out.println("passed the check");
         String name = payload.get("name").asText();
 
         try {
             mapper = new ObjectMapper();
-            Player player1 = new Player(name, 0);
-            GameBoard board = new GameBoard(8);
-            String gameId = this.gmRepo.createGame(player1, board, session.getId());
+            //Player player1 = new Player(name, 0);
+            //GameBoard board = new GameBoard(8);
+            String gameId = this.gmRepo.createGame(name, session.getId());
             GameState game = this.gmRepo.getGameView(gameId);
             this.gmRepo.getGM(gameId);
             String msgType = "gameCreatedResponse";
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.put("gameId", gameId);
-            respPayload.set("gameState", mapper.valueToTree(game));
+            respPayload.set("gameState", game.getObjectNode());
             sendMessage(msgType, respPayload, session);
             System.out.println("sent");
             
@@ -301,7 +297,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             sendMessage(msgType, respPayload, session);
             return;
         }
-        GameManagerImpl gm = this.gmRepo.getGM(gameId); 
+        GameManager gm = this.gmRepo.getGM(gameId); 
         
         synchronized(gm) {
         
@@ -317,10 +313,10 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
             try {
                 
-                Player p2 = new Player(player, 0);
-                GameBoard board = this.gmRepo.joinGame(p2, gameId);
+                //Player p2 = new Player(player, 0);
+                GameBoard board = this.gmRepo.joinGame(player, gameId);
                 mapper = new ObjectMapper();
-                JsonNode boardJson = mapper.valueToTree(board.getBoard());
+                JsonNode boardJson = board.getObjectNode();
                 GameState game = this.gmRepo.getGM(gameId).getGameState();
                 this.gmRepo.addWebSocketToGame(gameId, session.getId());
 
@@ -329,7 +325,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.set("board", boardJson);
                 respPayload.put("gameId", gameId);
-                respPayload.set("gameState", mapper.valueToTree(game));
+                respPayload.set("gameState", game.getObjectNode());
                 sendMessage(msgType, respPayload, session);
                 ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
                 String str = mapper.writeValueAsString(outer);
@@ -349,8 +345,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     private void makeMove(WebSocketSession session, ObjectNode payload) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        Move move = null;
-        move = mapper.treeToValue(payload.get("move"), Move.class);
+        //Move move = null;
+       // move = mapper.treeToValue(payload.get("move"), Move.class);
+        ObjectNode move = (ObjectNode) payload.get("move");
         String gameId = payload.get("gameId").asText();
 
         if(!this.gmRepo.containsGame(gameId)) {
@@ -361,7 +358,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             sendMessage(msgType, respPayload, session);
             return;
         }
-        GameManagerImpl gm = this.gmRepo.getGM(gameId);
+        GameManager gm = this.gmRepo.getGM(gameId);
         synchronized(gm) {
 
             if(!this.gmRepo.rightPlayer(gameId, session.getId())) {
@@ -404,7 +401,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             JsonNode tmp = mapper.createObjectNode();
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.put("gameId", gameId);
-            respPayload.set("gameState", mapper.valueToTree(game));
+            respPayload.set("gameState", game.getObjectNode());
             sendMessage(msgType, respPayload, session);
             ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
 

@@ -1,10 +1,11 @@
-package gamesuite.core.control;
+package checkers.control;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.Move;
+
+import checkers.model.CheckersCoordPair;
+import checkers.model.CheckersMove;
 
 public class MoveController {
 
@@ -16,12 +17,12 @@ public class MoveController {
         this.stateManager = stateManager;
     }
 
-    public boolean checkMove(Move move) {
+    public boolean checkMove(CheckersMove move) {
         if(move == null)
             return false;
         
-        CoordPair start = new CoordPair(move.getStartX(), move.getStartY());
-        CoordPair end = new CoordPair(move.getEndX(), move.getEndY());
+        CheckersCoordPair start = new CheckersCoordPair(move.getStartX(), move.getStartY());
+        CheckersCoordPair end = new CheckersCoordPair(move.getEndX(), move.getEndY());
         start = this.stateManager.getBoardPos(start.getX(), start.getY());
         end = this.stateManager.getBoardPos(end.getX(), end.getY());
         
@@ -50,30 +51,30 @@ public class MoveController {
         return check3;
     }
 
-    public List<CoordPair> makeMove(Move move) {
+    public List<CheckersCoordPair> makeMove(CheckersMove move) {
         if(move == null)
             return null;
         int x = move.getStartX();
         int y = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY();
-        CoordPair start = this.stateManager.getBoardPos(x, y);
-        CoordPair end = this.stateManager.getBoardPos(eX, eY);
+        CheckersCoordPair start = this.stateManager.getBoardPos(x, y);
+        CheckersCoordPair end = this.stateManager.getBoardPos(eX, eY);
         //move = new Move(start, end);
-        CoordPair[] changed = null;
+        CheckersCoordPair[] changed = null;
         if(this.validator.isValidMove(move) && this.stateManager.getFurtherJumps() == null) {
             this.stateManager.updateBoard(move);
-            changed = new CoordPair[2];
+            changed = new CheckersCoordPair[2];
             changed[0] = start;
             changed[1] = end;
         } else if(this.validator.isValidJump(move)) {
             this.stateManager.updateBoard(move);
             int jumpedX = (start.getX() + end.getX()) >> 1;
             int jumpedY = (start.getY() + end.getY()) >> 1;
-            CoordPair jumped = this.stateManager.getBoardPos(jumpedX, jumpedY);
+            CheckersCoordPair jumped = this.stateManager.getBoardPos(jumpedX, jumpedY);
             this.stateManager.removeJumped(jumped);
             this.stateManager.incrPoints();
-            changed = new CoordPair[3];
+            changed = new CheckersCoordPair[3];
             changed[0] = start;
             changed[1] = jumped;
             changed[2] = end;
@@ -84,13 +85,13 @@ public class MoveController {
         return null;
     }
 
-    public void updateState(List<CoordPair> changed) {
+    public void updateState(List<CheckersCoordPair> changed) {
         if(changed != null) {
             int size = changed.size();
-            for(CoordPair pos : changed) {
+            for(CheckersCoordPair pos : changed) {
                 int x = pos.getX();
                 int y = pos.getY();
-                CoordPair[] checks = { 
+                CheckersCoordPair[] checks = { 
                     this.stateManager.getBoardPos(x - 1, y - 1),
                     this.stateManager.getBoardPos(x - 1, y + 1),
                     this.stateManager.getBoardPos(x + 1, y - 1),
@@ -100,7 +101,7 @@ public class MoveController {
                     this.stateManager.getBoardPos(x + 2, y - 2),
                     this.stateManager.getBoardPos(x + 2, y + 2)
                 };
-                for(CoordPair currPos : checks) {
+                for(CheckersCoordPair currPos : checks) {
                     boolean hasFurtherJumps = this.validator.hasFurtherJumps(currPos);
                     if(!hasFurtherJumps)
                         this.stateManager.removeFromJumps(currPos, hasFurtherJumps);
@@ -115,8 +116,8 @@ public class MoveController {
             int y = changed.get(size - 1).getY();
             int sX = changed.get(0).getX();
             int sY = changed.get(0).getY();
-            CoordPair end = this.stateManager.getBoardPos(x, y);
-            CoordPair start = this.stateManager.getBoardPos(sX, sY);
+            CheckersCoordPair end = this.stateManager.getBoardPos(x, y);
+            CheckersCoordPair start = this.stateManager.getBoardPos(sX, sY);
             boolean isKingable = this.validator.isKingable(end); 
             if(isKingable) {
                 this.stateManager.kingPiece(end);
@@ -144,15 +145,15 @@ public class MoveController {
     }
 
       private void updateJumpsList() {
-        Set<CoordPair> p1Jumps = this.stateManager.getJumps(1);
-        Set<CoordPair> p2Jumps = this.stateManager.getJumps(2);
+        Set<CheckersCoordPair> p1Jumps = this.stateManager.getJumps(1);
+        Set<CheckersCoordPair> p2Jumps = this.stateManager.getJumps(2);
 
-        for(CoordPair pos: p1Jumps) {
+        for(CheckersCoordPair pos: p1Jumps) {
             boolean hasFurther = this.validator.hasFurtherJumps(pos);
             if(!hasFurther) 
                 this.stateManager.removeFromJumps(pos, hasFurther);
         }
-        for(CoordPair pos: p2Jumps) {
+        for(CheckersCoordPair pos: p2Jumps) {
             boolean hasFurther = this.validator.hasFurtherJumps(pos);
             if(!hasFurther)
                 this.stateManager.removeFromJumps(pos, hasFurther);

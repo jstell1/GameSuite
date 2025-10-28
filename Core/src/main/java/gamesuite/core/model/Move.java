@@ -1,44 +1,19 @@
 package gamesuite.core.model;
 
-public class Move {
-    int startX, startY;
-    int endX, endY;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-    public Move() {
-        this.startX = -1; this.startY = -1;
-        this.endX = -1; this.endY = -1;
-    }
+public interface Move {
 
-    public Move(int startX, int startY, int endX, int endY) {
-        this.startX = startX; this.startY = startY;
-        this.endX = endX; this.endY = endY;
-    }
+    public int getStartX();
 
-    public void setStartX(int x) {
-        if( x >= 0 && this.startX == -1) 
-            this.startX = x;
-    }
+    public int getStartY();
 
-    public void setStartY(int y) {
-        if( y >= 0 && this.startY == -1) 
-            this.startY = y;
-    }
+    public int getEndX();
 
-    public void setEndX(int x) {
-        if( x >= 0 && this.endX == -1) 
-            this.endX = x;
-    }
+    public int getEndY();
 
-    public void setEndY(int y) {
-        if( y >= 0 && this.endY == -1)  
-            this.endY = y;
-    }
+    public void setObjectNode(ObjectNode node);
+    public ObjectNode getObjectNode();
 
-    public int getStartX() { return this.startX; }
 
-    public int getStartY() { return this.startY; }
-
-    public int getEndX() { return this.endX; }
-
-    public int getEndY() { return this.endY; } 
 }

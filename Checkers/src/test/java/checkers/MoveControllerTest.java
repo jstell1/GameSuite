@@ -1,4 +1,4 @@
-package gamesuite.core;
+package checkers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,32 +8,33 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import gamesuite.core.control.GameStateManager;
-import gamesuite.core.control.MoveController;
-import gamesuite.core.control.RulesValidator;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GamePiece;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
+import checkers.control.GameStateManager;
+import checkers.control.MoveController;
+import checkers.
+control.RulesValidator;
+import checkers.model.CheckersCoordPair;
+import checkers.model.CheckersGameBoard;
+import checkers.model.CheckersGamePiece;
+import checkers.model.CheckersGameState;
+import checkers.model.CheckersMove;
+import checkers.model.CheckersPlayer;
 
 public class MoveControllerTest {
     
-    Player p1;
-    Player p2;
-    GameBoard board;
-    GameState game;
+    CheckersPlayer p1;
+    CheckersPlayer p2;
+    CheckersGameBoard board;
+    CheckersGameState game;
     GameStateManager stateMang;
     RulesValidator validator;
     MoveController movCont;
 
     @BeforeEach
     void setUp() {
-        this.p1 = new Player("Frodo", 0);
-        this.p2 = new Player("Sam", 0);
-        this.board = new GameBoard(8);
-        this.game = new GameState(p1, p2);
+        this.p1 = new CheckersPlayer("Frodo", 0);
+        this.p2 = new CheckersPlayer("Sam", 0);
+        this.board = new CheckersGameBoard(8);
+        this.game = new CheckersGameState(p1, p2);
         this.stateMang = new GameStateManager(game, board);
         this.validator = new RulesValidator(game, board);
         this.movCont = new MoveController(validator, stateMang);
@@ -43,17 +44,17 @@ public class MoveControllerTest {
     void testCheckMove() {
         
 
-        GamePiece[] pieces = {
-            new GamePiece("B", "C", 1),
-            new GamePiece("B", "C", 1),
-            new GamePiece("B", "C", 1),
-            new GamePiece("B", "C", 1),
-            new GamePiece("B", "C", 1),
-            new GamePiece("R", "C", 1),//5
-            new GamePiece("R", "C", 1),
-            new GamePiece("R", "C", 1),
-            new GamePiece("R", "C", 1),
-            new GamePiece("R", "C", 1),
+        CheckersGamePiece[] pieces = {
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("R", "C", 1),//5
+            new CheckersGamePiece("R", "C", 1),
+            new CheckersGamePiece("R", "C", 1),
+            new CheckersGamePiece("R", "C", 1),
+            new CheckersGamePiece("R", "C", 1),
         };
 
         this.game.setTurn(2);
@@ -62,30 +63,30 @@ public class MoveControllerTest {
         this.board.setBoardPos(3, 2, pieces[1]);
         this.board.setBoardPos(4, 1, pieces[5]);
         this.board.setBoardPos(6, 3, pieces[6]);
-        Move move = new Move(6, 3, 5, 4);
+        CheckersMove move = new CheckersMove(6, 3, 5, 4);
         assertFalse(this.movCont.checkMove(move));
         this.board.setBoardPos(5, 4, pieces[2]);
         this.game.addPlayerJumps(this.board.getBoardPos(6, 3), 2);
-        move = new Move(4, 1, 2,3);
+        move = new CheckersMove(4, 1, 2,3);
         assertTrue(this.movCont.checkMove(move));
-        move = new Move(6,3,4,3);
+        move = new CheckersMove(6,3,4,3);
         assertFalse(this.movCont.checkMove(move));
-        move = new Move(6,3,4,5);
+        move = new CheckersMove(6,3,4,5);
         assertTrue(this.movCont.checkMove(move));
         game.setFurtherJumps(board.getBoardPos(4, 1));
         assertFalse(this.movCont.checkMove(move));
         this.game.setFurtherJumps(null);
-        move = new Move(6, 3, 5, 2);
+        move = new CheckersMove(6, 3, 5, 2);
         assertFalse(this.movCont.checkMove(move));
         this.game.removePlayerJumps(this.board.getBoardPos(6, 3), 2);
         this.game.removePlayerJumps(this.board.getBoardPos(4, 1), 2);
-        move = new Move(6, 3, 5, 2);
+        move = new CheckersMove(6, 3, 5, 2);
         assertTrue(this.movCont.checkMove(move));
-        move = new Move(6, 3, 5, 3);
+        move = new CheckersMove(6, 3, 5, 3);
         assertFalse(this.movCont.checkMove(move));
 
-        this.board = new GameBoard(8);
-        this.game = new GameState(this.p1, this.p2);
+        this.board = new CheckersGameBoard(8);
+        this.game = new CheckersGameState(this.p1, this.p2);
         this.stateMang = new GameStateManager(this.game, this.board);
         this.validator = new RulesValidator(this.game, this.board);
         this.movCont = new MoveController(this.validator, this.stateMang);
@@ -93,23 +94,23 @@ public class MoveControllerTest {
         this.board.setBoardPos(4, 1, pieces[5]);
         this.board.setBoardPos(6, 1, pieces[6]);
         this.game.addPlayerJumps(this.board.getBoardPos(4, 1), 2);
-        move = new Move(6, 1, 5, 2);
+        move = new CheckersMove(6, 1, 5, 2);
         assertFalse(this.movCont.checkMove(move));
     }
 
     @Test
     void testMakeMove() {
-        CoordPair pos = this.board.getBoardPos(5, 4);
-        GamePiece piece = new GamePiece("B", "C", 1);
+        CheckersCoordPair pos = this.board.getBoardPos(5, 4);
+        CheckersGamePiece piece = new CheckersGamePiece("B", "C", 1);
         pos.setPiece(piece);
-        CoordPair pos2 = this.board.getBoardPos(6, 5);
-        GamePiece piece2 = new GamePiece("R", "C", 1);
+        CheckersCoordPair pos2 = this.board.getBoardPos(6, 5);
+        CheckersGamePiece piece2 = new CheckersGamePiece("R", "C", 1);
         pos2.setPiece(piece2);
-        CoordPair pos3 = this.board.getBoardPos(3, 2);
-        GamePiece piece3 = new GamePiece("R", "C", 1);
+        CheckersCoordPair pos3 = this.board.getBoardPos(3, 2);
+        CheckersGamePiece piece3 = new CheckersGamePiece("R", "C", 1);
         pos3.setPiece(piece3);
-        Move move = new Move(5, 4, 7, 6);
-        Move move2 = new Move(3, 2, 2, 3);
+        CheckersMove move = new CheckersMove(5, 4, 7, 6);
+        CheckersMove move2 = new CheckersMove(3, 2, 2, 3);
         this.movCont.makeMove(move);
         this.stateMang.incrTurn(true, true);
         this.movCont.makeMove(move2);
@@ -123,12 +124,12 @@ public class MoveControllerTest {
 
     @Test
     void testUpdateState() {
-        GamePiece[] pieces = {
-            new GamePiece("B", "C", 1),
-            new GamePiece("B", "C", 1),
-            new GamePiece("R", "C", 1),
-            new GamePiece("R", "C", 1),
-            new GamePiece("R","C",1)
+        CheckersGamePiece[] pieces = {
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("B", "C", 1),
+            new CheckersGamePiece("R", "C", 1),
+            new CheckersGamePiece("R", "C", 1),
+            new CheckersGamePiece("R","C",1)
         };
 
         this.board.setBoardPos(3,2, pieces[0]);
@@ -136,7 +137,7 @@ public class MoveControllerTest {
         this.board.setBoardPos(5,2, pieces[2]);
         this.board.setBoardPos(4,5, pieces[3]);
 
-        CoordPair[] positions = {
+        CheckersCoordPair[] positions = {
             this.board.getBoardPos(3,2),
             this.board.getBoardPos(2,5),
             this.board.getBoardPos(5,2),
@@ -145,18 +146,18 @@ public class MoveControllerTest {
             this.board.getBoardPos(3, 4),
         };
 
-        Move[] moves = {
-            new Move(3, 2, 4, 3),
-            new Move(5, 2, 3, 4),
-            new Move(3, 4, 1, 6),
-            new Move(4, 5, 3, 4),
-            new Move(2, 5, 4, 3),
-            new Move(4, 3, 6, 1),
-            new Move(2, 5, 3, 4),
-            new Move(5,2,4,3)
+        CheckersMove[] moves = {
+            new CheckersMove(3, 2, 4, 3),
+            new CheckersMove(5, 2, 3, 4),
+            new CheckersMove(3, 4, 1, 6),
+            new CheckersMove(4, 5, 3, 4),
+            new CheckersMove(2, 5, 4, 3),
+            new CheckersMove(4, 3, 6, 1),
+            new CheckersMove(2, 5, 3, 4),
+            new CheckersMove(5,2,4,3)
         };
 
-        List<CoordPair> changed = this.movCont.makeMove(moves[0]);
+        List<CheckersCoordPair> changed = this.movCont.makeMove(moves[0]);
         this.movCont.updateState(changed);
         assertEquals(2, this.stateMang.getTurn());
         assertTrue(this.game.getJumps(2).contains(positions[2]));
@@ -169,7 +170,7 @@ public class MoveControllerTest {
         assertEquals(this.stateMang.getWinner(), this.p2);
 
         setUp();
-        CoordPair[] positions2 = {
+        CheckersCoordPair[] positions2 = {
             this.board.getBoardPos(3,2),
             this.board.getBoardPos(2,5),
             this.board.getBoardPos(5,2),
@@ -197,7 +198,7 @@ public class MoveControllerTest {
         this.board.setBoardPos(4, 3, pieces[3]);
         this.game.addPlayerJumps(this.board.getBoardPos(1, 0), 1);
         this.game.setTurn(2);
-        Move move = new Move(4,3,3,2);
+        CheckersMove move = new CheckersMove(4,3,3,2);
         changed = this.movCont.makeMove(move);
         this.movCont.updateState(changed);
         assertEquals(this.p2, this.game.getWinner());
@@ -208,14 +209,14 @@ public class MoveControllerTest {
         this.board.setBoardPos(1, 6, pieces[2]);
         this.board.setBoardPos(4, 5, pieces[3]);
         this.board.setBoardPos(4, 7, pieces[4]);
-        GamePiece piece = new GamePiece("B", "K", 1);
+        CheckersGamePiece piece = new CheckersGamePiece("B", "K", 1);
         this.board.setBoardPos(5, 4, piece);
         this.game.addPlayerJumps(this.board.getBoardPos(0, 7), 1);
         this.game.addPlayerJumps(this.board.getBoardPos(3, 6), 1);
         this.game.addPlayerJumps(this.board.getBoardPos(4, 5), 2);
         this.game.addPlayerJumps(this.board.getBoardPos(4, 7), 2);
         this.game.setTurn(2);
-        move = new Move(4, 7, 2, 5);
+        move = new CheckersMove(4, 7, 2, 5);
         changed = this.movCont.makeMove(move);
         this.movCont.updateState(changed);
         assertEquals(1, this.game.getJumps(1).size());

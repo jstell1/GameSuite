@@ -1,46 +1,15 @@
 package gamesuite.core.model;
 
-public class Player {
-    private int points;
-    private String name;
-    private String userId;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-    public Player() {}
+public interface Player {
 
-    public Player(String name, int points) { 
-        this.name = name;
-        this.points = points; 
-        this.userId = null;
-    }
+    public int getPoints();
 
-    public boolean setUserId(String id) {
-        if(this.userId == null) {
-            this.userId = id;
-            return true;
-        }
-        return false;
-    }
+    public String getUserId();
 
-    public int addPoints(int num) {
-        points += num;
-        return points;
-    }
+    public String getName();
 
-    public void setPoints(int num) {
-        if(this.points == 0)
-            this.points = num;
-    }
-
-    public void setName(String name) {
-        if(this.name == null) 
-            this.name = name;
-    }
-
-    public int getPoints() { return this.points; }
-
-    public String getUserId() { return this.userId; }
-
-    public String getName() { return this.name; }
-
-    public Player copy() { return new Player(this.name, this.points); }
+    public Player copy();
+    //public ObjectNode getObjectNode();
 }

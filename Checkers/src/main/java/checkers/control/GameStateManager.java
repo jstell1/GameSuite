@@ -1,26 +1,27 @@
-package gamesuite.core.control;
+package checkers.control;
 
 import java.util.List;
 import java.util.Set;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GamePiece;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
+
+import checkers.model.CheckersCoordPair;
+import checkers.model.CheckersGameBoard;
+import checkers.model.CheckersGamePiece;
+import checkers.model.CheckersGameState;
+import checkers.model.CheckersMove;
+import checkers.model.CheckersPlayer;
 
 public class GameStateManager {
 
-    private GameState game;
-    private GameBoard board;
+    private CheckersGameState game;
+    private CheckersGameBoard board;
 
-    public GameStateManager(GameState game, GameBoard board) {
+    public GameStateManager(CheckersGameState game, CheckersGameBoard board) {
         this.game = game;
         this.board = board;
     }
 
     public void incrTurn(boolean p1HasMoves, boolean p2HasMoves) {
-        Player[] players = this.game.getPlayers();
+        CheckersPlayer[] players = this.game.getPlayers();
         int p1Points = players[0].getPoints();
         int p2Points = players[1].getPoints();
              if(p2HasMoves && !p1HasMoves) {
@@ -52,26 +53,26 @@ public class GameStateManager {
             this.game.addPlayerPoints(2);
     }
 
-    public void updateBoard(Move move) {
+    public void updateBoard(CheckersMove move) {
         int sX = move.getStartX();
         int sY = move.getStartY();
         int eX = move.getEndX();
         int eY = move.getEndY(); 
-        CoordPair start = this.board.getBoardPos(sX, sY);
-        CoordPair end = this.board.getBoardPos(eX, eY);
+        CheckersCoordPair start = this.board.getBoardPos(sX, sY);
+        CheckersCoordPair end = this.board.getBoardPos(eX, eY);
         end.setPiece(start.getPiece());
         start.setPiece(null);
     }
     
-    public void setFurtherJumps(CoordPair pos) { this.game.setFurtherJumps(pos); }
+    public void setFurtherJumps(CheckersCoordPair pos) { this.game.setFurtherJumps(pos); }
 
-    public void removeJumped(CoordPair pos) { pos.setPiece(null); }
+    public void removeJumped(CheckersCoordPair pos) { pos.setPiece(null); }
 
-    public void kingPiece(CoordPair pos) {
+    public void kingPiece(CheckersCoordPair pos) {
         if(pos == null || pos.getPiece() == null)
             return;
 
-        GamePiece piece = pos.getPiece();
+        CheckersGamePiece piece = pos.getPiece();
         String[] names = this.game.getPieceNames();
         boolean check = piece.getName().equals(names[0]) && pos.getX() == this.board.getSideLength() - 1;
         check = check || piece.getName().equals(names[1]) && pos.getX() == 0; 
@@ -79,11 +80,11 @@ public class GameStateManager {
             piece.kingPiece();
     }
     
-    public void removeFromJumps(CoordPair pos, boolean hasFurtherJumps) {
+    public void removeFromJumps(CheckersCoordPair pos, boolean hasFurtherJumps) {
         if(pos == null)
             return;
 
-        GamePiece piece = pos.getPiece();
+        CheckersGamePiece piece = pos.getPiece();
 
         if(piece == null || !hasFurtherJumps) {
             this.game.removePlayerJumps(pos, 1);
@@ -114,40 +115,40 @@ public class GameStateManager {
     private void initRow(String name, String type, int val, int row, int startPos) {
         int size = this.board.getSideLength();
         for(int j = startPos; j < size; j += 2) {
-            GamePiece piece = new GamePiece(name, type, val);
+            CheckersGamePiece piece = new CheckersGamePiece(name, type, val);
             this.board.setBoardPos(row, j, piece);
         }
     }
 
-    public CoordPair getBoardPos(int x, int y) { return this.board.getBoardPos(x, y); }
+    public CheckersCoordPair getBoardPos(int x, int y) { return this.board.getBoardPos(x, y); }
 
     public String getBoardString() {
         return this.board.toString();
     }
 
-    public CoordPair getFurtherJumps() { return this.game.getFurtherJumps(); }
+    public CheckersCoordPair getFurtherJumps() { return this.game.getFurtherJumps(); }
 
-    public Player getWinner() { return this.game.getWinner(); }
+    public CheckersPlayer getWinner() { return this.game.getWinner(); }
 
     public boolean getDraw() { return this.game.getDraw(); }
 
-    public GameBoard getBoardCopy() { return this.board.copy(); }
+    public CheckersGameBoard getBoardCopy() { return this.board.copy(); }
 
     public int getTurn() { return this.game.getTurn(); }
 
-    public void addPlayerJumps(CoordPair currPos, int playerNum) {
+    public void addPlayerJumps(CheckersCoordPair currPos, int playerNum) {
         this.game.addPlayerJumps(currPos, playerNum);
     }
     
-    public Set<CoordPair> getJumps(int playerNum) {
+    public Set<CheckersCoordPair> getJumps(int playerNum) {
         return this.game.getJumps(playerNum);
     }
 
-    public void setChanged(List<CoordPair> changed) {
+    public void setChanged(List<CheckersCoordPair> changed) {
         this.game.setChangedPos(changed);
     }
 
-    public void addJustKinged(CoordPair pos) {
+    public void addJustKinged(CheckersCoordPair pos) {
         this.game.addJustKinged(pos);
     }
 
@@ -155,11 +156,11 @@ public class GameStateManager {
         this.game.clearJustKinged();
     }
 
-    public boolean isJustKinged(CoordPair pos) {
+    public boolean isJustKinged(CheckersCoordPair pos) {
         return this.game.isJustKinged(pos);
     }
 
-    public boolean addPlayer(Player player) {
+    public boolean addPlayer(CheckersPlayer player) {
         return this.game.addPlayer(player);
     }
 

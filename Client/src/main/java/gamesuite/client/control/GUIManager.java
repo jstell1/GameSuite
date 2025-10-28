@@ -2,15 +2,16 @@ package gamesuite.client.control;
 
 import java.util.List;
 import javax.swing.SwingUtilities;
+
+import checkers.model.CoordPair;
+import checkers.model.GameBoard;
+import checkers.model.GameState;
+import checkers.model.Move;
+import checkers.model.Player;
 import gamesuite.client.view.CoordPairPanel;
 import gamesuite.client.view.GameBoardPanel;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
 
 public class GUIManager implements GameUI, UIListener {
     private GameState gameView;

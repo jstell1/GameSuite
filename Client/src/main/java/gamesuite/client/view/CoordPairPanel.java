@@ -9,9 +9,10 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
+
+import checkers.model.CoordPair;
+import checkers.model.GamePiece;
 import gamesuite.client.control.UIListener;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GamePiece;
 public class CoordPairPanel extends JPanel {
 
     private GamePieceAsset piece;

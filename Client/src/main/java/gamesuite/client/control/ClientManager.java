@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
+import checkers.model.CoordPair;
+import checkers.model.GameState;
+import checkers.model.Move;
 import gamesuite.core.network.*;
 
 public class ClientManager {

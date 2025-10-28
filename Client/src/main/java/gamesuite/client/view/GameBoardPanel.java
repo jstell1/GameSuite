@@ -7,9 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JPanel;
+
+import checkers.model.CoordPair;
+import checkers.model.GameBoard;
 import gamesuite.client.control.UIListener;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
 
 public class GameBoardPanel extends JPanel {
 
