@@ -1,5 +1,6 @@
 package gamesuite.core.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface GameBoard {
@@ -16,5 +17,5 @@ public interface GameBoard {
     public boolean isValidPos(int x, int y);
 
     public String toString();
-    public ObjectNode getObjectNode();
+    public JsonNode getObjectNode();
 }

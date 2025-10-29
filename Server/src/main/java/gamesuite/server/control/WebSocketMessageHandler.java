@@ -316,8 +316,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 //Player p2 = new Player(player, 0);
                 GameBoard board = this.gmRepo.joinGame(player, gameId);
                 mapper = new ObjectMapper();
-                JsonNode boardJson = board.getObjectNode();
                 GameState game = this.gmRepo.getGM(gameId).getGameState();
+                JsonNode boardJson = board.getObjectNode();
                 this.gmRepo.addWebSocketToGame(gameId, session.getId());
 
                 String msgType = "gameReadyResponse";
@@ -337,7 +337,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 String msgType = "serverError";
                 JsonNode tmp = mapper.createObjectNode();
                 ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("message", "Error processing createGameRequest");
+                respPayload.put("message", "Error processing joinGameRequest");
                 sendMessage(msgType, respPayload, session);
             }
         }

@@ -19,7 +19,7 @@ public class ServerGameRepo {
     private final Map<String, GameManager> games = new ConcurrentHashMap<>();
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
     private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
-    private final PluginLoader loader = new PluginLoader("../plugins/");
+    private final PluginLoader loader = new PluginLoader("plugins/");
 
     public ServerGameRepo() {
         try {
@@ -97,7 +97,10 @@ public class ServerGameRepo {
         
         GameManager gm = this.games.get(gameId);
         synchronized(gm) {
-            if(gm.getGameState().getPlayer(2) == null) {
+
+            GameState game = gm.getGameState();
+            Player p = game.getPlayer(2);
+            if(p == null) {
 
                 boolean added = gm.addPlayer(player);
                 if(added) {

@@ -45,7 +45,14 @@ public class CheckersGameStateView implements GameState {
 
     public int getTurn() { return this.game.getTurn(); }
 
-    public Player getPlayer(int playerNum) { return new CheckersPlayerView(this.game.getPlayer(playerNum)); }
+    public Player getPlayer(int playerNum) { 
+
+        CheckersPlayer p = this.game.getPlayer(playerNum);
+        if(p == null)
+            return null;
+        else 
+            return new CheckersPlayerView(p); 
+    }
     
 
     public Player[] getPlayers() { 

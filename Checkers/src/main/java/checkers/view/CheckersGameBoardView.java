@@ -1,5 +1,7 @@
 package checkers.view;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import checkers.model.CheckersCoordPair;
@@ -34,12 +36,14 @@ public class CheckersGameBoardView implements GameBoard {
     public String toString() { return this.board.toString(); }
 
     @Override
-    public ObjectNode getObjectNode() {
+    public JsonNode getObjectNode() {
          CheckersCoordPair[][] bord = this.board.getBoard();
-        CheckersCoordPairView[][] ret = new CheckersCoordPairView[board.getSideLength()][board.getSideLength()];
-        for(CheckersCoordPair[] row : bord)
-            for(CheckersCoordPair pos : row)
-                ret[pos.getX()][pos.getY()] = new CheckersCoordPairView(pos);
-        return null;
+         ObjectMapper mapper = new ObjectMapper();
+        //CheckersCoordPairView[][] ret = new CheckersCoordPairView[board.getSideLength()][board.getSideLength()];
+        //for(CheckersCoordPair[] row : bord)
+        //    for(CheckersCoordPair pos : row)
+        //        ret[pos.getX()][pos.getY()] = new CheckersCoordPairView(pos);
+
+        return mapper.valueToTree(bord);
     }
 }

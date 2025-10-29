@@ -94,7 +94,7 @@ public class CheckersGameManager implements GameManager {
         return null; 
     }
 
-    public GameBoard getBoard() { return new CheckersGameBoardView(this.stateManager.getBoardCopy()); }
+    public GameBoard getBoard() { return new CheckersGameBoardView(this.board); }
 
     public boolean gameOver() {
         if(this.stateManager.getWinner() != null || this.stateManager.getDraw())
