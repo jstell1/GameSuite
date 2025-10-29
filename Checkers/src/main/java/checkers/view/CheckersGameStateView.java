@@ -67,7 +67,13 @@ public class CheckersGameStateView implements GameState {
     public CoordPair getFurtherJumps() { return new CheckersCoordPairView(this.game.getFurtherJumps()); }
 
     public boolean getDraw() { return this.game.getDraw(); }
-    public Player getWinner() { return new CheckersPlayerView(this.game.getWinner()); }
+    public Player getWinner() { 
+
+        if(this.game.getWinner() == null)
+            return null;
+        else
+            return new CheckersPlayerView(this.game.getWinner()); 
+    }
     public int getPlayerPoints(int playerNum) { return this.game.getPlayerPoints(playerNum); }
 
 

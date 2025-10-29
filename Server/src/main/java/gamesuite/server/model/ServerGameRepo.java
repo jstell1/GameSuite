@@ -19,7 +19,7 @@ public class ServerGameRepo {
     private final Map<String, GameManager> games = new ConcurrentHashMap<>();
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
     private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
-    private final PluginLoader loader = new PluginLoader("plugins/");
+    private final PluginLoader loader = new PluginLoader("../plugins/");
 
     public ServerGameRepo() {
         try {
