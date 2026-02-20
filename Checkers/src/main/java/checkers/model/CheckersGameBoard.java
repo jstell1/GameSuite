@@ -1,8 +1,11 @@
 package checkers.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gamesuite.core.model.GameBoard;
 
-public class CheckersGameBoard {
+public class CheckersGameBoard implements GameBoard {
     private CheckersCoordPair[][] board;
     private int sideLength;
     private int size;
@@ -85,5 +88,12 @@ public class CheckersGameBoard {
         }
         str += "\n";
         return str;
+    }
+
+    @Override
+    public JsonNode getJsonNode() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.valueToTree(this);
+        return node; 
     }
 }

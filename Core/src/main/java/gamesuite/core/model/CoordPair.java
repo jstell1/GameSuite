@@ -18,5 +18,5 @@ public interface CoordPair{
 
     public int[] toArray(CoordPair pos);
 
-   // public ObjectNode getObjectNode();
+   public ObjectNode getCoordPairJson();
 }

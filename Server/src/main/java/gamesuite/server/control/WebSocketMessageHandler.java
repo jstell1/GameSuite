@@ -15,9 +15,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GameState;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.server.model.ServerGameRepo;
@@ -96,10 +93,10 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
             //}
 
-                GameState game = this.gmRepo.removePlayer(session.getId());
+                GameManager game = this.gmRepo.removePlayer(session.getId());
                 webSocketSessions.remove(session.getId());
-                if(gameId != null && this.gmRepo.containsGame(gameId) && game.isGameOver()) {
-                    notifyGameOver(game, gameId);
+                if(gameId != null && this.gmRepo.containsGame(gameId) && game.gameOver()) {
+                    notifyGameOver(game.getGameStateJson(), gameId);
                 }
                 
                 System.out.println("Active sessions: " + webSocketSessions.size());
@@ -120,7 +117,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
     }
 
-    public void notifyGameOver(GameState game, String gameId) {
+    public void notifyGameOver(JsonNode game, String gameId) {
         
         GameManager gm = this.gmRepo.getGM(gameId);
         synchronized(gm) {
@@ -129,7 +126,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             ObjectNode outer = mapper.createObjectNode();
             ObjectNode inner = mapper.createObjectNode();
             inner.put("gameId", gameId);
-            inner.set("gameState", game.getJsonNode());
+            inner.set("gameState", game);
             outer = mapper.createObjectNode().set(msgType, inner);
             try {
                 String str = mapper.writeValueAsString(outer);
@@ -255,12 +252,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             //Player player1 = new Player(name, 0);
             //GameBoard board = new GameBoard(8);
             String gameId = this.gmRepo.createGame(name, session.getId());
-            GameState game = this.gmRepo.getGameView(gameId);
+            JsonNode game = this.gmRepo.getGameView(gameId);
             this.gmRepo.getGM(gameId);
             String msgType = "gameCreatedResponse";
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.put("gameId", gameId);
-            respPayload.set("gameState", game.getJsonNode());
+            respPayload.set("gameState", game);
             sendMessage(msgType, respPayload, session);
             System.out.println("sent");
             
@@ -314,10 +311,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             try {
                 
                 //Player p2 = new Player(player, 0);
-                GameBoard board = this.gmRepo.joinGame(player, gameId);
+                JsonNode boardJson = this.gmRepo.joinGame(player, gameId);
                 mapper = new ObjectMapper();
-                GameState game = this.gmRepo.getGM(gameId).getGameState();
-                JsonNode boardJson = board.getObjectNode();
+                JsonNode game = this.gmRepo.getGM(gameId).getGameStateJson();
                 this.gmRepo.addWebSocketToGame(gameId, session.getId());
 
                 String msgType = "gameReadyResponse";
@@ -325,7 +321,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.set("board", boardJson);
                 respPayload.put("gameId", gameId);
-                respPayload.set("gameState", game.getJsonNode());
+                respPayload.set("gameState", game);
                 sendMessage(msgType, respPayload, session);
                 ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
                 String str = mapper.writeValueAsString(outer);
@@ -370,7 +366,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 return;
             }
 
-            if(!this.gmRepo.getGameView(gameId).isBoardInit()) {
+            if(!this.gmRepo.getGM(gameId).isGameReady()) {
                 String msgType = "moveUpdateError";
                 JsonNode tmp = mapper.createObjectNode();
                 ObjectNode respPayload = tmp.deepCopy();
@@ -382,7 +378,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     
             //gm = this.gmRepo.getGM(gameId);
 
-            int currTurn = gm.getGameState().getTurn();
+            int currTurn = gm.getTurn();
             int userTurnNum = sessionList.get(session.getId());
 
             if(currTurn != userTurnNum) {
@@ -396,12 +392,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             }
 
             gm.sendMove(move);
-            GameState game = gm.getGameState();
+            JsonNode game = gm.getGameStateJson();
             String msgType = "stateUpdateResponse";
             JsonNode tmp = mapper.createObjectNode();
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.put("gameId", gameId);
-            respPayload.set("gameState", game.getJsonNode());
+            respPayload.set("gameState", game);
             sendMessage(msgType, respPayload, session);
             ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
 

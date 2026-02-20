@@ -12,12 +12,15 @@ import javax.swing.JPanel;
 
 import checkers.model.CheckersCoordPair;
 import checkers.model.CheckersGamePiece;
-import checkers.ui.GamePieceAsset;
+//import checkers.ui.GamePieceAsset;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GamePiece;
 import gamesuite.core.ui.UIListener;
+import checkers.model.CheckersGameBoard;
+
 public class CheckersCoordPairPanel extends JPanel {
 
+    private CheckersGameBoard gameBoard;
     private GamePieceAsset piece;
     private CheckersCoordPair pos;
     private int row;
@@ -25,7 +28,7 @@ public class CheckersCoordPairPanel extends JPanel {
     private UIListener listener;
     private Color baseColor;
 
-    public CheckersCoordPairPanel(CheckersCoordPair pos, UIListener listener, Color baseColor) {
+    public CheckersCoordPairPanel(CheckersCoordPair pos, UIListener listener, Color baseColor, CheckersGameBoardPanel gameBoard) {
         super();
         this.pos = pos;
         this.row = pos.getX();
@@ -45,8 +48,8 @@ public class CheckersCoordPairPanel extends JPanel {
                     if(currCol != Color.YELLOW) {
                         setBackground(Color.YELLOW);
                         repaint();
-                        //listener.sendYellowedPanel(getSelf());
-               //         listener.sendChange(row, col);
+                        gameBoard.addYellowedPanel(getSelf());
+                        gameBoard.sendChange(row, col);
                     } else {
                         setBackground(baseColor);
                         repaint();

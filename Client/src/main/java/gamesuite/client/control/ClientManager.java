@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import gamesuite.client.view.CheckersGameBoardFactory;
+import checkers.ui.CheckersGameBoardFactory;
 import gamesuite.core.control.PluginLoader;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameState;

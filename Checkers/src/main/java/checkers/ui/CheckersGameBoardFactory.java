@@ -3,12 +3,13 @@ package checkers.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import checkers.model.CheckersCoordPair;
-import checkers.model.CheckersGameBoard;
-import checkers.model.CheckersGameState;
+//import gamesuite.client.view.CheckersCoordPair;
+//import gamesuite.client.view.CheckersGameBoard;
+//import gamesuite.client.view.CheckersGameState;
 import gamesuite.core.ui.GameBoardFactory;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
+import checkers.model.*;
 
 public class CheckersGameBoardFactory implements GameBoardFactory {
 
@@ -21,6 +22,7 @@ public class CheckersGameBoardFactory implements GameBoardFactory {
             CheckersGameBoard cBoard = new CheckersGameBoard(board);
             CheckersGameState game = mapper.treeToValue(gameJson, CheckersGameState.class);
             CheckersGameBoardPanel gameBoard = new CheckersGameBoardPanel(cBoard, 600, listener);
+            gameBoard.setGameState(game);
             return gameBoard;
         } catch (Exception e) {}
 

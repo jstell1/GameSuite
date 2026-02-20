@@ -1,5 +1,6 @@
 package gamesuite.core.control;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import gamesuite.core.model.GameBoard;
@@ -11,6 +12,7 @@ public interface GameManager {
 
     
     //public abstract void initGame();
+    public JsonNode joinGame(String player);
     public void sendMove(Move move);
     public void sendMove(ObjectNode move);
     public boolean addPlayer(String player);
@@ -22,5 +24,7 @@ public interface GameManager {
     public boolean initBoard();
     public int getTurn();
     public GameState getGameState();
+    public JsonNode getGameStateJson();
     public GameState quitGame(int playerNum);
+    public int getNumPlayers();
 }

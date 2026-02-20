@@ -44,6 +44,26 @@ tasks.named('jar') {
     archiveVersion.set("")
 }
 
+task CheckersJar(type: Jar) {
+    archiveBaseName = 'Checkers'
+    
+    // grab compiled classes
+    from(sourceSets.main.output) {
+        include 'checkers/model/**'
+        include 'checkers/control/**'
+    }
+}
+
+task UIJar(type: Jar) {
+    archiveBaseName = 'CheckersUI'
+    
+    // grab compiled classes
+    from(sourceSets.main.output) {
+        include 'checkers/model/**'
+        include 'checkers/ui/**'
+    }
+}
+
 tasks.matching { it.name.startsWith("bootDist") || it.name.startsWith("bootStart") }.configureEach {
     enabled = false
 }

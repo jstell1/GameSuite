@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Player;
@@ -93,27 +95,28 @@ public class ServerGameRepo {
         //this.userPlayerNumMap.put(sessionId, num);
     //}
 
-    public GameBoard joinGame(String player, String gameId) {
+    public JsonNode joinGame(String player, String gameId) {
         
         GameManager gm = this.games.get(gameId);
+        JsonNode node = null;
         synchronized(gm) {
+            node = gm.joinGame(player);
+            //GameState game = gm.getGameState();
+            // Player p = game.getPlayer(2);
+            // if(p == null) {
 
-            GameState game = gm.getGameState();
-            Player p = game.getPlayer(2);
-            if(p == null) {
-
-                boolean added = gm.addPlayer(player);
-                if(added) {
-                    gm.initBoard();
-                    return gm.getBoard();
-                }
-            }
+            //     boolean added = gm.addPlayer(player);
+            //     if(added) {
+            //         gm.initBoard();
+            //         return gm.getBoard();
+            //     }
+            // }
         }
-        return null;
+        return node;
     }
 
-    public GameState getGameView(String gameId) {
-        return this.games.get(gameId).getGameState();
+    public JsonNode getGameView(String gameId) {
+        return this.games.get(gameId).getGameStateJson();
     }
 
     public boolean containsGame(String gameId) {
@@ -148,7 +151,7 @@ public class ServerGameRepo {
 
     
 
-    public GameState removePlayer(String sessionId) {
+    public GameManager removePlayer(String sessionId) {
         String gameId = null;
         GameManager gm = null;
         GameState game = null;
@@ -157,7 +160,7 @@ public class ServerGameRepo {
             gameId = this.userSessions.get(sessionId);
             gm = this.games.get(gameId);
             synchronized(gm) {
-                if(gm.getGameState().getWinner() == null && gm.getGameState().getNumPlayers() > 1) {
+                if(gm.getWinner() == null && gm.getNumPlayers() > 1) {
                     
                     Map<String, Integer> playerNums = this.gameUserMap.get(gameId);
                     int playerNum = playerNums.get(sessionId).intValue();
@@ -176,6 +179,6 @@ public class ServerGameRepo {
             }
         } catch (Exception e) {}
         
-        return game;
+        return gm;
     }
 }

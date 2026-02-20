@@ -3,7 +3,10 @@ package checkers.model;
 
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameState;
 
 import java.util.Arrays;
@@ -11,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CheckersGameState {
+public class CheckersGameState implements GameState {
 
     private CheckersPlayer player1;
     private CheckersPlayer player2;
@@ -74,6 +77,12 @@ public class CheckersGameState {
     public String[] getPieceNames() { 
         return Arrays.copyOf(this.pieceNames, this.pieceNames.length); 
     }
+
+    public JsonNode getGameStateJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode json = mapper.valueToTree(this);
+        return json;
+    } 
 
     public void addJustKinged(CheckersCoordPair pos) {
         this.justKinged.add(pos);
@@ -212,5 +221,17 @@ public class CheckersGameState {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isJustKinged(CoordPair pos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isJustKinged'");
+    }
+
+    @Override
+    public JsonNode getJsonNode() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getJsonNode'");
     }
 }

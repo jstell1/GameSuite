@@ -2,13 +2,11 @@ package checkers.model;
 
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import gamesuite.core.model.GamePiece;
-import gamesuite.core.model.Move;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CheckersGamePiece {
+public class CheckersGamePiece implements GamePiece {
     private String name;
     private String type;
     private int val;

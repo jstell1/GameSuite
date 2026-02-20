@@ -1,6 +1,8 @@
 package checkers.model;
 
-public class CheckersPlayer {
+import gamesuite.core.model.Player;
+
+public class CheckersPlayer implements Player {
     private int points;
     private String name;
     private String userId;

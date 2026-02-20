@@ -21,7 +21,7 @@ public interface GameState {
 
     public int getTurnFactor();
 
-    public Set<CoordPair> getJumps(int playerNum);
+    //public Set<CoordPair> getJumps(int playerNum);
 
     public int getTurn();
 
@@ -39,6 +39,6 @@ public interface GameState {
 
     public int getNumPlayers();
 
-    public List<CoordPair> getChangedPos();
+    //public List<CoordPair> getChangedPos();
     public JsonNode getJsonNode();
 }

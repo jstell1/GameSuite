@@ -1,8 +1,11 @@
 package checkers.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gamesuite.core.model.Move;
 
-public class CheckersMove {
+public class CheckersMove implements Move {
     int startX, startY;
     int endX, endY;
 
@@ -42,5 +45,18 @@ public class CheckersMove {
 
     public int getEndX() { return this.endX; }
 
-    public int getEndY() { return this.endY; } 
+    public int getEndY() { return this.endY; }
+
+    @Override
+    public void setJsonNode(JsonNode node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setJsonNode'");
+    }
+
+    @Override
+    public JsonNode getJsonNode() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.valueToTree(this);
+        return node;
+    } 
 }

@@ -3,6 +3,7 @@ package checkers.control;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -11,10 +12,6 @@ import checkers.model.CheckersGameBoard;
 import checkers.model.CheckersGameState;
 import checkers.model.CheckersMove;
 import checkers.model.CheckersPlayer;
-import checkers.view.CheckersGameBoardView;
-import checkers.view.CheckersGameStateView;
-import checkers.view.CheckersMoveView;
-import checkers.view.CheckersPlayerView;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
@@ -61,8 +58,8 @@ public class CheckersGameManager implements GameManager {
         ObjectMapper mapper = new ObjectMapper();
         try {
             CheckersMove mv = mapper.treeToValue(move, CheckersMove.class);
-            CheckersMoveView mvView = new CheckersMoveView(mv);
-            sendMove(mvView);
+            //CheckersMoveView mvView = new CheckersMoveView(mv);
+            sendMove(mv);
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -83,18 +80,18 @@ public class CheckersGameManager implements GameManager {
     }
 
     public boolean isGameReady() {
-        return getGameState().isBoardInit();
+        return this.game.isBoardInit();
     }
 
     public String getBoardString() { return this.stateManager.getBoardString(); }
 
     public Player getWinner() { 
         if(this.stateManager.getWinner() != null) 
-            return new CheckersPlayerView(this.stateManager.getWinner().copy());
+            return this.stateManager.getWinner().copy();
         return null; 
     }
 
-    public GameBoard getBoard() { return new CheckersGameBoardView(this.board); }
+    public GameBoard getBoard() { return this.board; }
 
     public boolean gameOver() {
         if(this.stateManager.getWinner() != null || this.stateManager.getDraw())
@@ -112,14 +109,46 @@ public class CheckersGameManager implements GameManager {
 
     public int getTurn() { return this.stateManager.getTurn(); }
 
-    public GameState getGameState() {
-        return new CheckersGameStateView(this.game);
-    }
+    //public GameState getGameState() {
+    //    return new CheckersGameStateView(this.game);
+    //}
 
     public GameState quitGame(int playerNum) {
         if(this.stateManager.getWinner() == null) {
             this.stateManager.setWinner(playerNum % 2 + 1);
         }
-        return getGameState();
+        return this.game;
     }
+
+    @Override
+    public JsonNode getGameStateJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode json = mapper.valueToTree(this.game);
+        return json;
+    }
+
+    @Override
+    public int getNumPlayers() {
+        return this.game.getNumPlayers();
+    }
+
+    @Override
+    public JsonNode joinGame(String player) {
+        CheckersPlayer p = game.getPlayer(2);
+        if(p == null) {
+
+            boolean added = addPlayer(player);
+            if(added) {
+                initBoard();
+                return this.board.getJsonNode();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public GameState getGameState() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getGameState'");
+    } 
 }

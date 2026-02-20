@@ -1,9 +1,11 @@
 package checkers.model;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GamePiece;
 
-public class CheckersCoordPair {
+public class CheckersCoordPair implements CoordPair {
     private int x;
     private int y;
     private CheckersGamePiece piece;
@@ -50,7 +52,7 @@ public class CheckersCoordPair {
         return pos;
     }
 
-    public static CheckersCoordPair toCoordPair(int[] arr) {
+    public CoordPair toCoordPair(int[] arr) {
         if(arr.length == 2) 
             return new CheckersCoordPair(arr[0], arr[1]);
         return null;
@@ -63,6 +65,20 @@ public class CheckersCoordPair {
             arr[1] = pos.getY();
         }
         return null;
+    }
+
+  
+
+    @Override
+    public int[] toArray(CoordPair pos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toArray'");
+    }
+
+    @Override
+    public ObjectNode getCoordPairJson() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCoordPairJson'");
     }
 
 }
