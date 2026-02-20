@@ -1,11 +1,9 @@
-package checkers.model;
+package gamesuite.client.view;
 
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import gamesuite.core.model.GamePiece;
-import gamesuite.core.model.Move;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CheckersGamePiece {

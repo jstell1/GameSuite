@@ -6,7 +6,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import gamesuite.client.control.UIListener;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import gamesuite.core.model.GameState;
+import gamesuite.core.model.Player;
+//import checkers.ui.GameBoardPanel;
+import gamesuite.core.ui.GameBoardUI;
+import gamesuite.core.ui.UIListener;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -19,14 +27,19 @@ import java.awt.event.WindowListener;
 
 public class GameGUI {
     private JFrame window;
-    private GameBoardPanel gameBoard;
     //private JLabel turnLabel;
     private JTextPane turnLabel;
     private JPanel centerPanel;
     private UIListener listener;
     private JButton quitButton;
+    private GameState gameView;
+    private GameBoardUI gameBoard;
+    private int tmpX, tmpY;
+    private int playerTurn;
 
-    public GameGUI(int startTurn, GameBoardPanel gameBoard, UIListener listener) {
+    //Gameboard ready
+    public GameGUI(GameBoardUI gameBoard, UIListener listener) {
+        int startTurn = gameBoard.getTurn();
         this.listener = listener;
         this.window = new JFrame("GameSuite");
 
@@ -94,11 +107,13 @@ public class GameGUI {
         this.window.setResizable(true);
     }
 
+    //main page
     public GameGUI(UIListener listener) {
         this.listener = listener;
         this.window = new JFrame("GameSuite");
         this.window.setSize(800, 800);
         this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
         this.window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -107,6 +122,7 @@ public class GameGUI {
                 System.exit(0);
             }
         });
+
         this.window.setLayout(new BorderLayout());
         //this.turnLabel = new JLabel("Create new game or join game");
         this.turnLabel = new JTextPane();
@@ -207,7 +223,53 @@ public class GameGUI {
         this.turnLabel.setText("Player " + num + "'s turn");
     }
 
+    public int getPlayerTurn() {
+        return this.playerTurn;
+    }
+
     public void setGameOverLabel(String msg) {
         this.turnLabel.setText(msg);
+    }
+
+    public void update(JsonNode gameState) {
+       // if(this.gameView != null) {
+                //List<CoordPair> changed = this.gameView.getChangedPos();
+                this.gameBoard.update(gameState);
+                //this.gameBoard.update();
+         //   }
+           // this.tmpX = -1;
+            //this.tmpY = -1;
+ 
+            if(!this.gameBoard.isGameOver()) {
+                if(this.playerTurn == this.gameBoard.getTurn())
+                    enableGUI();
+                setTurnLabel(this.gameBoard.getTurn());
+            } else {
+                String winner = this.gameBoard.getWinner();
+                setGameOverLabel(winner + " is the winner");
+            }
+           // return null;
+        //this.gameBoard.updateBoard(gameState);
+    }
+
+    public void setGameState(JsonNode game) {
+       
+    }
+
+    public void initGame(JsonNode board, JsonNode game, GameBoardUI boardUI) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'initGame'");
+    }
+
+    public boolean isPlayerTurn() {
+        return this.playerTurn == this.gameBoard.getTurn();
+    }
+
+    public void setPlayerTurn(int playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
+    public void removeYellowed(int x, int y) {
+        this.gameBoard.removeYellowed(x, y);
     }
 }

@@ -1,13 +1,15 @@
-package gamesuite.client.control;
+package gamesuite.core.ui;
 
-import gamesuite.client.view.CoordPairPanel;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface UIListener {
-    public void sendChange(int x, int y);
     public boolean getIsBoardEnabled();
-    public void sendYellowedPanel(CoordPairPanel pos);
+    public void disabledBoard();
+    public void sendMove(JsonNode move);
+    public void sendYellowedPanel(JsonNode pos);
     public void createGame(String name);
     public void joinGame(String name, String gameId);
     public void quitGame(boolean hardQuit);
     public boolean isPlayerTurn();
+    public void enableBoard();
 }

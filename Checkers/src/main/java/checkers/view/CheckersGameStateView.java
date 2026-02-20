@@ -2,6 +2,7 @@ package checkers.view;
 
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -90,8 +91,8 @@ public class CheckersGameStateView implements GameState {
     }
 
     @Override
-    public ObjectNode getObjectNode() {
-        ObjectMapper mapper = new ObjectMapper();
+    public JsonNode getJsonNode() {
+         ObjectMapper mapper = new ObjectMapper();
         return mapper.valueToTree(game);
     }
 }

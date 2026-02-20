@@ -2,16 +2,17 @@ package gamesuite.client;
 
 import java.util.Scanner;
 
-import checkers.model.GameBoard;
-import checkers.model.GameState;
-import checkers.model.Player;
-import gamesuite.core.control.CheckersGameManager;
+import gamesuite.core.model.GameBoard;
+import gamesuite.core.model.GameState;
+import gamesuite.core.model.Player;
+import gamesuite.core.control.GameManager;
+import gamesuite.core.control.GameManagerFactory;
 import gamesuite.client.control.ClientConfigurer;
 import gamesuite.client.control.ClientManager;
 import gamesuite.client.control.GUIManager;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
-import gamesuite.client.view.TextGameCLI;
+//import gamesuite.client.view.TextGameCLI;
 
 public class App {
 
@@ -38,6 +39,8 @@ public class App {
             //runLocal(uiType, ip, port, player1, player2, in);
         } else {
             ClientManager cmg = new ClientManager(ip, port);
+            
+            
             GUIManager guiGM = new GUIManager();
             guiGM.setGamManager(cmg);
             cmg.setGUIManager(guiGM);
@@ -55,6 +58,8 @@ public class App {
 
     }
 
+
+    /* 
     public static void runLocal(String uiType, String ip, int port, String player1, String player2, Scanner in) {
          
         
@@ -64,6 +69,7 @@ public class App {
             Player p1 = new Player(player1, 0);
             Player p2 = new Player(player2, 0);
             GameBoard board = new GameBoard(8);
+            
             CheckersGameManager checkers = new CheckersGameManager(board, p1, p2);
             checkers.initBoard();
             GameState game = checkers.getGameState();
@@ -84,4 +90,5 @@ public class App {
 
         }
     }
+        */
 }

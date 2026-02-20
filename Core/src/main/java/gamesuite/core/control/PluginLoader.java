@@ -1,6 +1,8 @@
 package gamesuite.core.control;
 
 import gamesuite.core.control.GameManager;
+import gamesuite.core.ui.GameBoardFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -15,16 +17,55 @@ public class PluginLoader {
     private final File pluginDir;
     private final Map<String, Class<? extends GameManagerFactory>> gameClasses = new ConcurrentHashMap<>();
     private final Map<String, URLClassLoader> classLoaders = new ConcurrentHashMap<>();
+    private Map<String, Class<? extends GameBoardFactory>> gameBoards;
+    private Map<String, URLClassLoader> gameBoardClassLoaders;
+    File[] jars;
 
     public PluginLoader(String pluginDirPath) {
         this.pluginDir = new File(pluginDirPath);
         if (!pluginDir.exists()) pluginDir.mkdirs();
     }
 
+    public void loadGameBoards() {
+        this.gameBoards = new ConcurrentHashMap<>();
+        this.gameBoardClassLoaders = new ConcurrentHashMap<>();
+
+        //for(File jar : this.jars) {
+        //    try {
+                //loadGameUIs(jar);
+        //    } catch (Exception e) {}
+        //}
+    }
+
+    private void loadGameUIs(File jarFile) throws Exception {
+        URL jarUrl = jarFile.toURI().toURL();
+        String gameName = jarFile.getName();
+
+        gameName = jarFile.getName().replaceFirst("\\.jar$", "");
+
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
+
+        ServiceLoader<GameBoardFactory> serviceLoader = ServiceLoader.load(GameBoardFactory.class, classLoader);
+        Iterator<GameBoardFactory> iterator = serviceLoader.iterator();
+
+        if (!iterator.hasNext()) {
+            System.err.println("No GameBoardUI found in " + jarFile.getName());
+            return;
+        }
+
+        GameBoardFactory temp = iterator.next();
+        Class<? extends GameBoardFactory> clazz = (Class<? extends GameBoardFactory>) temp.getClass();
+
+        this.gameBoards.put(gameName, clazz);
+        this.gameBoardClassLoaders.put(gameName, classLoader);
+
+        System.out.println("Registered game plugin: " + gameName);
+    }
+
     public void loadAll() throws Exception {
-        File[] jars = pluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
-        if (jars == null) return;
-        for (File jar : jars) {
+        this.jars = pluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
+        if (this.jars == null) return;
+        for (File jar : this.jars) {
 
 
             loadPlugin(jar);
@@ -65,10 +106,8 @@ public class PluginLoader {
 
         gameName = jarFile.getName().replaceFirst("\\.jar$", "");
 
-         //gameName.replaceFirst(".jar", "");
         URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
 
-        // Option 1: Use ServiceLoader
         ServiceLoader<GameManagerFactory> serviceLoader = ServiceLoader.load(GameManagerFactory.class, classLoader);
         Iterator<GameManagerFactory> iterator = serviceLoader.iterator();
 
@@ -80,7 +119,6 @@ public class PluginLoader {
         GameManagerFactory temp = iterator.next();
         Class<? extends GameManagerFactory> clazz = (Class<? extends GameManagerFactory>) temp.getClass();
 
-        //String gameName = temp.getGameName();
         gameClasses.put(gameName, clazz);
         classLoaders.put(gameName, classLoader);
 
@@ -89,6 +127,16 @@ public class PluginLoader {
 
     public Set<String> listAvailableGames() {
         return Collections.unmodifiableSet(gameClasses.keySet());
+    }
+
+    public GameBoardFactory createBoardFactory(String gameName) {
+        Class<? extends GameBoardFactory> clazz = this.gameBoards.get(gameName);
+        if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to instantiate " + gameName, e);
+        }
     }
 
     public GameManagerFactory createGameManager(String gameName) {

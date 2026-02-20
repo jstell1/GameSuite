@@ -26,12 +26,12 @@ public class ServerGameRepo {
             loader.loadAll();
             loader.watchForChanges();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
     }
 
+    //Autoselects checkers for now since that's the only game plugin available
     public String createGame(String p1, String sessionId) {
         //GameManagerFactory gmFact = 
         GameManagerFactory gmFact = loader.createGameManager("Checkers");//new GameManager(board, p1);

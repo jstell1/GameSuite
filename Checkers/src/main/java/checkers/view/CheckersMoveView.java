@@ -2,7 +2,7 @@ package checkers.view;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import checkers.model.CheckersMove;
 import gamesuite.core.model.Move;
@@ -22,7 +22,7 @@ public class CheckersMoveView implements Move {
     public int getEndY() { return this.move.getEndY(); }
 
     @Override
-    public void setObjectNode(ObjectNode node) {
+    public void setJsonNode(JsonNode node) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -38,7 +38,7 @@ public class CheckersMoveView implements Move {
     }
 
     @Override
-    public ObjectNode getObjectNode() {
+    public JsonNode getJsonNode() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getObjectNode'");
     }

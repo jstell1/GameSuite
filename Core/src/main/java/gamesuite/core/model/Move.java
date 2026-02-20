@@ -1,6 +1,6 @@
 package gamesuite.core.model;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface Move {
 
@@ -12,8 +12,8 @@ public interface Move {
 
     public int getEndY();
 
-    public void setObjectNode(ObjectNode node);
-    public ObjectNode getObjectNode();
+    public void setJsonNode(JsonNode node);
+    public JsonNode getJsonNode();
 
 
 }

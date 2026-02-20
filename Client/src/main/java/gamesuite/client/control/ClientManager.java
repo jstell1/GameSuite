@@ -16,10 +16,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import checkers.model.CoordPair;
-import checkers.model.GameState;
-import checkers.model.Move;
+import gamesuite.client.view.CheckersGameBoardFactory;
+import gamesuite.core.control.PluginLoader;
+import gamesuite.core.model.CoordPair;
+import gamesuite.core.model.GameState;
+import gamesuite.core.model.Move;
 import gamesuite.core.network.*;
+import gamesuite.core.ui.GameBoardFactory;
+import gamesuite.core.ui.GameBoardUI;
 
 public class ClientManager {
     private final WebSocketClient client = new StandardWebSocketClient();
@@ -35,8 +39,16 @@ public class ClientManager {
     private JsonNode schemaRoot;
     private String ip;
     private int port;
+    private final PluginLoader loader = new PluginLoader("../plugins/");
     
     public ClientManager(String ip, int port) {
+        try {
+            this.loader.loadAll();
+            this.loader.watchForChanges();
+            this.loader.loadGameBoards();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         this.ip = ip;
         this.port = port;
         this.baseUrl = "https://" + ip + ":" + port;
@@ -49,6 +61,10 @@ public class ClientManager {
         } catch (Exception e) {
             
         }
+    }
+
+    public void loadGame(String gameName) {
+
     }
 
     public void setGUIManager(GUIManager guiGM) {
@@ -96,7 +112,7 @@ public class ClientManager {
                     }
     
                     ObjectNode outer = null;
-                    ObjectNode payload =null; 
+                    ObjectNode payload = null; 
     
                     try {
                         outer = (ObjectNode) mapper.readTree(netWorkMsg);
@@ -122,27 +138,36 @@ public class ClientManager {
                             ClientManager.this.gameId = payload.get("gameId").asText();
                             ClientManager.this.guiGM.setGameId(ClientManager.this.gameId);
                             JsonNode gameJson = payload.get("gameState");
-                            GameState game = mapper.treeToValue(gameJson, GameState.class);
-                            ClientManager.this.guiGM.setGameState(game);
+                            //GameState game = mapper.treeToValue(gameJson, GameState.class);
+                            //ClientManager.this.guiGM.setGameState(gameJson);
+                            ClientManager.this.guiGM.setPlayerTurn(1);//setGameState(gameJson);
                             break;
                         case "gameReadyResponse":
                             JsonNode boardJson = mapper.valueToTree(payload.get("board"));
                             gameJson = mapper.valueToTree(payload.get("gameState"));
-                            CoordPair[][] board = mapper.treeToValue(boardJson, CoordPair[][].class);
-                            game = mapper.treeToValue(gameJson, GameState.class);
+                            //CoordPair[][] board = mapper.treeToValue(boardJson, CoordPair[][].class);
+                            //game = mapper.treeToValue(gameJson, GameState.class);
                             if(ClientManager.this.gameId == null) {
                                 ClientManager.this.gameId = payload.get("gameId").asText();
                                 ClientManager.this.guiGM.setGameId(payload.get("gameId").asText());
                             }
-                            ClientManager.this.guiGM.setGameState(game);
-                            ClientManager.this.guiGM.initGame(board, game);
+
+                            if(ClientManager.this.guiGM.getPlayerTurn() == 0) {
+                                ClientManager.this.guiGM.setPlayerTurn(2);
+                            }
+
+                            GameBoardFactory fact = new CheckersGameBoardFactory(); //loader.createBoardFactory("Checkers");
+                            GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManager.this.guiGM);
+                            //ClientManager.this.guiGM.setBoard(gbu);
+                            //ClientManager.this.guiGM.setGameState(gameJson);
+                            ClientManager.this.guiGM.initGame(gbu);
                             break;
                         case "stateUpdateResponse":
                             gameJson = mapper.valueToTree(payload.get("gameState"));
-                            game = mapper.treeToValue(gameJson, GameState.class);
+                            //GameState game = mapper.treeToValue(gameJson, GameState.class);
 
-                            ClientManager.this.guiGM.setGameState(game);
-                            ClientManager.this.guiGM.update();
+                            //ClientManager.this.guiGM.setGameState(game);
+                            ClientManager.this.guiGM.update(gameJson);
                             break;
                         default: break;
                     }
@@ -160,17 +185,17 @@ public class ClientManager {
         return sessionIdFuture.get();
     }
 
-    public synchronized void sendMove(Move move) {
+    public synchronized void sendMove(JsonNode move) {
         if (session != null && session.isOpen()) {
 
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "moveRequest";
-            JsonNode tmp = mapper.createObjectNode();
-            JsonNode moveJson = mapper.valueToTree(move);
-            ObjectNode payload = tmp.deepCopy();
+            //JsonNode tmp = mapper.createObjectNode();
+            //JsonNode moveJson = mapper.valueToTree(move);
+            ObjectNode payload = mapper.createObjectNode();//tmp.deepCopy();
 
             payload.put("gameId", this.gameId);
-            payload.set("move", moveJson);
+            payload.set("move", move);
             ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
             
             try {

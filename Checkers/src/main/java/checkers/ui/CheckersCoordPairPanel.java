@@ -1,4 +1,4 @@
-package gamesuite.client.view;
+package checkers.ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -10,19 +10,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
-import checkers.model.CoordPair;
-import checkers.model.GamePiece;
-import gamesuite.client.control.UIListener;
-public class CoordPairPanel extends JPanel {
+import checkers.model.CheckersCoordPair;
+import checkers.model.CheckersGamePiece;
+import checkers.ui.GamePieceAsset;
+import gamesuite.core.model.CoordPair;
+import gamesuite.core.model.GamePiece;
+import gamesuite.core.ui.UIListener;
+public class CheckersCoordPairPanel extends JPanel {
 
     private GamePieceAsset piece;
-    private CoordPair pos;
+    private CheckersCoordPair pos;
     private int row;
     private int col;
     private UIListener listener;
     private Color baseColor;
 
-    public CoordPairPanel(CoordPair pos, UIListener listener, Color baseColor) {
+    public CheckersCoordPairPanel(CheckersCoordPair pos, UIListener listener, Color baseColor) {
         super();
         this.pos = pos;
         this.row = pos.getX();
@@ -42,8 +45,8 @@ public class CoordPairPanel extends JPanel {
                     if(currCol != Color.YELLOW) {
                         setBackground(Color.YELLOW);
                         repaint();
-                        listener.sendYellowedPanel(getSelf());
-                        listener.sendChange(row, col);
+                        //listener.sendYellowedPanel(getSelf());
+               //         listener.sendChange(row, col);
                     } else {
                         setBackground(baseColor);
                         repaint();
@@ -58,13 +61,13 @@ public class CoordPairPanel extends JPanel {
         setBackground(this.baseColor);
     }
     
-    private CoordPairPanel getSelf() { return this; }
+    private CheckersCoordPairPanel getSelf() { return this; }
 
     public int getRow() { return this.row; }
 
     public int getCol() { return this.col; }
 
-    public CoordPair getCoordPair() { return this.pos; }
+    public CheckersCoordPair getCoordPair() { return this.pos; }
 
     private void setPiece() {
         if(this.pos.getPiece() == null)
@@ -79,7 +82,7 @@ public class CoordPairPanel extends JPanel {
         repaint();
     }
 
-    public void setPiece(GamePiece piece) {
+    public void setPiece(CheckersGamePiece piece) {
         if(piece == null) {
             this.piece = null;
         } else if(piece.getName().equals("B")) {

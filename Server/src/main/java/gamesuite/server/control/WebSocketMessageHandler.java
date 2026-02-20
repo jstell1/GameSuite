@@ -129,7 +129,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             ObjectNode outer = mapper.createObjectNode();
             ObjectNode inner = mapper.createObjectNode();
             inner.put("gameId", gameId);
-            inner.set("gameState", game.getObjectNode());
+            inner.set("gameState", game.getJsonNode());
             outer = mapper.createObjectNode().set(msgType, inner);
             try {
                 String str = mapper.writeValueAsString(outer);
@@ -260,7 +260,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             String msgType = "gameCreatedResponse";
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.put("gameId", gameId);
-            respPayload.set("gameState", game.getObjectNode());
+            respPayload.set("gameState", game.getJsonNode());
             sendMessage(msgType, respPayload, session);
             System.out.println("sent");
             
@@ -325,7 +325,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.set("board", boardJson);
                 respPayload.put("gameId", gameId);
-                respPayload.set("gameState", game.getObjectNode());
+                respPayload.set("gameState", game.getJsonNode());
                 sendMessage(msgType, respPayload, session);
                 ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
                 String str = mapper.writeValueAsString(outer);
@@ -401,7 +401,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             JsonNode tmp = mapper.createObjectNode();
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.put("gameId", gameId);
-            respPayload.set("gameState", game.getObjectNode());
+            respPayload.set("gameState", game.getJsonNode());
             sendMessage(msgType, respPayload, session);
             ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
 
