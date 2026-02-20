@@ -1,5 +1,7 @@
 package gamesuite.server.model;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,12 +23,24 @@ public class ServerGameRepo {
     private final Map<String, GameManager> games = new ConcurrentHashMap<>();
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
     private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
-    private final PluginLoader loader = new PluginLoader("../plugins/");
+    private PluginLoader loader;
 
     public ServerGameRepo() {
         try {
-            loader.loadAll();
-            loader.watchForChanges();
+            //Path basePath = Paths.get(System.getProperty("user.dir"));
+            // System.out.println(basePath.resolve("Server")
+            //                             .resolve("..")
+            //                             .resolve("plugins")
+            //                             .normalize().toString());
+            this.loader = new PluginLoader("plugins/");
+                
+                
+               // basePath.resolve("Server")
+            //                             .resolve("..")
+            //                             .resolve("plugins")
+            //                             .normalize().toString());
+            this.loader.loadAll();
+            this.loader.watchForChanges();
         } catch (Exception e) {
             e.printStackTrace();
         }

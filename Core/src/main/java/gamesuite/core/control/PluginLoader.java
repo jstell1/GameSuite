@@ -15,26 +15,43 @@ import java.util.jar.Manifest;
 
 public class PluginLoader {
     private final File pluginDir;
+    private File uiPluginDir;
     private final Map<String, Class<? extends GameManagerFactory>> gameClasses = new ConcurrentHashMap<>();
     private final Map<String, URLClassLoader> classLoaders = new ConcurrentHashMap<>();
     private Map<String, Class<? extends GameBoardFactory>> gameBoards;
     private Map<String, URLClassLoader> gameBoardClassLoaders;
     File[] jars;
+    File[] uiJars;
 
     public PluginLoader(String pluginDirPath) {
         this.pluginDir = new File(pluginDirPath);
-        if (!pluginDir.exists()) pluginDir.mkdirs();
+        if (!this.pluginDir.exists()) this.pluginDir.mkdirs();
     }
 
-    public void loadGameBoards() {
+    public void setUIPluginLoader(String uiPluginDirPath) {
+        this.uiPluginDir = new File(uiPluginDirPath);
+        if(!this.uiPluginDir.exists()) this.uiPluginDir.mkdir();
+    }
+
+    public boolean loadGameBoards() {
+        boolean check = true;
+        if(this.uiPluginDir == null) {
+            check = false;
+            System.out.println("PROBLEM!!!!");
+            return check;
+        }
+
+
         this.gameBoards = new ConcurrentHashMap<>();
         this.gameBoardClassLoaders = new ConcurrentHashMap<>();
-
-        //for(File jar : this.jars) {
-        //    try {
-                //loadGameUIs(jar);
-        //    } catch (Exception e) {}
-        //}
+        //String p = this.path + "/ui";
+        this.uiJars = uiPluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
+        for(File jar : this.uiJars) {
+            try {
+                loadGameUIs(jar);
+            } catch (Exception e) { check = false; }
+        }
+        return check;
     }
 
     private void loadGameUIs(File jarFile) throws Exception {

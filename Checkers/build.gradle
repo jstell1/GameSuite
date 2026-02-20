@@ -52,6 +52,7 @@ task CheckersJar(type: Jar) {
         include 'checkers/model/**'
         include 'checkers/control/**'
     }
+    from(sourceSets.main.resources) 
 }
 
 task UIJar(type: Jar) {
@@ -62,6 +63,7 @@ task UIJar(type: Jar) {
         include 'checkers/model/**'
         include 'checkers/ui/**'
     }
+    from(sourceSets.main.resources)
 }
 
 tasks.matching { it.name.startsWith("bootDist") || it.name.startsWith("bootStart") }.configureEach {

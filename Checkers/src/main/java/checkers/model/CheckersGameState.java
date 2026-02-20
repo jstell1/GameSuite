@@ -223,15 +223,15 @@ public class CheckersGameState implements GameState {
         return false;
     }
 
-    @Override
-    public boolean isJustKinged(CoordPair pos) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isJustKinged'");
-    }
+    // @Override
+    // public boolean isJustKinged(CoordPair pos) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'isJustKinged'");
+    // }
 
-    @Override
-    public JsonNode getJsonNode() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getJsonNode'");
-    }
-}
+//     @Override
+//     public JsonNode getJsonNode() {
+//         // TODO Auto-generated method stub
+//         throw new UnsupportedOperationException("Unimplemented method 'getJsonNode'");
+//     }
+ }

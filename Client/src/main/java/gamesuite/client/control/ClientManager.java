@@ -2,6 +2,8 @@ package gamesuite.client.control;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import checkers.ui.CheckersGameBoardFactory;
+//import checkers.ui.CheckersGameBoardFactory;
 import gamesuite.core.control.PluginLoader;
 import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameState;
@@ -39,12 +41,49 @@ public class ClientManager {
     private JsonNode schemaRoot;
     private String ip;
     private int port;
-    private final PluginLoader loader = new PluginLoader("../plugins/");
+    private PluginLoader loader;
     
     public ClientManager(String ip, int port) {
         try {
+
+
+            // Path basePath = Paths.get(System.getProperty("user.dir"));
+            // System.out.println(basePath.resolve("Server")
+            //                             .resolve("..")
+            //                             .resolve("plugins")
+            //                             .normalize().toString());
+            this.loader = new PluginLoader("../plugins");
+                
+                //basePath.resolve("Server")
+            //                             .resolve("..")
+            //                             .resolve("plugins")
+            //                             .normalize().toString());
+
+
+            // String basePath = System.getProperty("user.dir");
+            // this.loader = new PluginLoader(basePath + "\\..\\plugins\\");
             this.loader.loadAll();
             this.loader.watchForChanges();
+
+            //Path basePath2 = Paths.get(System.getProperty("user.dir"));
+            //System.out.println(System.getProperty("usr.dir").toString());
+            // System.out.println(basePath2//.//resolve("Client")
+            //                             //.resolve("..")
+            //                             .resolve("plugins")
+            //                             .resolve("ui")
+            //                             .normalize().toString());
+            this.loader.setUIPluginLoader("../plugins/ui");
+                
+                
+                //basePath2//.resolve("Client")
+            //                            // .resolve("..")
+            //                             .resolve("plugins")
+            //                             .resolve("ui")
+            //                             .normalize().toString());
+
+
+            // System.out.println(basePath + "\\..\\plugins\\");
+            // this.loader.setUIPluginLoader(basePath + "\\..\\plugins\\ui\\");
             this.loader.loadGameBoards();
         } catch (Exception e) {
             // TODO: handle exception
@@ -156,7 +195,7 @@ public class ClientManager {
                                 ClientManager.this.guiGM.setPlayerTurn(2);
                             }
 
-                            GameBoardFactory fact = new CheckersGameBoardFactory(); //loader.createBoardFactory("Checkers");
+                            GameBoardFactory fact = ClientManager.this.loader.createBoardFactory("CheckersUI");
                             GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManager.this.guiGM);
                             //ClientManager.this.guiGM.setBoard(gbu);
                             //ClientManager.this.guiGM.setGameState(gameJson);

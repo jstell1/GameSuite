@@ -13,7 +13,7 @@ public interface GameState {
 
     public String[] getPieceNames();
 
-    public boolean isJustKinged(CoordPair pos);
+    //public boolean isJustKinged(CoordPair pos);
 
     public boolean isGameOver();
 
@@ -40,5 +40,5 @@ public interface GameState {
     public int getNumPlayers();
 
     //public List<CoordPair> getChangedPos();
-    public JsonNode getJsonNode();
+    //public JsonNode getJsonNode();
 }
