@@ -140,7 +140,9 @@ public class CheckersGameManager implements GameManager {
             boolean added = addPlayer(player);
             if(added) {
                 initBoard();
-                return this.board.getJsonNode();
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode b = mapper.valueToTree(this.board.getBoard());
+                return b;
             }
         }
         return null;

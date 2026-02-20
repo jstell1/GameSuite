@@ -32,7 +32,7 @@ public class ServerGameRepo {
             //                             .resolve("..")
             //                             .resolve("plugins")
             //                             .normalize().toString());
-            this.loader = new PluginLoader("plugins/");
+            this.loader = new PluginLoader("../plugins/");
                 
                 
                // basePath.resolve("Server")

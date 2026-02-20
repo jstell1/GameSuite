@@ -322,7 +322,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 respPayload.set("board", boardJson);
                 respPayload.put("gameId", gameId);
                 respPayload.set("gameState", game);
-                sendMessage(msgType, respPayload, session);
+                //sendMessage(msgType, respPayload, session);
                 ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
                 String str = mapper.writeValueAsString(outer);
                 notifyPlayerJoined(gameId, str);

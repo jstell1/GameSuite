@@ -12,8 +12,8 @@ public interface Move {
 
     public int getEndY();
 
-    public void setJsonNode(JsonNode node);
-    public JsonNode getJsonNode();
+    //public void setJsonNode(JsonNode node);
+    //public JsonNode getJsonNode();
 
 
 }

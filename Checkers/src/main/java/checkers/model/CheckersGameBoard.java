@@ -90,10 +90,10 @@ public class CheckersGameBoard implements GameBoard {
         return str;
     }
 
-    @Override
-    public JsonNode getJsonNode() {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.valueToTree(this);
-        return node; 
-    }
+    // @Override
+    // public JsonNode getJsonNode() {
+    //     ObjectMapper mapper = new ObjectMapper();
+    //     JsonNode node = mapper.valueToTree(this);
+    //     return node; 
+    // }
 }

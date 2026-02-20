@@ -78,11 +78,11 @@ public class CheckersGameState implements GameState {
         return Arrays.copyOf(this.pieceNames, this.pieceNames.length); 
     }
 
-    public JsonNode getGameStateJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode json = mapper.valueToTree(this);
-        return json;
-    } 
+    // public JsonNode getGameStateJson() {
+    //     ObjectMapper mapper = new ObjectMapper();
+    //     JsonNode json = mapper.valueToTree(this);
+    //     return json;
+    // } 
 
     public void addJustKinged(CheckersCoordPair pos) {
         this.justKinged.add(pos);

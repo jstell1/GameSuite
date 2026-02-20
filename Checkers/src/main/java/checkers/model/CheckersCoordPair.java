@@ -69,16 +69,16 @@ public class CheckersCoordPair implements CoordPair {
 
   
 
-    @Override
-    public int[] toArray(CoordPair pos) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toArray'");
-    }
+    // @Override
+    // public int[] toArray(CoordPair pos) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'toArray'");
+    // }
 
-    @Override
-    public ObjectNode getCoordPairJson() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCoordPairJson'");
-    }
+    // @Override
+    // public ObjectNode getCoordPairJson() {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'getCoordPairJson'");
+    // }
 
 }
