@@ -17,12 +17,7 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-//import checkers.ui.CheckersGameBoardFactory;
 import gamesuite.core.control.PluginLoader;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
 import gamesuite.core.network.*;
 import gamesuite.core.ui.GameBoardFactory;
 import gamesuite.core.ui.GameBoardUI;

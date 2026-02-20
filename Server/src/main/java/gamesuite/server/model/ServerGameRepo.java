@@ -10,10 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Player;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManagerFactory;
 import gamesuite.core.control.PluginLoader;
@@ -168,7 +164,7 @@ public class ServerGameRepo {
     public GameManager removePlayer(String sessionId) {
         String gameId = null;
         GameManager gm = null;
-        GameState game = null;
+        //GameState game = null;
 
         try {
             gameId = this.userSessions.get(sessionId);
@@ -178,7 +174,7 @@ public class ServerGameRepo {
                     
                     Map<String, Integer> playerNums = this.gameUserMap.get(gameId);
                     int playerNum = playerNums.get(sessionId).intValue();
-                    game = gm.quitGame(playerNum);
+                    gm.quitGame(playerNum);
                     this.userSessions.remove(sessionId);
                     this.gameUserMap.get(gameId).remove(sessionId);
                     

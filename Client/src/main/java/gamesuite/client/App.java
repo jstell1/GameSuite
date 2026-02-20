@@ -2,16 +2,10 @@ package gamesuite.client;
 
 import java.util.Scanner;
 
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Player;
-import gamesuite.core.control.GameManager;
-import gamesuite.core.control.GameManagerFactory;
 import gamesuite.client.control.ClientConfigurer;
 import gamesuite.client.control.ClientManager;
 import gamesuite.client.control.GUIManager;
 import gamesuite.client.view.GameGUI;
-import gamesuite.client.view.GameUI;
 //import gamesuite.client.view.TextGameCLI;
 
 public class App {

@@ -4,15 +4,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-//import gamesuite.core.ui.CoordPairPanel;
 import gamesuite.core.ui.GameBoardUI;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GameBoard;
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
-import gamesuite.core.model.Player;
 import gamesuite.core.ui.UIListener;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
@@ -30,12 +22,12 @@ public class GUIManager implements GameUI, UIListener {
         this.tmpY = -1;
     }
 
-    public GUIManager(ClientManager gm, GameState game) {
-        this.gm = gm;
-        this.tmpX = -1; 
-        this.tmpY = -1;
-        //this.gameView = game;
-    }
+    // public GUIManager(ClientManager gm, GameState game) {
+    //     this.gm = gm;
+    //     this.tmpX = -1; 
+    //     this.tmpY = -1;
+    //     //this.gameView = game;
+    // }
 
     public void setGamManager(ClientManager gm) {
         if(this.gm == null)

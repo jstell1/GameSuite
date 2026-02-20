@@ -9,9 +9,7 @@ import javax.swing.JTextPane;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.core.model.GameState;
-import gamesuite.core.model.Player;
-//import checkers.ui.GameBoardPanel;
+//import gamesuite.core.model.GameState;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 
@@ -32,7 +30,6 @@ public class GameGUI {
     private JPanel centerPanel;
     private UIListener listener;
     private JButton quitButton;
-    private GameState gameView;
     private GameBoardUI gameBoard;
     private int tmpX, tmpY;
     private int playerTurn;
