@@ -4,6 +4,8 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import gamesuite.core.control.GameManager;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.client.view.GameGUI;

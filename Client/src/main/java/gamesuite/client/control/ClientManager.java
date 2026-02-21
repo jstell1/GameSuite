@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +18,8 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import gamesuite.client.view.MainGUI;
 import gamesuite.core.control.PluginLoader;
 import gamesuite.core.network.*;
 import gamesuite.core.ui.GameBoardFactory;
@@ -37,48 +40,16 @@ public class ClientManager {
     private String ip;
     private int port;
     private PluginLoader loader;
+    private MainGUI main;
     
     public ClientManager(String ip, int port) {
         try {
 
-
-            // Path basePath = Paths.get(System.getProperty("user.dir"));
-            // System.out.println(basePath.resolve("Server")
-            //                             .resolve("..")
-            //                             .resolve("plugins")
-            //                             .normalize().toString());
             this.loader = new PluginLoader("../plugins");
-                
-                //basePath.resolve("Server")
-            //                             .resolve("..")
-            //                             .resolve("plugins")
-            //                             .normalize().toString());
-
-
-            // String basePath = System.getProperty("user.dir");
-            // this.loader = new PluginLoader(basePath + "\\..\\plugins\\");
             this.loader.loadAll();
             this.loader.watchForChanges();
 
-            //Path basePath2 = Paths.get(System.getProperty("user.dir"));
-            //System.out.println(System.getProperty("usr.dir").toString());
-            // System.out.println(basePath2//.//resolve("Client")
-            //                             //.resolve("..")
-            //                             .resolve("plugins")
-            //                             .resolve("ui")
-            //                             .normalize().toString());
             this.loader.setUIPluginLoader("../plugins/ui");
-                
-                
-                //basePath2//.resolve("Client")
-            //                            // .resolve("..")
-            //                             .resolve("plugins")
-            //                             .resolve("ui")
-            //                             .normalize().toString());
-
-
-            // System.out.println(basePath + "\\..\\plugins\\");
-            // this.loader.setUIPluginLoader(basePath + "\\..\\plugins\\ui\\");
             this.loader.loadGameBoards();
         } catch (Exception e) {
             // TODO: handle exception
@@ -101,6 +72,9 @@ public class ClientManager {
 
     }
 
+    public void setMainGUI(MainGUI gui) {
+        this.main = gui;
+    }
     public void setGUIManager(GUIManager guiGM) {
         if(this.guiGM == null)
             this.guiGM = guiGM;
@@ -305,5 +279,15 @@ public class ClientManager {
             }
         }
         
+    }
+
+    public List<String> getAvailableGames() {
+
+        return null;
+    }
+
+    public List<String> getActiveGames(String val) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getActiveGames'");
     }
 }

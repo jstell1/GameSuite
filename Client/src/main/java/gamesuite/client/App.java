@@ -7,6 +7,7 @@ import gamesuite.client.control.ClientManager;
 import gamesuite.client.control.GUIManager;
 import gamesuite.client.view.GameGUI;
 //import gamesuite.client.view.TextGameCLI;
+import gamesuite.client.view.MainGUI;
 
 public class App {
 
@@ -41,9 +42,16 @@ public class App {
     
             try {
                 cmg.connect();
+
                 GameGUI ui = new GameGUI(guiGM);
                 guiGM.setGameGUI(ui);
-                ui.activate();
+                MainGUI main = new MainGUI(cmg);
+                
+                
+
+                
+                main.activate();
+                //ui.activate();
             } catch (Exception e) {
                 e.printStackTrace();
             }
