@@ -347,6 +347,44 @@
       },
       "required": ["serverError"],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "gamesListRequest": {
+          "additionalProperties": false
+        }
+      },
+      "required": ["gamesListRequest"],
+      "additionalProperties": false
+    },
+     {
+      "type": "object",
+      "properties": {
+        "gamesListResponse": {
+          "properties": {
+            "gamesList": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      },
+      "required": ["gamesListResponse"],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "activeGamesRequest": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["activeGamesRequest"],
+      "additionalProperties": false
     }
   ]
 }

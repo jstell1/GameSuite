@@ -2,7 +2,10 @@ package gamesuite.server.model;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -23,18 +26,9 @@ public class ServerGameRepo {
 
     public ServerGameRepo() {
         try {
-            //Path basePath = Paths.get(System.getProperty("user.dir"));
-            // System.out.println(basePath.resolve("Server")
-            //                             .resolve("..")
-            //                             .resolve("plugins")
-            //                             .normalize().toString());
-            this.loader = new PluginLoader("../plugins/");
-                
-                
-               // basePath.resolve("Server")
-            //                             .resolve("..")
-            //                             .resolve("plugins")
-            //                             .normalize().toString());
+       
+            this.loader = new PluginLoader("plugins/");
+        
             this.loader.loadAll();
             this.loader.watchForChanges();
         } catch (Exception e) {
@@ -190,5 +184,11 @@ public class ServerGameRepo {
         } catch (Exception e) {}
         
         return gm;
+    }
+
+    public List<String> getGamesList() {
+        String[] gamesList = this.loader.listAvailableGames().toArray(new String[0]);
+        List<String> list = Arrays.asList(gamesList);
+        return list;
     }
 }

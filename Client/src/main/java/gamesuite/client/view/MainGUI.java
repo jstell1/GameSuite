@@ -42,7 +42,7 @@ public class MainGUI {
         this.window.setLayout(new BorderLayout());
         this.gamesList = new JList<>();
         this.listpane = new JScrollPane(this.gamesList);
-        this.listpane.setPreferredSize(new Dimension(200,700));
+        this.listpane.setPreferredSize(new Dimension(200,500));
         this.centerPanel = new JPanel();
         this.centerPanel.add(this.listpane);
 
@@ -55,7 +55,7 @@ public class MainGUI {
             if(val != null) {
                 new Thread(() -> {
                     this.cmg.getActiveGames(val);
-                });
+                }).start();
             }
         });
         this.window.setMinimumSize(new Dimension(800, 500));
@@ -72,6 +72,10 @@ public class MainGUI {
         SwingUtilities.invokeLater(() -> {
             this.window.pack();
             this.window.setVisible(true);    
+            new Thread(() -> {
+                List<String> games = this.cmg.getAvailableGames();
+                //setGamesList(games.toArray(new String[0]));
+            }).start();
         });
     }
 }

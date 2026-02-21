@@ -3,6 +3,7 @@ package gamesuite.server.control;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,6 +223,20 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                         sendMessage(msgType, respPayload, session);
                     }
                     break;
+                case "gamesListRequest":
+                    try {
+                        sendGamesList(session, payload);
+                    } catch (Exception e) {
+                        mapper = new ObjectMapper();
+                        String msgType = "serverError";
+                        ObjectNode respPayload = mapper.createObjectNode();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        sendMessage(msgType, respPayload, session);
+                    }
+                    break;
+                case "activeGamesRequest":
+
+                    break;
                 default:
                     mapper = new ObjectMapper();
                     String msgType = "badRequestError";
@@ -233,6 +248,27 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
     }
 
+    
+    private void sendActiveGamesList(WebSocketSession session, ObjectNode payload) throws Exception {
+        
+    }
+    
+    private void sendGamesList(WebSocketSession session, ObjectNode payload) throws Exception {
+        List<String> list = this.gmRepo.getGamesList();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String msgType = "gamesListResponse";
+            ObjectNode respPayload = mapper.createObjectNode();
+            respPayload.set("gamesList", mapper.valueToTree(list.toArray(new String[0])));
+            sendMessage(msgType, respPayload, session);
+        } catch(Exception e) {
+            mapper = new ObjectMapper();
+            String msgType = "serverError";
+            ObjectNode respPayload = mapper.createObjectNode();
+            respPayload.put("message", "Error processing createGameRequest");
+            sendMessage(msgType, respPayload, session);
+        }
+    }
     private void createGame(WebSocketSession session, ObjectNode payload) throws Exception {
          System.out.println("recieved");
         ObjectMapper mapper = new ObjectMapper();

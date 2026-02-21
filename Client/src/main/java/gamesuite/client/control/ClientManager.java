@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -15,6 +16,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,11 +48,11 @@ public class ClientManager {
     public ClientManager(String ip, int port) {
         try {
 
-            this.loader = new PluginLoader("../plugins");
+            this.loader = new PluginLoader("plugins");
             this.loader.loadAll();
             this.loader.watchForChanges();
 
-            this.loader.setUIPluginLoader("../plugins/ui");
+            this.loader.setUIPluginLoader("plugins/ui");
             this.loader.loadGameBoards();
         } catch (Exception e) {
             // TODO: handle exception
@@ -177,6 +180,11 @@ public class ClientManager {
                             //ClientManager.this.guiGM.setGameState(game);
                             ClientManager.this.guiGM.update(gameJson);
                             break;
+                        case "gamesListResponse":
+                            JsonNode gamesListJson = payload.get("gamesList"); 
+                            String[] gamesList = mapper.treeToValue(gamesListJson, String[].class);
+                            ClientManager.this.main.setGamesList(gamesList);
+                            break;
                         default: break;
                     }
                 }
@@ -282,7 +290,21 @@ public class ClientManager {
     }
 
     public List<String> getAvailableGames() {
-
+         if(session != null && session.isOpen()) {
+            ObjectMapper mapper = new ObjectMapper();
+            String msgType = "gamesListRequest";
+            ObjectNode payload = mapper.createObjectNode();
+            payload.set(msgType, mapper.createObjectNode());
+            try {
+                String str = mapper.writeValueAsString(payload);
+                TextMessage msg = new TextMessage(str);
+                session.sendMessage(msg);
+                System.out.println("Sent");
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
