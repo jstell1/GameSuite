@@ -23,6 +23,7 @@ public class ServerGameRepo {
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
     private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
     private PluginLoader loader;
+    private final Map<String, Map<String, Integer>> activeList = new ConcurrentHashMap<>();
 
     public ServerGameRepo() {
         try {
@@ -31,16 +32,22 @@ public class ServerGameRepo {
         
             this.loader.loadAll();
             this.loader.watchForChanges();
+
+            Set<String> list = this.loader.listAvailableGames();
+            for(String name : list) {
+                Map<String, Integer> games = new ConcurrentHashMap<>();
+                this.activeList.put(name, games);   
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    //Autoselects checkers for now since that's the only game plugin available
-    public String createGame(String p1, String sessionId) {
-        //GameManagerFactory gmFact = 
-        GameManagerFactory gmFact = loader.createGameManager("Checkers");//new GameManager(board, p1);
+    
+    public String createGame(String game, String p1, String sessionId) {
+        
+        GameManagerFactory gmFact = loader.createGameManager(game);
         GameManager gm = gmFact.createGame(p1);
         
         String gameId = UUID.randomUUID().toString();
@@ -50,6 +57,9 @@ public class ServerGameRepo {
             users.put(sessionId, 1);
             this.gameUserMap.put(gameId, users);
             this.userSessions.put(sessionId, gameId);
+            synchronized(this.activeList) {
+                this.activeList.get(gm.getName()).put(gameId, 1);
+            }
             System.out.println("numGames: " + this.games.size());
             System.out.println("numSessions: " + this.userSessions.size());
             System.out.println("PlayerNumMap: " + this.gameUserMap.get(gameId).size());
@@ -105,6 +115,9 @@ public class ServerGameRepo {
         JsonNode node = null;
         synchronized(gm) {
             node = gm.joinGame(player);
+            synchronized(this.activeList) {
+                this.activeList.get(gm.getName()).put(gameId, 2);
+            }
             //GameState game = gm.getGameState();
             // Player p = game.getPlayer(2);
             // if(p == null) {
@@ -177,6 +190,9 @@ public class ServerGameRepo {
                     this.games.remove(gameId);
                     this.userSessions.remove(sessionId);
                 }
+                synchronized(this.activeList) {
+                    this.activeList.get(gm.getName()).remove(gameId);
+                }
                 System.out.println("numGames: " + this.games.size());
                 System.out.println("numSessions: " + this.userSessions.size());
                 System.out.println("PlayerNumMap: " + this.gameUserMap.size());
@@ -184,6 +200,14 @@ public class ServerGameRepo {
         } catch (Exception e) {}
         
         return gm;
+    }
+
+    public String[] getActiveGames(String game) {
+        
+        synchronized(this.activeList) {
+            String[] list = this.activeList.get(game).keySet().toArray(new String[0]);
+            return list;
+        }
     }
 
     public List<String> getGamesList() {

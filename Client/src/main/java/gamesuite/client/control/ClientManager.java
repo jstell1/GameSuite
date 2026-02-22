@@ -185,6 +185,11 @@ public class ClientManager {
                             String[] gamesList = mapper.treeToValue(gamesListJson, String[].class);
                             ClientManager.this.main.setGamesList(gamesList);
                             break;
+                        case "activeGamesResponse":
+                            gamesListJson = payload.get("gamesList");
+                            gamesList = mapper.treeToValue(gamesListJson, String[].class); 
+                            ClientManager.this.guiGM.setActiveGamesList(gamesList);
+                            break;
                         default: break;
                     }
                 }
@@ -225,12 +230,13 @@ public class ClientManager {
         }
     }
 
-    public synchronized String createGame(String playerName) throws Exception {
+    public synchronized String createGame(String game, String playerName) throws Exception {
         
         if(session != null && session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "createGameRequest";
             ObjectNode inner = mapper.createObjectNode();
+            inner.put("game", game);
             inner.put("name", playerName);
             ObjectNode payload = mapper.createObjectNode();
             payload.set(msgType, inner);
@@ -242,7 +248,7 @@ public class ClientManager {
        return null;
     }
 
-    public synchronized String joinGame(String name, String gameId) {
+    public synchronized String joinGame(String game, String name, String gameId) {
         if(session != null && session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "joinGameRequest";
@@ -308,8 +314,23 @@ public class ClientManager {
         return null;
     }
 
-    public List<String> getActiveGames(String val) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getActiveGames'");
+    public void getActiveGames(String gameName) {
+         if(session != null && session.isOpen()) {
+            ObjectMapper mapper = new ObjectMapper();
+            String msgType = "activeGamesRequest";
+            ObjectNode payload = mapper.createObjectNode();
+            ObjectNode inner = mapper.createObjectNode();
+            inner.put("game", gameName);
+            payload.set(msgType, inner);
+            try {
+                String str = mapper.writeValueAsString(payload);
+                TextMessage msg = new TextMessage(str);
+                session.sendMessage(msg);
+                System.out.println("Sent");
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -235,7 +235,15 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                     }
                     break;
                 case "activeGamesRequest":
-
+                     try {
+                        sendActiveGamesList(session, payload);
+                    } catch (Exception e) {
+                        mapper = new ObjectMapper();
+                        String msgType = "serverError";
+                        ObjectNode respPayload = mapper.createObjectNode();
+                        respPayload.put("message", "Error processing createGameRequest");
+                        sendMessage(msgType, respPayload, session);
+                    }
                     break;
                 default:
                     mapper = new ObjectMapper();
@@ -250,7 +258,21 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     
     private void sendActiveGamesList(WebSocketSession session, ObjectNode payload) throws Exception {
-        
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String game = payload.get("game").asText();
+            String[] list = this.gmRepo.getActiveGames(game);
+            String msgType = "activeGamesResponse";
+            ObjectNode respPayload = mapper.createObjectNode();
+            respPayload.set("gamesList", mapper.valueToTree(list));
+            sendMessage(msgType, respPayload, session);
+        } catch (Exception e) {
+            mapper = new ObjectMapper();
+            String msgType = "serverError";
+            ObjectNode respPayload = mapper.createObjectNode();
+            respPayload.put("message", "Error processing createGameRequest");
+            sendMessage(msgType, respPayload, session);
+        }
     }
     
     private void sendGamesList(WebSocketSession session, ObjectNode payload) throws Exception {
@@ -269,6 +291,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             sendMessage(msgType, respPayload, session);
         }
     }
+
     private void createGame(WebSocketSession session, ObjectNode payload) throws Exception {
          System.out.println("recieved");
         ObjectMapper mapper = new ObjectMapper();
@@ -281,13 +304,14 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             return;
         }
         System.out.println("passed the check");
+        String gameNm = payload.get("game").asText();
         String name = payload.get("name").asText();
 
         try {
             mapper = new ObjectMapper();
             //Player player1 = new Player(name, 0);
             //GameBoard board = new GameBoard(8);
-            String gameId = this.gmRepo.createGame(name, session.getId());
+            String gameId = this.gmRepo.createGame(gameNm, name, session.getId());
             JsonNode game = this.gmRepo.getGameView(gameId);
             this.gmRepo.getGM(gameId);
             String msgType = "gameCreatedResponse";

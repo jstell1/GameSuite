@@ -10,11 +10,13 @@ import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.client.view.GameGUI;
 import gamesuite.client.view.GameUI;
+import gamesuite.client.view.MainGUI;
 
 public class GUIManager implements GameUI, UIListener {
     
     private ClientManager gm;
     private GameGUI gui;
+    private MainGUI main;
     public int tmpX;
     public int tmpY;
 
@@ -35,6 +37,9 @@ public class GUIManager implements GameUI, UIListener {
         if(this.gm == null)
             this.gm = gm;
     } 
+    public void setMainGUI(MainGUI gui) {
+        this.main = gui;
+    }
 
     public void setGameState(JsonNode game) {
         SwingUtilities.invokeLater(() -> {
@@ -114,6 +119,32 @@ public class GUIManager implements GameUI, UIListener {
         });
     }
 
+    @Override
+    public void initActiveList(String game) {
+        SwingUtilities.invokeLater(() -> {
+            this.main.closeWindow();
+            this.gui.setGame(game);
+            this.gui.activate();
+            new Thread(() -> {
+                this.gm.getActiveGames(game);
+            }).start();
+        });
+    }
+
+    @Override
+    public void refreshActiveList(String game) {
+        new Thread(() -> {
+            this.gm.getActiveGames(game);
+        }).start();
+    }
+
+    @Override
+    public void refreshGamesList() {
+        SwingUtilities.invokeLater(() -> {
+            this.gm.getAvailableGames();
+        });
+    }
+
     public void initGame(GameBoardUI boardUI) {
         
         SwingUtilities.invokeLater(()->{
@@ -152,26 +183,28 @@ public class GUIManager implements GameUI, UIListener {
         SwingUtilities.invokeLater(() -> {
             old.disableGUI();
             this.gui = new GameGUI(this);
+            this.main = new MainGUI(gm, this);
             old.closeWindow();
-            this.gui.activate();
+            this.main.activate();
+            //this.gui.activate();
         });
     }
 
     @Override
-    public void createGame(String name) {
+    public void createGame(String game, String name) {
      //   this.playerTurn = 1;
         new Thread(() -> {
             try {
-                this.gm.createGame(name);
+                this.gm.createGame(game, name);
             } catch (Exception e) {
             }
         }).start();
     }
 
     @Override
-    public void joinGame(String name, String gameId) {
+    public void joinGame(String game, String name, String gameId) {
         new Thread(() -> {
-            String id = this.gm.joinGame(name, gameId);
+            String id = this.gm.joinGame(game, name, gameId);
             if(id != null) {
                // this.playerTurn = 2;
                 SwingUtilities.invokeLater(() -> {
@@ -209,6 +242,12 @@ public class GUIManager implements GameUI, UIListener {
     public void enableBoard() {
         SwingUtilities.invokeLater(() -> {
             this.gui.enableGUI();
+        });
+    }
+
+    public void setActiveGamesList(String[] list) {
+        SwingUtilities.invokeLater(() -> {
+            this.gui.setActiveGamesList(list);
         });
     }
 

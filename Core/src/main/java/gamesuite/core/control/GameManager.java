@@ -27,4 +27,5 @@ public interface GameManager {
     public JsonNode getGameStateJson();
     public GameState quitGame(int playerNum);
     public int getNumPlayers();
+    public String getName();
 }

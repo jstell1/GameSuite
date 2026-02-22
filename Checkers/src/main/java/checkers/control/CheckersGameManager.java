@@ -24,7 +24,7 @@ public class CheckersGameManager implements GameManager {
     private MoveController moveController;
     private CheckersGameState game;
     private CheckersGameBoard board;
-
+    public static final String name = "Checkers";
     
 
     public CheckersGameManager(CheckersGameBoard board, CheckersPlayer player1) {
@@ -52,6 +52,10 @@ public class CheckersGameManager implements GameManager {
             this.moveController.updateState(changed);
         }
     }
+    @Override
+    public String getName() {
+        return name;
+    } 
 
     @Override
     public void sendMove(ObjectNode move) {

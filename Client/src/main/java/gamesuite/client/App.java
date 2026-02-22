@@ -45,8 +45,9 @@ public class App {
 
                 GameGUI ui = new GameGUI(guiGM);
                 guiGM.setGameGUI(ui);
-                MainGUI main = new MainGUI(cmg);
+                MainGUI main = new MainGUI(cmg, guiGM);
                 cmg.setMainGUI(main);
+                guiGM.setMainGUI(main);
                 main.activate();
                 //ui.activate();
             } catch (Exception e) {
