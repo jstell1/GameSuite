@@ -172,7 +172,7 @@ public class GUIManager implements GameUI, UIListener {
            // this.playerTurn = 1;
             SwingUtilities.invokeLater(() -> {
                 this.gui.disableGUI();
-                this.gui.setGameOverLabel("Give to player 2, GameId: " + gameId);
+                this.gui.setGameOverLabel("GameId: " + gameId);
             });
         }
     }
@@ -184,6 +184,7 @@ public class GUIManager implements GameUI, UIListener {
             old.disableGUI();
             this.gui = new GameGUI(this);
             this.main = new MainGUI(gm, this);
+            this.gm.setMainGUI(this.main);
             old.closeWindow();
             this.main.activate();
             //this.gui.activate();

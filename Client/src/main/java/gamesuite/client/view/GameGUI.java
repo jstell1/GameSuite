@@ -123,6 +123,7 @@ public class GameGUI {
         this.window = new JFrame("GameSuite");
         this.window.setSize(800, 800);
         this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.turnLabel = new JTextPane();
 
         this.window.addWindowListener(new WindowAdapter() {
             @Override
@@ -163,7 +164,7 @@ public class GameGUI {
              } 
          });
         
-        JPanel btnPanel = new JPanel(new GridLayout(5, 1));
+        JPanel btnPanel = new JPanel(new GridLayout(6, 1));
         this.refreshButton = new JButton("Refresh List");
         
         this.refreshButton.addActionListener(e -> {
@@ -176,6 +177,8 @@ public class GameGUI {
         btnPanel.add(this.selectBtn);
         btnPanel.add(this.refreshButton);
         this.centerPanel.add(btnPanel);
+        this.turnLabel.setEditable(false);
+        this.centerPanel.add(this.turnLabel);
         //this.btnPanel = new JPanel();
         this.window.add(this.centerPanel, BorderLayout.CENTER);
         //this.btnPanel.add(this.selectBtn);

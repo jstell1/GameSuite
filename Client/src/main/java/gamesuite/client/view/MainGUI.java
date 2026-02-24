@@ -46,6 +46,7 @@ public class MainGUI {
                 System.exit(0);
             }
         });
+
         this.window.setLayout(new BorderLayout());
         this.gamesList = new JList<>();
         this.listpane = new JScrollPane(this.gamesList);
@@ -73,7 +74,7 @@ public class MainGUI {
         this.refreshBtn.addActionListener(e -> {
             this.listener.refreshGamesList();
         });
-
+        btnPanel.add(this.refreshBtn);
         this.centerPanel.add(btnPanel);
         //this.btnPanel = new JPanel();
         this.window.add(this.centerPanel, BorderLayout.CENTER);
