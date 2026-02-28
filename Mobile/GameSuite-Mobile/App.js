@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState, createContext, useContext } from 'react';
+import { useEffect, useState, createContext, useRef, useContext, useCallback } from 'react';
 import { 
   KeyboardAvoidingView, TouchableWithoutFeedback, 
   Keyboard, Alert, 
@@ -9,81 +9,80 @@ import {
   Pressable, Dimensions,
   Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ajv from 'ajv';
+import GameBoardScreen from './ui/GameBoardScreen';
+import HomeScreen from './ui/HomeScreen';
+import { GameContext, API_HOST, WS_HOST } from './Global';
 
-const GameContext = createContext();
-const { width } = Dimensions.get('window');
-const squareSize = width / 8;
-const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
-let ws;
-let sessionId = null;
-let isClickable = true;
-let turnNum = 1;
-let playerTurn;
-let gameTurn;
-let name;
-let game;
-let currGameId;
 
+const listeners = {};
 const Stack = createNativeStackNavigator();
+
+export function subscribe(eventType, callback) {
+  if (!listeners[eventType]) {
+    listeners[eventType] = [];
+  }
+
+  listeners[eventType].push(callback);
+
+  return function unsubscribe() {
+    listeners[eventType] =
+      listeners[eventType].filter(cb => cb !== callback);
+  };
+}
+
+export function publish(eventType, data) {
+  if (!listeners[eventType]) return;
+
+  listeners[eventType].forEach(cb => cb(data));
+}
 
 export default function App() {
 
+  const ajv = useRef(new Ajv());
+  const ws = useRef(null);
+  const sessionId = useRef(null);
+  const validate = useRef(null);
+  const [currGameId, setCurrGameId ] = useState("Create or Join Game");
+  const playerTurn = useRef(0);
+  const [ isClickable, setIsClickable ] = useState(false);
   const [game, setGame] = useState(null);
-
-  return (
-    <GameContext.Provider value={{ game, setGame }}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={HomeScreen}/>
-          <Stack.Screen name="GameBoard" component={GameBoardScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </GameContext.Provider>
-  );
-}
-
-
-
-function HomeScreen({navigation}) {
-  
-  const { setGame } = useContext(GameContext);
   const [createName, setCreateName] = useState("");
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
-  const [gameId, setGameId] = useState("Create or Join Game");
-  const ajv = new Ajv();
-  let schema;
-  let validate;
-  useEffect(() => {
+  const [ gameTurn, setGameTurn ] = useState("");
+  const resetSocket = useCallback(() => {
     getSchema().then(() => connectWebSocket());
+  });
+
+  useEffect(() => {
+    resetSocket();//getSchema().then(() => connectWebSocket());
   }, []);
 
   async function getSchema() {
     
     const resp = await fetch(`${API_HOST}/schema`);
     //console.log(resp);
-    schema = await resp.json();
+    const schema = await resp.json();
     console.log(schema);
-    validate = ajv.compile(schema);
+    validate.current = ajv.current.compile(schema);
   }
 
   async function connectWebSocket() {
-    ws = new WebSocket(`${WS_HOST}`);
+    ws.current = new WebSocket(`${WS_HOST}`);
 
-    ws.onopen = () => {
+    ws.current.onopen = () => {
       console.log("WebSocket connected");
     };
 
-    ws.onmessage = e => {
+    ws.current.onmessage = e => {
       
       console.log(e.data);
       const data = JSON.parse(e.data);
         console.log("WS Message:", data);
-      const valid = validate(data);
+      const valid = validate.current(data);
 
       if (!valid) {
         let msg = {
@@ -91,8 +90,8 @@ function HomeScreen({navigation}) {
               "message": "don't recognize message type"
           }
         }
-        ws.send(JSON.stringify(msg));
-        console.log(validate.errors);
+        ws.current.send(JSON.stringify(msg));
+        console.log(validate.current.errors);
         return;
       };
 
@@ -102,55 +101,55 @@ function HomeScreen({navigation}) {
 
       switch(type) {
         case "sessionConnectedResponse":
-            sessionId = payload.sessionId;
+            sessionId.current = payload.sessionId;
             break;
         case "gameCreatedResponse":
-            setGameId(payload.gameId);
-            currGameId = payload.gameId;
-            name = createName;
-            playerTurn = 1;
-            turnNum = payload.gameState.turn;
-            isClickable = false;
+            setCurrGameId(payload.gameId);
+            //listeners["gameCreatedResponse"](payload.gameId);
+            //name = createName;
+            //playerTurn = 1;
+            //turnNum = payload.gameState.turn;
+            //isClickable = false;
+            setGame(payload.gameState);
+            playerTurn.current = 1;
             break;
         case "gameReadyResponse":
-            
-          setGameId(data.gameId);
-          currGameId = payload.gameId;
-          if(playerTurn == null) {
-            playerTurn = 2;
-            name = joinName;
+          
+          if(currGameId === "Create or Join Game") {
+            setCurrGameId(data.gameId);
+          }
+          if(playerTurn.current === 0) {
+            playerTurn.current = 2;
+            //name = joinName;
           }
           
-          gameTurn = `Player ${payload.gameState.turn}'s turn`;
-          turnNum = payload.gameState.turn;
+          setGameTurn(`Player ${payload.gameState.turn}'s turn`);
+          //turnNum = payload.gameState.turn;
           //id = payload.gameId;
-          currGameId = payload.gameId;
-          isClickable = false;
+          //currGameId = payload.gameId;
+          //setIsClickable(false);
 
-          if(playerTurn === turnNum)
-            isClickable = true;
+          if(playerTurn.current === payload.gameState.turn) {
+            setIsClickable(true);
+          }
           setGame(payload.gameState);
           const gameBoard = payload.board;
           navigation.navigate("GameBoard",
-            {currGameId, sessionId, name, gameBoard,
-              resetSocket: () => {
-                getSchema().then(() => connectWebSocket());
-              }
-            }
+            { gameBoard }
           );
           break;
         case "stateUpdateResponse":
-          gameTurn = `Player ${payload.gameState.turn}'s turn`;
+          setGameTurn(`Player ${payload.gameState.turn}'s turn`);
           turnNum = payload.gameState.turn;
           if(payload.gameState.winner == null) {
 
-            if(playerTurn === turnNum)
-                isClickable = true;
+            if(playerTurn.current === turnNum)
+                setIsClickable(true);
             else
-                isClickable = false;
+                setIsClickable(false);
           } else {
-            isClickable = false;
-            gameTurn = `${payload.gameState.winner.name} is the winner`;
+            setIsClickable(false);
+            setGameTurn(`${payload.gameState.winner.name} is the winner`);
           }
           setGame(payload.gameState);
           break;
@@ -165,255 +164,24 @@ function HomeScreen({navigation}) {
 
   }
 
-  const createGame = async () => {
-    if(!createName) { Alert.alert("Must have name!"); return; }
-
-    let msg = {
-      "createGameRequest": {
-          "name": createName
-      }
-    }
-    ws.send(JSON.stringify(msg));
-    
-  }
-
-  const joinGame = async () => {
-    if(!joinName || !joinGameId) {
-      Alert.alert("Must have name and game id!");
-      return;
-    }
-    name = joinName;
-    
-    let payload = {
-        "joinGameRequest": {
-            "name": name,
-            "gameId": joinGameId
-        }
-    }
-    ws.send(JSON.stringify(payload));
-  }
-
   return (
-
-    <SafeAreaView style={{flex: 1}}>
-      
-       
-        <ScrollView 
-            contentContainerStyle={styles.container} 
-            keyboardShouldPersistTaps="handled"
-          >
-            <Text selectable={true}>{gameId}</Text>
-            <Text>Name</Text>
-            <TextInput style={styles.input} onChangeText={setCreateName}/>
-            <Button title="Create Game" onPress={createGame}/>
-            <Text>Name</Text>
-            <TextInput style={styles.input} onChangeText={setJoinName}/>
-            <Text>GameId</Text>
-            <TextInput style={styles.input} onChangeText={setJoinGameId}/>
-            <Button title="Join Game" onPress={joinGame}/>
-            <StatusBar style="auto" />
-          </ScrollView>
-       
-     
-    </SafeAreaView>
+    <GameContext.Provider value={{ ws, playerTurn,
+                                  currGameId,setCurrGameId, 
+                                  isClickable, setIsClickable, 
+                                  game, setGame,
+                                  createName, setCreateName, 
+                                  joinName, setJoinName, 
+                                  joinGameId, setJoinGameId,
+                                  gameTurn, setGameTurn,
+                                  resetSocket
+                                }}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="GameBoard" component={GameBoardScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GameContext.Provider>
   );
 }
 
-
-function Square({ row, col, piece, onPress, highlighted }) {
-  const isDark = (row + col) % 2 === 1;
-
-  return (
-    <Pressable
-      onPress={() => onPress(row, col)}
-      style={[
-        styles.square,
-        isDark ? styles.dark : styles.light,
-        highlighted && styles.yellow,
-      ]}
-    >
-      {piece && (
-        <View
-          style={[
-            styles.piece,
-            piece.color === "red" ? styles.red : styles.black,
-            piece.type === "K" && styles.king,
-          ]}
-        />
-      )}
-    </Pressable>
-  );
-}
-
-function GameBoardScreen({navigation, route}) {
-  const { game } = useContext(GameContext);
-  const {gameId, sessionId, name, gameBoard, resetSocket} = route.params;
-  const [board,setBoard] = useState(() => initBoardData(gameBoard));
-  const [highlights, setHighlights] = useState([]);
-  const [numClicks, setNumClicks] = useState(0);
-  const [start, setStart] = useState(null);
-
-  if(turnNum === playerTurn) {
-    isClickable = true;
-  }
-
-  //setBoard(() => initBoardData());
-  
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Button
-          title="Home"
-          onPress={async () => {
-            await ws.close();
-            
-            await resetSocket();
-            await navigation.pop();
-            playerTurn = null;
-            //setGame(null);
-          }}
-        />
-      )
-    });
-  }, [navigation, resetSocket]);
-
-  useEffect(() => {
-    if (game?.changedPos) {
-      applyChanges(game.changedPos);
-    }
-  }, [game]);
-
-  function applyChanges(changedPos) {
-    const newBoard = board.map(row => [...row]);
-    changedPos.forEach((pos) => {
-      if(pos.piece !== null) {
-        let color;
-        if(pos.piece.name === "R") 
-          color = "red";
-        else
-          color = "black"
-        
-        newBoard[pos.x][pos.y] = {color: color, type: pos.piece.type};
-      } else {
-        newBoard[pos.x][pos.y] = null;
-      }
-    });
-    setBoard(newBoard);
-  }
-
-  function initBoardData(gameBoard) {
-    const arr = [];
-    for (let row = 0; row < 8; row++) {
-      const rowArr = [];
-      for (let col = 0; col < 8; col++) {
-        let piece = null;
-        let tmp = gameBoard[row][col]["piece"];
-        let name = tmp != null ? tmp["name"] : null;
-
-        if(name != null && name === "B")
-          piece = { color: "black", type: "C" };
-        else if(name != null && name === "R")
-          piece = { color: "red", type: "C" };
-
-        rowArr.push(piece);
-      }
-      arr.push(rowArr);
-    }
-    return arr;
-  }
-
-  async function handlePress(row, col) {
-    if(isClickable === false) return;
-    if (numClicks === 0) {
-      setStart({ row, col });
-      setHighlights([{ row, col }]);
-      setNumClicks(1);
-    } else if (numClicks === 1) {
-      const end = { row, col };
-      
-      //console.log("Move:", start, "->", end);
-      const movMessage = {
-        moveRequest: {
-          gameId: currGameId,
-          move: {
-            startX: highlights[0].row,
-            startY: highlights[0].col,
-            endX: end.row,
-            endY: end.col
-          }
-        }
-      }
-      setHighlights([]);
-      setNumClicks(0);
-      setStart(null);
-      isClickable = false;
-      ws.send(JSON.stringify(movMessage));
-    }
-  }
-
-  return (
-    <View style={styles.container}>
-      <Text>{gameTurn}</Text>
-      <View style={styles.board}>
-        {board.map((rowArr, row) =>
-          rowArr.map((piece, col) => {
-            const highlighted = highlights.some(h => h.row === row && h.col === col);
-            return ( 
-              <Square
-                key={`${row}-${col}`}
-                row={row}
-                col={col}
-                piece={piece}
-                onPress={handlePress}
-                highlighted={highlighted}
-              />
-            );
-          })
-        )}
-      </View>
-    </View>
-  );
-}
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    height: 40,
-    width: 300,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  board: {
-    width: '100%',
-    aspectRatio: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  square: {
-    height: squareSize,
-    width: squareSize,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  dark: { backgroundColor: "saddlebrown" },
-  light: { backgroundColor: "lightgray" },
-  yellow: { backgroundColor: "yellow" },
-  piece: {
-    width: "80%",
-    height: "80%",
-    borderRadius: 50,
-  },
-  red: { backgroundColor: "red" },
-  black: { backgroundColor: "black" },
-  king: {
-    borderWidth: 2,
-    borderColor: "gold",
-  },
-});
