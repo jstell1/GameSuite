@@ -21,13 +21,19 @@ export default function HomeScreen({navigation, route}) {
   const {joinGameId, setJoinGameId} = useContext(GameContext);
   const { currGameId }  = useContext(GameContext);
   const { ws } = useContext(GameContext);
+  const { gameBoard } = useContext(GameContext);
 
 //   useEffect(() => {
-//   const unsubscribe = subscribe('gameCreatedResponse', (gameId) => {
+//   const unsubscribe = subscribe('gameReadyResponse', (gameId) => {
 //     setGameId(gameId)
 //   });
 //   return unsubscribe;
 // }, []);
+
+  useEffect(() => {
+    if(!gameBoard) return;
+    navigation.navigate("GameBoard");
+  }, [gameBoard, navigation]);
 
   const createGame = async () => {
     if(!createName) { Alert.alert("Must have name!"); return; }
@@ -38,7 +44,7 @@ export default function HomeScreen({navigation, route}) {
           "name": createName
       }
     }
-    ws.send(JSON.stringify(msg));
+    ws.current.send(JSON.stringify(msg));
     
   }
 
@@ -54,7 +60,7 @@ export default function HomeScreen({navigation, route}) {
             "gameId": joinGameId
         }
     }
-    ws.send(JSON.stringify(payload));
+    ws.current.send(JSON.stringify(payload));
   }
 
   return (

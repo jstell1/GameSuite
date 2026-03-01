@@ -18,26 +18,29 @@ const { width } = Dimensions.get('window');
 const squareSize = width / 8;
 
 export default function GameBoardScreen({navigation, route}) {
-  const {gameBoard } = route.params;
+  const {gameBoard } = useContext(GameContext);
   const { resetSocket} = useContext(GameContext);
   const [board,setBoard] = useState(null); //() => initBoardData(gameBoard));
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
-  
   const [game, setGame] = useState(null);
-  
   const { isClickable, setIsClickable } = useContext(GameContext);
   const { playerTurn } = useContext(GameContext);
   const {gameTurn } = useContext(GameContext); //string for displaying on screen
 
   useEffect(() => {
+    if(!game) return;
+    console.log(game.turn);
     if(game.turn === playerTurn.current) {
       setIsClickable(true);
     }
   }, [playerTurn, game]);
 
   useEffect(() => {
+    console.log(gameBoard);
+    if(!gameBoard) return;
+    console.log("not supposed to be here if null");
     setBoard(() => initBoardData(gameBoard));
   }, [gameBoard]);
 
@@ -49,9 +52,9 @@ export default function GameBoardScreen({navigation, route}) {
         <Button
           title="Home"
           onPress={async () => {
-            await ws.close();
+            await ws.current.close();
             
-            await resetSocket();
+            await resetSocket.current();
             await navigation.pop();
             playerTurn.current = 0;
             //setGame(null);
@@ -130,8 +133,8 @@ export default function GameBoardScreen({navigation, route}) {
       setHighlights([]);
       setNumClicks(0);
       setStart(null);
-      isClickable = false;
-      ws.send(JSON.stringify(movMessage));
+      setIsClickable(false);
+      ws.current.send(JSON.stringify(movMessage));
     }
   }
 
@@ -139,8 +142,9 @@ export default function GameBoardScreen({navigation, route}) {
     <View style={styles.container}>
       <Text>{gameTurn}</Text>
       <View style={styles.board}>
-        {board.map((rowArr, row) =>
-          rowArr.map((piece, col) => {
+        {board
+         ? board.map((rowArr, row) =>
+          rowArr.map((piece, col) => {  
             const highlighted = highlights.some(h => h.row === row && h.col === col);
             return ( 
               <Square
@@ -153,7 +157,7 @@ export default function GameBoardScreen({navigation, route}) {
               />
             );
           })
-        )}
+        ): <Text>Loading..</Text>}
       </View>
     </View>
   );

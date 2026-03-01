@@ -53,18 +53,14 @@ export default function App() {
   const [joinName, setJoinName] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [ gameTurn, setGameTurn ] = useState("");
-  const resetSocket = useCallback(() => {
-    getSchema().then(() => connectWebSocket());
-  });
+  const [ gameBoard, setGameBoard ] = useState(null);
+  //const gameBoard = useState(null);
 
-  useEffect(() => {
-    resetSocket();//getSchema().then(() => connectWebSocket());
-  }, []);
 
   async function getSchema() {
-    
+    console.log("in getSchema")
     const resp = await fetch(`${API_HOST}/schema`);
-    //console.log(resp);
+    console.log(resp.text);
     const schema = await resp.json();
     console.log(schema);
     validate.current = ajv.current.compile(schema);
@@ -122,7 +118,7 @@ export default function App() {
             playerTurn.current = 2;
             //name = joinName;
           }
-          
+          console.log(payload.gameState.turn);
           setGameTurn(`Player ${payload.gameState.turn}'s turn`);
           //turnNum = payload.gameState.turn;
           //id = payload.gameId;
@@ -133,13 +129,15 @@ export default function App() {
             setIsClickable(true);
           }
           setGame(payload.gameState);
-          const gameBoard = payload.board;
-          navigation.navigate("GameBoard",
-            { gameBoard }
-          );
+          setGameBoard(payload.board);
+          
+          // navigation.navigate("GameBoard",
+          //   { gameBoard }
+          // );
           break;
         case "stateUpdateResponse":
           setGameTurn(`Player ${payload.gameState.turn}'s turn`);
+          console.log(payload.gameState.turn);
           turnNum = payload.gameState.turn;
           if(payload.gameState.winner == null) {
 
@@ -158,11 +156,23 @@ export default function App() {
             break;
       }      
     };
-    ws.onerror = e => { console.log(e.message); };
+    ws.current.onerror = e => { console.log(e.message); };
 
-    ws.onclose = e => { console.log(e.code, e.reason); };
+    ws.current.onclose = e => { console.log(e.code, e.reason); };
 
   }
+
+  const resetSocket = useCallback(() => {
+    console.log("in resetSocket");
+    getSchema().then(() => connectWebSocket());
+  },[]);
+
+    
+  useEffect(() => {
+    resetSocket();//getSchema().then(() => connectWebSocket());
+  }, []);
+
+ 
 
   return (
     <GameContext.Provider value={{ ws, playerTurn,
@@ -173,7 +183,8 @@ export default function App() {
                                   joinName, setJoinName, 
                                   joinGameId, setJoinGameId,
                                   gameTurn, setGameTurn,
-                                  resetSocket
+                                  resetSocket, 
+                                  gameBoard, setGameBoard
                                 }}>
       <NavigationContainer>
         <Stack.Navigator>
