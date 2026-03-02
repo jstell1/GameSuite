@@ -18,29 +18,31 @@ const { width } = Dimensions.get('window');
 const squareSize = width / 8;
 
 export default function GameBoardScreen({navigation, route}) {
-  const {gameBoard } = useContext(GameContext);
+  const {gameBoard , setGameBoard} = useContext(GameContext);
   const { resetSocket} = useContext(GameContext);
   const [board,setBoard] = useState(null); //() => initBoardData(gameBoard));
   const [highlights, setHighlights] = useState([]);
   const [numClicks, setNumClicks] = useState(0);
   const [start, setStart] = useState(null);
-  const [game, setGame] = useState(null);
+  const {game, setGame} = useContext(GameContext);
   const { isClickable, setIsClickable } = useContext(GameContext);
   const { playerTurn } = useContext(GameContext);
   const {gameTurn } = useContext(GameContext); //string for displaying on screen
+  const { ws } = useContext(GameContext);
+  const { currGameId, setCurrGameId } = useContext(GameContext);
 
   useEffect(() => {
     if(!game) return;
-    console.log(game.turn);
+    //console.log(game.turn);
     if(game.turn === playerTurn.current) {
       setIsClickable(true);
     }
   }, [playerTurn, game]);
 
   useEffect(() => {
-    console.log(gameBoard);
+    //console.log(gameBoard);
     if(!gameBoard) return;
-    console.log("not supposed to be here if null");
+    //console.log("not supposed to be here if null");
     setBoard(() => initBoardData(gameBoard));
   }, [gameBoard]);
 
@@ -54,10 +56,12 @@ export default function GameBoardScreen({navigation, route}) {
           onPress={async () => {
             await ws.current.close();
             
-            await resetSocket.current();
+            await resetSocket();
             await navigation.pop();
             playerTurn.current = 0;
-            //setGame(null);
+            setGame(null);
+            setGameBoard(null);
+            setCurrGameId("Create or Join Game");
           }}
         />
       )
@@ -65,6 +69,7 @@ export default function GameBoardScreen({navigation, route}) {
   }, [navigation, resetSocket]);
 
   useEffect(() => {
+    //console.log("updating board");
     if (game?.changedPos) {
       applyChanges(game.changedPos);
     }
@@ -110,6 +115,7 @@ export default function GameBoardScreen({navigation, route}) {
   }
 
   async function handlePress(row, col) {
+    //console.log("in handlePress");
     if(isClickable === false) return;
     if (numClicks === 0) {
       setStart({ row, col });
@@ -119,22 +125,33 @@ export default function GameBoardScreen({navigation, route}) {
       const end = { row, col };
       
       //console.log("Move:", start, "->", end);
-      const movMessage = {
-        moveRequest: {
-          gameId: currGameId,
-          move: {
-            startX: highlights[0].row,
-            startY: highlights[0].col,
-            endX: end.row,
-            endY: end.col
+      let movMessage;
+      //console.log(currGameId);
+      try {
+        
+        movMessage = {
+          moveRequest: {
+            gameId: currGameId,
+            move: {
+              startX: highlights[0].row,
+              startY: highlights[0].col,
+              endX: end.row,
+              endY: end.col
+            }
           }
-        }
+        };
+      } catch (error) {
+        console.log(error);
       }
+      //console.log(movMessage);
+      //console.log("right after");
       setHighlights([]);
       setNumClicks(0);
       setStart(null);
       setIsClickable(false);
+      //console.log("sending");
       ws.current.send(JSON.stringify(movMessage));
+     // console.log("sent");
     }
   }
 

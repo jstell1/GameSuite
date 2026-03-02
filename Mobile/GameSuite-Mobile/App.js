@@ -56,13 +56,13 @@ export default function App() {
   const [ gameBoard, setGameBoard ] = useState(null);
   //const gameBoard = useState(null);
 
-
+  //console.log(currGameId);
   async function getSchema() {
-    console.log("in getSchema")
+    //console.log("in getSchema")
     const resp = await fetch(`${API_HOST}/schema`);
-    console.log(resp.text);
+    //console.log(resp.text);
     const schema = await resp.json();
-    console.log(schema);
+    //console.log(schema);
     validate.current = ajv.current.compile(schema);
   }
 
@@ -75,9 +75,9 @@ export default function App() {
 
     ws.current.onmessage = e => {
       
-      console.log(e.data);
+      //console.log(e.data);
       const data = JSON.parse(e.data);
-        console.log("WS Message:", data);
+        //console.log("WS Message:", data);
       const valid = validate.current(data);
 
       if (!valid) {
@@ -87,7 +87,7 @@ export default function App() {
           }
         }
         ws.current.send(JSON.stringify(msg));
-        console.log(validate.current.errors);
+        //console.log(validate.current.errors);
         return;
       };
 
@@ -110,15 +110,13 @@ export default function App() {
             playerTurn.current = 1;
             break;
         case "gameReadyResponse":
+          setCurrGameId(payload.gameId);
           
-          if(currGameId === "Create or Join Game") {
-            setCurrGameId(data.gameId);
-          }
           if(playerTurn.current === 0) {
             playerTurn.current = 2;
             //name = joinName;
           }
-          console.log(payload.gameState.turn);
+          //console.log(payload.gameState.turn);
           setGameTurn(`Player ${payload.gameState.turn}'s turn`);
           //turnNum = payload.gameState.turn;
           //id = payload.gameId;
@@ -137,14 +135,17 @@ export default function App() {
           break;
         case "stateUpdateResponse":
           setGameTurn(`Player ${payload.gameState.turn}'s turn`);
-          console.log(payload.gameState.turn);
-          turnNum = payload.gameState.turn;
+          //console.log("new turn: " + payload.gameState.turn);
+          let turnNum = payload.gameState.turn;
           if(payload.gameState.winner == null) {
 
-            if(playerTurn.current === turnNum)
-                setIsClickable(true);
-            else
-                setIsClickable(false);
+            if(playerTurn.current === turnNum) {
+              setIsClickable(true);
+            }
+            else {
+              setIsClickable(false);
+            }
+
           } else {
             setIsClickable(false);
             setGameTurn(`${payload.gameState.winner.name} is the winner`);
@@ -163,7 +164,7 @@ export default function App() {
   }
 
   const resetSocket = useCallback(() => {
-    console.log("in resetSocket");
+    //console.log("in resetSocket");
     getSchema().then(() => connectWebSocket());
   },[]);
 
@@ -187,7 +188,10 @@ export default function App() {
                                   gameBoard, setGameBoard
                                 }}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator
+          screenOptions={{
+            headerTitleAlign: 'center'
+          }}>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="GameBoard" component={GameBoardScreen} />
         </Stack.Navigator>

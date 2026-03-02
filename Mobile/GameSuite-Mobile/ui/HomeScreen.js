@@ -29,7 +29,7 @@ export default function HomeScreen({navigation, route}) {
 //   });
 //   return unsubscribe;
 // }, []);
-
+  //console.log(currGameId);
   useEffect(() => {
     if(!gameBoard) return;
     navigation.navigate("GameBoard");
