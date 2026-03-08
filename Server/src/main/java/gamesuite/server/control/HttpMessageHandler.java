@@ -13,6 +13,7 @@ import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.server.model.ServerGameRepo;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.util.StreamUtils;
 
 
@@ -42,6 +43,12 @@ public class HttpMessageHandler {
         return StreamUtils.copyToString(htmlFile.getInputStream(), StandardCharsets.UTF_8);
     }
 
+     @GetMapping("/old")
+    public String oldHome() throws IOException {
+        ClassPathResource htmlFile = new ClassPathResource("static/old/index.html");
+        return StreamUtils.copyToString(htmlFile.getInputStream(), StandardCharsets.UTF_8);
+    }
+
     @GetMapping("/schema")
     public ResponseEntity<JsonNode> getSchema() {
         ObjectMapper mapper = new ObjectMapper();
@@ -51,5 +58,32 @@ public class HttpMessageHandler {
             str = mapper.writeValueAsString(this.schemaRoot);
         } catch (Exception e) {}
         return new ResponseEntity<>(this.schemaRoot, HttpStatus.OK);
+    }
+
+    @GetMapping("/games")
+    public ResponseEntity<JsonNode> getAllGames() {
+        try {
+            
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode str = mapper.valueToTree(this.gmRepo.getGamesList());
+            return new ResponseEntity<>(str, HttpStatus.OK);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return null;
+    }
+
+    @GetMapping("/games/{game}")
+    public ResponseEntity<JsonNode> getGames(@PathVariable String game) {
+
+        try {
+            
+            ObjectMapper mapper = new ObjectMapper();
+            String[] games = this.gmRepo.getActiveGames(game);
+            return new ResponseEntity<>(mapper.valueToTree(games), HttpStatus.OK);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return null;
     }
 }

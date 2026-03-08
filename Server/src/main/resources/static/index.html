@@ -1,41 +1,37 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>GameSuite</title>
-    <link rel="stylesheet" href="index.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.17.1/ajv7.min.js" defer></script>
-
-    <script src="index.js" defer></script>
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>my-app</title>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
   </head>
 
   <body>
-  <!-- Lobby -->
-  <div id="lobby">
-    <label id="top">Create or Join Game</label>
-    <form id="createForm">
-      <label>Name:</label>
-      <input type="text" id="createName">
-      <input type="submit" value="Create Game">
-    </form>
-
-    <form id="joinForm">
-      <label>Name:</label>
-      <input type="text" id="joinName">
-      <label>Game ID:</label>
-      <input type="text" id="joinGameId">
-      <input type="submit" value="Join Game">
-    </form>
-  </div>
-
-  <!-- Game board -->
-  <div id="gameBoard" style="display: none;">
-    <h2>Game Board</h2>
-    <p id="gameInfo"></p>
-    <div id="boardContainer"></div>
-    <button id="quit">Quit Game</button>
-  </div>
-  
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  <script src="/_expo/static/js/web/index-660825146c5f71f0a51e616271c96436.js" defer></script>
 </body>
-
 </html>

@@ -132,6 +132,7 @@ createForm.addEventListener("submit", async (e) => {
 
     let payload = {
         "createGameRequest": {
+            "game": "Checkers",
             "name": name
         }
     }

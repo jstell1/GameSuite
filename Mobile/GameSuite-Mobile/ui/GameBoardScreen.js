@@ -15,7 +15,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GameContext, API_HOST, WS_HOST } from '../Global';
 
 const { width } = Dimensions.get('window');
-const squareSize = width / 8;
+const BOARD_SIZE = Platform.OS === "web" ? Math.min(width * 0.8, 480) : width;
+const squareSize = BOARD_SIZE / 8;
 
 export default function GameBoardScreen({navigation, route}) {
   const {gameBoard , setGameBoard} = useContext(GameContext);
@@ -225,8 +226,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   board: {
-    width: '100%',
-    aspectRatio: 1,
+    width: BOARD_SIZE,
+    //aspectRatio: 1,
     flexDirection: "row",
     flexWrap: "wrap",
   },

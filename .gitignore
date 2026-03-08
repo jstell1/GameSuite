@@ -7,6 +7,8 @@ bin/
 *.class
 *.log
 
+Mobile/GameSuite-Mobile/config.json
+
 node_modules/
 
 # Expo/React Native cache

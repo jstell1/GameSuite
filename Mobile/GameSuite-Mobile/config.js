@@ -1,13 +1,12 @@
 import { useEffect, useState, createContext, useRef, useContext, useCallback } from 'react';
 import Constants from "expo-constants";
-import { Platform } from 'react-native';
-
+import { API, WS } from './config.json';
 
 export const GameContext = createContext({});
 //export const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
 
 // LAN IP of your PC (reachable from emulator or device)
-const MOBILE_IP = "192.168.0.43:8080";
+const MOBILE_IP = API;
 
 // API base URL
 export const API_HOST =
