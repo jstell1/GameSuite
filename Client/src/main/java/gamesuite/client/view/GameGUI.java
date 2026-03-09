@@ -150,7 +150,9 @@ public class GameGUI {
         
         this.selectBtn.addActionListener(a -> {
             String val = this.gamesList.getSelectedValue();
-            if(val != null && this.name.getText() != "") {
+            System.out.println(this.name.getText());
+            if(val != null && !this.name.getText().equals("")) {
+                System.out.println("joining");
                  this.listener.joinGame(game, this.name.getText(), val);
                 //this.listener.initActiveList(val);
                 //this.cmg.getActiveGames(val);
@@ -159,7 +161,7 @@ public class GameGUI {
         this.createGameBtn = new JButton("Create Game");
         this.createGameBtn.setPreferredSize(new Dimension(120, 30));
         this.createGameBtn.addActionListener(e -> {
-             if(name.getText() != null) {
+             if(!this.name.getText().equals("")) {
                  this.listener.createGame(game, name.getText());  
              } 
          });

@@ -41,7 +41,7 @@ public class App {
             cmg.setGUIManager(guiGM);
     
             try {
-                cmg.connect();
+                //cmg.connect();
 
                 GameGUI ui = new GameGUI(guiGM);
                 guiGM.setGameGUI(ui);

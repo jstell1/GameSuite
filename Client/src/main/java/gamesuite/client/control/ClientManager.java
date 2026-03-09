@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.hc.client5.http.impl.Operations.CompletedFuture;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -54,16 +55,18 @@ public class ClientManager {
     private int port;
     private PluginLoader loader;
     private MainGUI main;
+    private CompletableFuture<WebSocketSession> connectionFuture; 
     
     public ClientManager(String ip, int port) {
         try {
-
+            this.connectionFuture = new CompletableFuture<>();
             this.loader = new PluginLoader("../plugins/");
             this.loader.loadAll();
             this.loader.watchForChanges();
 
             this.loader.setUIPluginLoader("../plugins/ui");
             this.loader.loadGameBoards();
+            
         } catch (Exception e) {
             // TODO: handle exception
         }
@@ -94,6 +97,7 @@ public class ClientManager {
     }
 
     public void connect() throws Exception {
+        this.connectionFuture = new CompletableFuture<>();
         try {
             connect(this.wsUrl);
         } catch (Exception e) {
@@ -112,6 +116,7 @@ public class ClientManager {
             public void afterConnectionEstablished(WebSocketSession session) {
                 //System.out.println("Connected to WebSocket");
                 ClientManager.this.session = session;
+                ClientManager.this.connectionFuture.complete(session);
                 //ClientGameManager.this.sessionId = session.getId();
             }
 
@@ -242,7 +247,14 @@ public class ClientManager {
 
     public synchronized String createGame(String game, String playerName) throws Exception {
         
-        if(session != null && session.isOpen()) {
+        if(this.session != null) {
+            System.out.println("Already connected");
+            return "";
+        }
+        connect();
+        this.session = this.connectionFuture.get();
+
+        if(this.session != null && this.session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "createGameRequest";
             ObjectNode inner = mapper.createObjectNode();
@@ -252,31 +264,54 @@ public class ClientManager {
             payload.set(msgType, inner);
             String str = mapper.writeValueAsString(payload);
             TextMessage msg = new TextMessage(str);
-            session.sendMessage(msg);
+            this.session.sendMessage(msg);
             System.out.println("Sent");
         }
        return null;
     }
 
     public synchronized String joinGame(String game, String name, String gameId) {
-        if(session != null && session.isOpen()) {
-            ObjectMapper mapper = new ObjectMapper();
-            String msgType = "joinGameRequest";
-            ObjectNode payload = mapper.createObjectNode();
-            payload.put("name", name);
-            payload.put("gameId", gameId);
-            ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
-            try {
-                String str = mapper.writeValueAsString(outer);
-                TextMessage msg = new TextMessage(str);
-                System.out.println(str);
-                session.sendMessage(msg);
-            } catch (Exception e) {
-               
+
+        
+        try {
+            if(this.session != null) {
+                System.out.println("Already connected");
+                return "";
             }
-            System.out.println("Sent");
-            return gameId;
+            if(name.equals("")) {
+                System.out.println("no name");
+                return "";
+            }
+            connect();
+            this.session = this.connectionFuture.get();
+            System.out.println(this.session != null ? this.session.getId(): "no session");
+            System.out.println(this.session == null);
+            System.out.println(this.session.isOpen());
+            if(this.session != null && this.session.isOpen()) {
+                System.out.println("past check");
+                ObjectMapper mapper = new ObjectMapper();
+                String msgType = "joinGameRequest";
+                ObjectNode payload = mapper.createObjectNode();
+                payload.put("name", name);
+                payload.put("gameId", gameId);
+                ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
+                System.out.println("made payload");
+                try {
+                    String str = mapper.writeValueAsString(outer);
+                    TextMessage msg = new TextMessage(str);
+                    System.out.println(str);
+                    this.session.sendMessage(msg);
+                } catch (Exception e) {
+                    
+                }
+                System.out.println("Sent");
+                return gameId;
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+
        return null;
     }
 
@@ -288,6 +323,7 @@ public class ClientManager {
             this.session = null;
             this.gameId = null;
             this.sessionId = null;
+            this.connectionFuture = new CompletableFuture<>();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -295,7 +331,7 @@ public class ClientManager {
 
         if(!hardQuit && this.session == null) {
             try {
-                connect();
+                //connect();
                 this.guiGM.resetGUI();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
