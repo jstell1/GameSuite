@@ -1,18 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState, createContext, useContext } from 'react';
+
+import { useEffect, useState, useContext } from 'react';
 import { 
-  KeyboardAvoidingView, TouchableWithoutFeedback, 
-  Keyboard, Alert, 
-  StyleSheet, Text, 
-  TextInput, ScrollView, 
+  StyleSheet, Text,  
   View, Button,
   Pressable, Dimensions,
   Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Constants from "expo-constants";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { GameContext, API_HOST, WS_HOST } from '../Global';
+import { GameContext } from '../Global';
 
 const { width } = Dimensions.get('window');
 const BOARD_SIZE = Platform.OS === "web" ? Math.min(width * 0.8, 480) : width;
@@ -58,7 +51,7 @@ export default function GameBoardScreen({navigation, route}) {
             await ws.current.close();
             
             await resetSocket();
-            await navigation.pop();
+            await navigation.popToTop();
             playerTurn.current = 0;
             setGame(null);
             setGameBoard(null);

@@ -14,7 +14,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ajv from 'ajv';
 import GameBoardScreen from './ui/GameBoardScreen';
 import HomeScreen from './ui/HomeScreen';
-import { GameContext, API_HOST, WS_HOST } from './Global';
+import { GameContext, API_HOST, WS_HOST, gamesListURI } from './Global';
+import GamesScreen from './ui/GamesScreen';
+import ActiveGamesScreen from './ui/ActiveGamesScreen';
 
 
 const listeners = {};
@@ -54,6 +56,7 @@ export default function App() {
   const [joinGameId, setJoinGameId] = useState("");
   const [ gameTurn, setGameTurn ] = useState("");
   const [ gameBoard, setGameBoard ] = useState(null);
+  const [gameChoice, setGameChoice ] = useState("");
   //const gameBoard = useState(null);
 
   //console.log(currGameId);
@@ -185,7 +188,8 @@ export default function App() {
                                   joinGameId, setJoinGameId,
                                   gameTurn, setGameTurn,
                                   resetSocket, 
-                                  gameBoard, setGameBoard
+                                  gameBoard, setGameBoard,
+                                  gameChoice, setGameChoice,
                                 }}>
       <NavigationContainer>
         <Stack.Navigator
@@ -193,6 +197,8 @@ export default function App() {
             headerTitleAlign: 'center'
           }}>
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="GamesScreen" component={GamesScreen} />
+          <Stack.Screen name="ActiveGamesScreen" component={ActiveGamesScreen} />
           <Stack.Screen name="GameBoard" component={GameBoardScreen} />
         </Stack.Navigator>
       </NavigationContainer>

@@ -69,6 +69,7 @@ public class HttpMessageHandler {
             return new ResponseEntity<>(str, HttpStatus.OK);
         } catch (Exception e) {
             // TODO: handle exception
+            System.out.println("NOOOOOOOO!!!!");
         }
         return null;
     }
@@ -77,12 +78,14 @@ public class HttpMessageHandler {
     public ResponseEntity<JsonNode> getGames(@PathVariable String game) {
 
         try {
-            
             ObjectMapper mapper = new ObjectMapper();
             String[] games = this.gmRepo.getActiveGames(game);
-            return new ResponseEntity<>(mapper.valueToTree(games), HttpStatus.OK);
+            JsonNode n = mapper.valueToTree(games);
+            System.out.println(n);
+            return new ResponseEntity<>(n, HttpStatus.OK);
         } catch (Exception e) {
             // TODO: handle exception
+            System.out.println("Booooo!!!");
         }
         return null;
     }

@@ -1,26 +1,40 @@
-import { useEffect, useState, createContext, useRef, useContext, useCallback } from 'react';
-import Constants from "expo-constants";
-import { Platform } from 'react-native';
 
+import { createContext } from "react";
+import { Platform } from "react-native";
 
 export const GameContext = createContext({});
-//export const { API_HOST, WS_HOST } = Constants.expoConfig.extra;
 
-// LAN IP of your PC (reachable from emulator or device)
+// LAN IP of your PC
 const MOBILE_IP = "192.168.0.43:8080";
 
-// API base URL
-export const API_HOST =
-  Platform.OS === "web"
-    ? typeof window !== "undefined" 
-      ? window.location.origin // safe on web
-      : `http://${MOBILE_IP}` // fallback if somehow window is undefined
-    : `http://${MOBILE_IP}`; // mobile (Android/iOS)
+/*
+Determine protocol
+*/
+const isWeb = Platform.OS === "web";
 
-// WebSocket URL
-export const WS_HOST =
-  Platform.OS === "web"
-    ? typeof window !== "undefined"
-      ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ingame`
-      : `http://${MOBILE_IP}`
-    : `ws://${MOBILE_IP}/ingame`; // mobile (Android/iOS)
+const httpProtocol =
+  isWeb && typeof window !== "undefined"
+    ? window.location.protocol === "https:" ? "https" : "http"
+    : "http";
+
+const wsProtocol =
+  isWeb && typeof window !== "undefined"
+    ? window.location.protocol === "https:" ? "wss" : "ws"
+    : "ws";
+
+/*
+Determine host
+*/
+const host =
+  isWeb && typeof window !== "undefined"
+    ? window.location.host
+    : MOBILE_IP;
+
+/*
+Base URLs
+*/
+export const API_HOST = `${httpProtocol}://${host}`;
+
+export const WS_HOST = `${wsProtocol}://${host}/ingame`;
+
+export const gamesListURI = `${httpProtocol}://${host}/games`;
