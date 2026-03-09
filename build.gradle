@@ -113,6 +113,25 @@ tasks.register('masterClean') {
             pluginsDir.deleteDir()
             println "Deleted plugins folder"
         }
+
+         // Static resources directory
+        def staticDir = file("$rootDir/Server/src/main/resources/static")
+
+        // Items to delete
+        def targets = [
+                "_expo",
+                "assets",
+                "index.html",
+                "metadata.json"
+        ]
+
+        targets.each { name ->
+            def target = new File(staticDir, name)
+            if (target.exists()) {
+                target.deleteDir() ?: target.delete()
+                println "Deleted ${target}"
+            }
+        }
     }
 
 }
