@@ -25,3 +25,95 @@ subprojects {
         useJUnitPlatform()
     }
 }
+
+// Root build.gradle
+
+def expoWebDist = file("$rootDir/Mobile/GameSuite-Mobile/dist")
+def serverResources = file("$rootDir/Server/src/main/resources/static")
+
+tasks.register('exportExpoWeb', Exec) {
+    group = 'build'
+    description = 'Exports the Expo web app to dist folder'
+    workingDir "$rootDir/Mobile/GameSuite-Mobile"
+    commandLine 'npx.cmd', 'expo', 'export', '--platform', 'web'
+}
+
+tasks.register('copyExpoToServer', Copy) {
+    group = 'build'
+    description = 'Copies Expo web output to server resources'
+    dependsOn 'exportExpoWeb'
+    from expoWebDist
+    into serverResources
+}
+
+tasks.register('preparePluginsDir') {
+    group = 'build'
+    description = 'Creates the plugins folder if missing'
+    doLast {
+        def pluginsDir = file("$rootDir/plugins")
+        if (!pluginsDir.exists()) {
+            pluginsDir.mkdirs()
+            println "Created plugins folder"
+        }
+    }
+}
+
+tasks.register('buildPlugins') {
+    group = 'build'
+    description = 'Builds Core, Server, Client jars and puts them in plugins folder'
+    dependsOn ':Client:fatJar', ':Checkers:CheckersJar', ':Checkers:UIJar' // adjust task names if needed
+    dependsOn 'preparePluginsDir'
+
+    doLast {
+        def pluginsDir = file("$rootDir/plugins")
+        def jarFiles = [
+            file("$rootDir/Checkers/build/libs/Checkers.jar"),
+            file("$rootDir/Checkers/build/libs/CheckersUI.jar"),
+        ]
+        jarFiles.each { jar ->
+            if (jar.exists()) {
+                copy {
+                    from jar
+                    into pluginsDir
+                }
+                println "Copied ${jar.name} to plugins"
+            } else {
+                println "Jar not found: ${jar}"
+            }
+        }
+    }
+}
+
+tasks.register('cleanExpo', Delete) {
+    group = 'build'
+    description = 'Runs Expo clean'
+    delete "$rootDir/Mobile/GameSuite-Mobile/dist"
+}
+
+
+tasks.register('masterBuild') {
+    group = 'build'
+    description = 'Exports web, copies resources, builds jars and plugins'
+    dependsOn 'copyExpoToServer', 'buildPlugins'
+}
+
+tasks.register('masterClean') {
+    group = 'build'
+    description = 'Cleans all subprojects, plugins folder, and Expo project'
+
+    // Run the clean task of all subprojects first
+    dependsOn subprojects.collect { it.tasks.named('clean') }
+    // Clean Expo project
+    dependsOn 'cleanExpo'
+
+    doLast {
+        // Delete plugins folder
+        def pluginsDir = file("$rootDir/plugins")
+        if (pluginsDir.exists()) {
+            pluginsDir.deleteDir()
+            println "Deleted plugins folder"
+        }
+    }
+
+}
+
