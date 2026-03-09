@@ -28,7 +28,7 @@ public class ServerGameRepo {
     public ServerGameRepo() {
         try {
        
-            this.loader = new PluginLoader("plugins/");
+            this.loader = new PluginLoader("../plugins/");
         
             this.loader.loadAll();
             this.loader.watchForChanges();

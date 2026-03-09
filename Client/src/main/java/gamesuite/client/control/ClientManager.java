@@ -7,8 +7,12 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import org.apache.hc.client5.http.impl.Operations.CompletedFuture;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -18,6 +22,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,9 +33,14 @@ import gamesuite.core.network.*;
 import gamesuite.core.ui.GameBoardFactory;
 import gamesuite.core.ui.GameBoardUI;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 public class ClientManager {
     private final WebSocketClient client = new StandardWebSocketClient();
-    private RestTemplate restTemplate = new RestTemplate();
+    private HttpClient restClient;
     private WebSocketSession session;
     private String sessionId;
     private String gameId;
@@ -48,20 +58,20 @@ public class ClientManager {
     public ClientManager(String ip, int port) {
         try {
 
-            this.loader = new PluginLoader("plugins");
+            this.loader = new PluginLoader("../plugins/");
             this.loader.loadAll();
             this.loader.watchForChanges();
 
-            this.loader.setUIPluginLoader("plugins/ui");
+            this.loader.setUIPluginLoader("../plugins/ui");
             this.loader.loadGameBoards();
         } catch (Exception e) {
             // TODO: handle exception
         }
         this.ip = ip;
         this.port = port;
-        this.baseUrl = "https://" + ip + ":" + port;
+        this.baseUrl = "http://" + ip + ":" + port;
         this.wsUrl = "wss://" + ip + ":" + port + "/ingame";
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        this.restClient = HttpClient.newHttpClient();
         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -296,41 +306,101 @@ public class ClientManager {
     }
 
     public List<String> getAvailableGames() {
-         if(session != null && session.isOpen()) {
+
+        
+
+        System.out.println("getting gamesList");
+        HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(this.baseUrl + "/games"))
+                        .GET()
+                        .build();
+
+        CompletableFuture<HttpResponse<String>> response = this.restClient.sendAsync(request,
+                                                    HttpResponse.BodyHandlers.ofString());
+
+        response.thenAccept(resp -> {
             ObjectMapper mapper = new ObjectMapper();
-            String msgType = "gamesListRequest";
-            ObjectNode payload = mapper.createObjectNode();
-            payload.set(msgType, mapper.createObjectNode());
             try {
-                String str = mapper.writeValueAsString(payload);
-                TextMessage msg = new TextMessage(str);
-                session.sendMessage(msg);
-                System.out.println("Sent");
+                String[] list = mapper.readValue(resp.body(), String[].class);
+                this.main.setGamesList(list);
+                System.out.println("Retrieved games list");
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
+            
+        }).join();
+
+
+
+
+
+
+
+        //  if(session != null && session.isOpen()) {
+
+
+
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String msgType = "gamesListRequest";
+        //     ObjectNode payload = mapper.createObjectNode();
+        //     payload.set(msgType, mapper.createObjectNode());
+        //     try {
+        //         String str = mapper.writeValueAsString(payload);
+        //         TextMessage msg = new TextMessage(str);
+        //         session.sendMessage(msg);
+        //         System.out.println("Sent");
+        //     } catch (Exception e) {
+        //         // TODO Auto-generated catch block
+        //         e.printStackTrace();
+        //     }
+        // }
         return null;
     }
 
     public void getActiveGames(String gameName) {
-         if(session != null && session.isOpen()) {
+        System.out.println("getting active list");
+         HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(this.baseUrl + "/games/" + gameName))
+                        .GET()
+                        .build();
+
+        CompletableFuture<HttpResponse<String>> response = this.restClient.sendAsync(request,
+                                                    HttpResponse.BodyHandlers.ofString());
+
+        response.thenAccept(resp -> {
             ObjectMapper mapper = new ObjectMapper();
-            String msgType = "activeGamesRequest";
-            ObjectNode payload = mapper.createObjectNode();
-            ObjectNode inner = mapper.createObjectNode();
-            inner.put("game", gameName);
-            payload.set(msgType, inner);
             try {
-                String str = mapper.writeValueAsString(payload);
-                TextMessage msg = new TextMessage(str);
-                session.sendMessage(msg);
-                System.out.println("Sent");
+                String[] list = mapper.readValue(resp.body(), String[].class);
+                this.guiGM.setActiveGamesList(list);
+                System.out.println("retrieved active list");
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
+            
+        }).join();
+
+       
+       
+       
+       
+       
+       
+        // if(session != null && session.isOpen()) {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String msgType = "activeGamesRequest";
+        //     ObjectNode payload = mapper.createObjectNode();
+        //     ObjectNode inner = mapper.createObjectNode();
+        //     inner.put("game", gameName);
+        //     payload.set(msgType, inner);
+        //     try {
+        //         String str = mapper.writeValueAsString(payload);
+        //         TextMessage msg = new TextMessage(str);
+        //         session.sendMessage(msg);
+        //         System.out.println("Sent");
+        //     } catch (Exception e) {
+        //         // TODO Auto-generated catch block
+        //         e.printStackTrace();
+        //     }
+        //}
     }
 }

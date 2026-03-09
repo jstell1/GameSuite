@@ -140,9 +140,9 @@ public class GUIManager implements GameUI, UIListener {
 
     @Override
     public void refreshGamesList() {
-        SwingUtilities.invokeLater(() -> {
+        new Thread(() -> {
             this.gm.getAvailableGames();
-        });
+        }).start();
     }
 
     public void initGame(GameBoardUI boardUI) {
