@@ -13,7 +13,6 @@ import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GameContext, API_HOST, WS_HOST } from '../Global';
-import { FlatList } from 'react-native-web';
 
 
 export default function HomeScreen({navigation, route}) {
@@ -47,31 +46,6 @@ export default function HomeScreen({navigation, route}) {
             <Text>Name</Text>
             <TextInput style={styles.input} onChangeText={setCreateName}/>
             <Button title="Choose Game" onPress={getGamesList}/>
-            <StatusBar style="auto" />
-          </ScrollView>
-       
-     
-    </SafeAreaView>
-  );
-
-  return (
-
-    <SafeAreaView style={{flex: 1}}>
-      
-       
-        <ScrollView 
-            contentContainerStyle={styles.container} 
-            keyboardShouldPersistTaps="handled"
-          >
-            <Text selectable={true}>{currGameId}</Text>
-            <Text>Name</Text>
-            <TextInput style={styles.input} onChangeText={setCreateName}/>
-            <Button title="Create Game" onPress={createGame}/>
-            <Text>Name</Text>
-            <TextInput style={styles.input} onChangeText={setJoinName}/>
-            <Text>GameId</Text>
-            <TextInput style={styles.input} onChangeText={setJoinGameId}/>
-            <Button title="Join Game" onPress={joinGame}/>
             <StatusBar style="auto" />
           </ScrollView>
        

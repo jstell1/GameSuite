@@ -24,11 +24,14 @@ export default function GameBoardScreen({navigation, route}) {
   const {gameTurn } = useContext(GameContext); //string for displaying on screen
   const { ws } = useContext(GameContext);
   const { currGameId, setCurrGameId } = useContext(GameContext);
+  //console.log("");
 
   useEffect(() => {
     if(!game) return;
-    //console.log(game.turn);
+    //console.log("curr game turn: " + game.turn);
+
     if(game.turn === playerTurn.current) {
+      //console.log("my turn");
       setIsClickable(true);
     }
   }, [playerTurn, game]);
@@ -50,7 +53,7 @@ export default function GameBoardScreen({navigation, route}) {
           onPress={async () => {
             await ws.current.close();
             
-            await resetSocket();
+            //await resetSocket();
             await navigation.popToTop();
             playerTurn.current = 0;
             setGame(null);
@@ -70,6 +73,8 @@ export default function GameBoardScreen({navigation, route}) {
   }, [game]);
 
   function applyChanges(changedPos) {
+    if(!board) return;
+    console.log("applying changes");
     const newBoard = board.map(row => [...row]);
     changedPos.forEach((pos) => {
       if(pos.piece !== null) {
@@ -109,8 +114,9 @@ export default function GameBoardScreen({navigation, route}) {
   }
 
   async function handlePress(row, col) {
-    //console.log("in handlePress");
+    console.log("in handlePress");
     if(isClickable === false) return;
+    console.log("isClickable");
     if (numClicks === 0) {
       setStart({ row, col });
       setHighlights([{ row, col }]);

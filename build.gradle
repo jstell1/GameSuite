@@ -70,17 +70,26 @@ tasks.register('buildPlugins') {
             file("$rootDir/Checkers/build/libs/Checkers.jar"),
             file("$rootDir/Checkers/build/libs/CheckersUI.jar"),
         ]
-        jarFiles.each { jar ->
-            if (jar.exists()) {
-                copy {
-                    from jar
-                    into pluginsDir
-                }
-                println "Copied ${jar.name} to plugins"
-            } else {
-                println "Jar not found: ${jar}"
-            }
+
+        copy {
+            from jarFiles[0]
+            into pluginsDir
         }
+        copy {
+            from jarFiles[1]
+            into "$pluginsDir/ui"
+        }
+        // jarFiles.each { jar ->
+        //     if (jar.exists()) {
+        //         copy {
+        //             from jar
+        //             into pluginsDir
+        //         }
+        //         println "Copied ${jar.name} to plugins"
+        //     } else {
+        //         println "Jar not found: ${jar}"
+        //     }
+        // }
     }
 }
 

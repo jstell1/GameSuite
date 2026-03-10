@@ -318,7 +318,9 @@ public class ClientManager {
     public synchronized void quitGame(boolean hardQuit) {
         
         try {
-            this.session.close();
+            if(this.session != null) {
+                this.session.close();
+            }
             System.out.println("Sent");
             this.session = null;
             this.gameId = null;

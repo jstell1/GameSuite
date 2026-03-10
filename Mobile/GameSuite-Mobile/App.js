@@ -69,111 +69,121 @@ export default function App() {
     validate.current = ajv.current.compile(schema);
   }
 
-  async function connectWebSocket() {
-    ws.current = new WebSocket(`${WS_HOST}`);
+  function connectWebSocket() {
+    return new Promise((resolve, reject) => {
 
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
-    };
 
-    ws.current.onmessage = e => {
-      
-      //console.log(e.data);
-      const data = JSON.parse(e.data);
-        //console.log("WS Message:", data);
-      const valid = validate.current(data);
-
-      if (!valid) {
-        let msg = {
-          "badErrorRequest": {
-              "message": "don't recognize message type"
-          }
-        }
-        ws.current.send(JSON.stringify(msg));
-        //console.log(validate.current.errors);
-        return;
-      };
-
-      let type = Object.keys(data)[0];
-      let payload = data[type];
-      //console.log(payload);
-
-      switch(type) {
-        case "sessionConnectedResponse":
-            sessionId.current = payload.sessionId;
-            break;
-        case "gameCreatedResponse":
-            setCurrGameId(payload.gameId);
-            //listeners["gameCreatedResponse"](payload.gameId);
-            //name = createName;
-            //playerTurn = 1;
-            //turnNum = payload.gameState.turn;
-            //isClickable = false;
-            setGame(payload.gameState);
-            playerTurn.current = 1;
-            break;
-        case "gameReadyResponse":
-          setCurrGameId(payload.gameId);
+        ws.current = new WebSocket(`${WS_HOST}`);
+    
+        ws.current.onopen = () => {
+          //console.log("WebSocket connected");
+          resolve(ws.current);
+        };
+    
+        ws.current.onmessage = e => {
           
-          if(playerTurn.current === 0) {
-            playerTurn.current = 2;
-            //name = joinName;
-          }
-          //console.log(payload.gameState.turn);
-          setGameTurn(`Player ${payload.gameState.turn}'s turn`);
-          //turnNum = payload.gameState.turn;
-          //id = payload.gameId;
-          //currGameId = payload.gameId;
-          //setIsClickable(false);
-
-          if(playerTurn.current === payload.gameState.turn) {
-            setIsClickable(true);
-          }
-          setGame(payload.gameState);
-          setGameBoard(payload.board);
-          
-          // navigation.navigate("GameBoard",
-          //   { gameBoard }
-          // );
-          break;
-        case "stateUpdateResponse":
-          setGameTurn(`Player ${payload.gameState.turn}'s turn`);
-          //console.log("new turn: " + payload.gameState.turn);
-          let turnNum = payload.gameState.turn;
-          if(payload.gameState.winner == null) {
-
-            if(playerTurn.current === turnNum) {
-              setIsClickable(true);
+          //console.log(e.data);
+          const data = JSON.parse(e.data);
+            //console.log("WS Message:", data);
+          const valid = validate.current(data);
+    
+          if (!valid) {
+            let msg = {
+              "badErrorRequest": {
+                  "message": "don't recognize message type"
+              }
             }
-            else {
-              setIsClickable(false);
-            }
+            ws.current.send(JSON.stringify(msg));
+            //console.log(validate.current.errors);
+            return;
+          };
+    
+          let type = Object.keys(data)[0];
+          let payload = data[type];
+          //console.log(payload);
+    
+          switch(type) {
+            case "sessionConnectedResponse":
+                sessionId.current = payload.sessionId;
+                //console.log(sessionId.current);
+                break;
+            case "gameCreatedResponse":
+                setCurrGameId(payload.gameId);
+                //listeners["gameCreatedResponse"](payload.gameId);
+                //name = createName;
+                //playerTurn = 1;
+                //turnNum = payload.gameState.turn;
+                //isClickable = false;
+                setGame(payload.gameState);
+                playerTurn.current = 1;
+                break;
+            case "gameReadyResponse":
+              setCurrGameId(payload.gameId);
+              
+              if(playerTurn.current === 0) {
+                //console.log("setting player turn to 2");
+                playerTurn.current = 2;
+                //name = joinName;
+              }
+              //console.log(payload.gameState.turn);
+              setGameTurn(`Player ${payload.gameState.turn}'s turn`);
+              //turnNum = payload.gameState.turn;
+              //id = payload.gameId;
+              //currGameId = payload.gameId;
+              //setIsClickable(false);
+    
+              if(playerTurn.current === payload.gameState.turn) {
+                setIsClickable(true);
+              }
+              setGame(payload.gameState);
+              setGameBoard(payload.board);
+              
+              // navigation.navigate("GameBoard",
+              //   { gameBoard }
+              // );
+              break;
+            case "stateUpdateResponse":
+              setGameTurn(`Player ${payload.gameState.turn}'s turn`);
+              //console.log("new turn: " + payload.gameState.turn);
+              //console.log("getting update");
+              let turnNum = payload.gameState.turn;
+              
+              if(payload.gameState.winner == null) {
+    
+                if(playerTurn.current === turnNum) {
+                  setIsClickable(true);
+                  //console.log("my turn");
+                }
+                else {
+                  setIsClickable(false);
+                  //console.log("not my turn");
+                }
+    
+              } else {
+                setIsClickable(false);
+                //console.log("game over");
+                setGameTurn(`${payload.gameState.winner.name} is the winner`);
+              }
+              setGame(payload.gameState);
+              break;
+            default: 
+                //console.log(data);
+                break;
+          }      
+        };
+        ws.current.onerror = e => { console.log(e.message); reject(e); };
+    
+        ws.current.onclose = e => { console.log(e.code, e.reason); };
+    });
 
-          } else {
-            setIsClickable(false);
-            setGameTurn(`${payload.gameState.winner.name} is the winner`);
-          }
-          setGame(payload.gameState);
-          break;
-        default: 
-            //console.log(data);
-            break;
-      }      
-    };
-    ws.current.onerror = e => { console.log(e.message); };
-
-    ws.current.onclose = e => { console.log(e.code, e.reason); };
 
   }
 
-  const resetSocket = useCallback(() => {
-    //console.log("in resetSocket");
-    getSchema().then(() => connectWebSocket());
-  },[]);
+  const resetSocket = useCallback(connectWebSocket,[]);
 
     
   useEffect(() => {
-    resetSocket();//getSchema().then(() => connectWebSocket());
+    getSchema();//resetSocket();//getSchema().then(() => connectWebSocket());
   }, []);
 
  
@@ -187,7 +197,7 @@ export default function App() {
                                   joinName, setJoinName, 
                                   joinGameId, setJoinGameId,
                                   gameTurn, setGameTurn,
-                                  resetSocket, 
+                                  resetSocket, sessionId,
                                   gameBoard, setGameBoard,
                                   gameChoice, setGameChoice,
                                 }}>

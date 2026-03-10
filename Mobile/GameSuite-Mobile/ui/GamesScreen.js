@@ -24,13 +24,13 @@ export default function GamesScreen({navigation}) {
   useEffect(() => {getGames()}, []);
 
   const getGames = async () => {
-    console.log("getting the games list");
-    console.log(gamesListURI);
+    //console.log("getting the games list");
+    //console.log(gamesListURI);
      fetch(gamesListURI)
       .then(resp => resp.json())
       .then(data =>
         {
-          console.log(data);
+      //    console.log(data);
           if(data)
             setGamesList(data);
         }

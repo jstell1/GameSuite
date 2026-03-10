@@ -29,17 +29,18 @@ export default function ActiveGamesScreen({navigation, route}) {
     const { createName } = useContext(GameContext);
     const { game, setGame } = useContext(GameContext);
     const { resetSocket } = useContext(GameContext);
+    const { sessionId } = useContext(GameContext);
 
     useEffect(() => {getGames()}, [gameChoice]);
 
     const getGames = async () => {
          if(gameChoice === null) return;
-         console.log("getting list");
+         //console.log("getting list");
         fetch(gamesListURI + '/' + gameChoice)
           .then(resp => resp.json())
           .then(data =>
             {
-              console.log(data);
+           //   console.log(data);
               if(data)
                 setGamesList(data);
             }
@@ -49,13 +50,12 @@ export default function ActiveGamesScreen({navigation, route}) {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener("beforeRemove", async (e) => {
-
-            if (game === null || !useIsFocused()) return; // normal back behavior
+            if (ws.current?.readyState !== WebSocket.OPEN) return; // normal back behavior
 
             try {
                 ws.current?.close();
 
-                await resetSocket();
+                //await resetSocket();
 
                 playerTurn.current = 0;
                 setGame(null);
@@ -68,7 +68,7 @@ export default function ActiveGamesScreen({navigation, route}) {
   });
 
   return unsubscribe;
-}, [navigation, game]);
+}, [navigation]);
 
     useEffect(() => {
         if(!gameBoard) return;
@@ -76,17 +76,22 @@ export default function ActiveGamesScreen({navigation, route}) {
     }, [gameBoard, navigation]);
     
     const createGame = async () => {
-    if(!createName) { Alert.alert("Must have name!"); return; }
-    if(game !== null) { Alert.alert("Already created game"); return; }
+      if(!createName) { Alert.alert("Must have name!"); return; }
+      if(game !== null) { Alert.alert("Already created game"); return; }
+     
+      await resetSocket();
+      console.log("socket setup");
 
-    let msg = {
+      let msg = {
         "createGameRequest": {
             "game": gameChoice,
             "name": createName
         }
-    }
-    ws.current.send(JSON.stringify(msg));
-    
+      }
+      console.log("about to send");
+      console.log(ws.current?.readyState === WebSocket.OPEN);
+      ws.current.send(JSON.stringify(msg));
+      console.log("sending createGameRequest");
     }
 
     const joinGame = async () => {
@@ -98,12 +103,14 @@ export default function ActiveGamesScreen({navigation, route}) {
         return;
         }
         
-        let payload = {
+        await resetSocket();
+          let payload = {
             "joinGameRequest": {
                 "name": createName,
                 "gameId": gamesList[selectedIndex]
             }
         }
+        console.log(payload);
         ws.current.send(JSON.stringify(payload));
     }
       
