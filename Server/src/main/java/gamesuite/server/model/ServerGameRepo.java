@@ -205,8 +205,16 @@ public class ServerGameRepo {
     public String[] getActiveGames(String game) {
         
         synchronized(this.activeList) {
-            String[] list = this.activeList.get(game).keySet().toArray(new String[0]);
-            return list;
+            Map<String, Integer> l = this.activeList.get(game);
+            List<String> list = new ArrayList<>();
+            for(String gameId : l.keySet()) {
+                if(l.get(gameId) < 2) {
+                    list.add(gameId);
+                }
+            }
+
+            //String[] list = l.keySet().toArray(new String[0]);
+            return list.toArray(new String[list.size()]);
         }
     }
 
