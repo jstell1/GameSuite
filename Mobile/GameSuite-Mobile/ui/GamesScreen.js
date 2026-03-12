@@ -46,6 +46,7 @@ export default function GamesScreen({navigation}) {
     
     return (
       <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.webContainer}>
         <ScrollView contentContainerStyle={{ padding: 20 }}>
           {gamesList 
             ? gamesList.map((item, idx) => {
@@ -69,8 +70,61 @@ export default function GamesScreen({navigation}) {
             );
           }) : <Text>Not here yet!</Text>}
         </ScrollView>
-        <Button title="Get List" onPress={getList}/>
-        <Button title="Refresh" onPress={getGames} />
+        <View style={styles.container}>
+          <Pressable 
+            onPress={getList}
+            style={styles.button}
+            >
+            <Text>Get List</Text>
+          </Pressable>
+          <Pressable
+            onPress={getGames}
+            style={styles.button} 
+            >
+            <Text>Refresh</Text>
+          </Pressable>
+        </View>
+      </View>
       </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    //flexDirection: "row",
+    padding: 15,
+    borderTopWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white"
+  },
+  button: {
+      padding: 15,
+      marginBottom: 6,
+      marginLeft: 6,
+      marginRight: 6,
+      backgroundColor: "#4da6ff",
+      borderRadius: 16,
+      alignItems: "center"
+  },
+
+   webContainer: {
+    flex: 1,
+    width: "100%",
+    alignSelf: "center",
+    ...Platform.select({
+      web: {
+        maxWidth: 600,   // max width only for web
+        borderWidth: 1,
+      borderColor: "#ccc",
+      borderRadius: 8,
+      backgroundColor: "white",
+      marginTop: 20,
+      overflow: "hidden"
+      },
+      default: {
+        // mobile/other platforms: no max width
+      }
+    })
+  }
+
+});

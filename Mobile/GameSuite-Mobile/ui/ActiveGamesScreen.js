@@ -116,34 +116,80 @@ export default function ActiveGamesScreen({navigation, route}) {
       
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ padding: 20 }}>
-          {gamesList 
-            ? gamesList.map((item, idx) => {
-            const selected = idx === selectedIndex;
-  
-            return (
-              <Pressable
-                key={idx}
-                onPress={() => setSelectedIndex(idx)}
-                style={{
-                  padding: 12,
-                  marginBottom: 6,
-                  backgroundColor: selected ? "#4da6ff" : "#eee",
-                  borderRadius: 6
-                }}
-              >
-                <Text style={{ color: selected ? "white" : "black" }}>
-                  {item}
-                </Text>
-              </Pressable>
-            );
-          }) : <Text>Not here yet!</Text>}
-        </ScrollView>
-        <Button title="Create Game" onPress={createGame}/>
-        <Button title="Join Game" onPress={joinGame}/>
-        <Button title="Refresh" onPress={getGames} />
+        <View style={styles.webContainer}>
+          <ScrollView contentContainerStyle={{ padding: 20 }}>
+            {gamesList 
+              ? gamesList.map((item, idx) => {
+              const selected = idx === selectedIndex;
+    
+              return (
+                <Pressable
+                  key={idx}
+                  onPress={() => setSelectedIndex(idx)}
+                  style={{
+                    padding: 12,
+                    marginBottom: 6,
+                    backgroundColor: selected ? "#4da6ff" : "#eee",
+                    borderRadius: 6
+                  }}
+                >
+                  <Text style={{ color: selected ? "white" : "black" }}>
+                    {item}
+                  </Text>
+                </Pressable>
+              );
+            }) : <Text>Not here yet!</Text>}
+          </ScrollView>
+          <View style={styles.container}>
+            <Pressable style={styles.button} onPress={createGame}><Text>Create Game</Text></Pressable>
+            <Pressable style={styles.button} onPress={joinGame}><Text>Join Game</Text></Pressable>
+            <Pressable style={styles.button} onPress={getGames}><Text>Refresh</Text></Pressable>
+          </View>
+        </View>
       </SafeAreaView>
     );
 
 
 }
+
+
+
+const styles = StyleSheet.create({
+  container: {
+    //flexDirection: "row",
+    padding: 15,
+    borderTopWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white"
+  },
+  button: {
+      padding: 15,
+      marginBottom: 6,
+      marginLeft: 6,
+      marginRight: 6,
+      backgroundColor: "#4da6ff",
+      borderRadius: 16,
+      alignItems: "center"
+  },
+
+   webContainer: {
+    flex: 1,
+    width: "100%",
+    alignSelf: "center",
+    ...Platform.select({
+      web: {
+        maxWidth: 600,   // max width only for web
+          borderWidth: 1,
+      borderColor: "#ccc",
+      borderRadius: 8,
+      backgroundColor: "white",
+      marginTop: 20,
+      overflow: "hidden"
+      },
+      default: {
+        // mobile/other platforms: no max width
+      }
+    })
+  }
+
+});

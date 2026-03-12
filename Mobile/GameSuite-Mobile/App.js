@@ -204,7 +204,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
-            headerTitleAlign: 'center'
+            headerTitleAlign: 'center',
+            gestureEnabled: false
           }}>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="GamesScreen" component={GamesScreen} />
