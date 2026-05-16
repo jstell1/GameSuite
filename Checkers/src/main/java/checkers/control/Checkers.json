@@ -1,0 +1,284 @@
+{
+
+    "game" : "Checkers",
+    "pieces" : [
+        {
+            "name" : "Checker",
+            "value" : 1,
+            "actions" : [
+                {
+                    "name" : "step",
+                    "type" : "move",
+                    "typeVector" : [
+                        { "x" : -1, "y" : -1 },
+                        { "x" : -1, "y" : 1 }
+                    ],
+
+                    "rules" : [
+                        {
+                            "constraints" : [
+                            { "type" : "emptyTarg" },
+                            {  "type" : "mustAttack" }
+
+                            ],
+                        "effects" : [
+                            {"type" : "makeMove"}
+                        ]
+                        },
+                        {
+                            "constraints" : [
+                                { "type" : "endRow" }
+                            ],
+                            "effects" : [
+                                { 
+                                    "type" : "promote",
+                                    "piece" : {
+                                        "name" : "King"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name" : "jump" ,
+                    "type" : "attack",
+                    "typeVector" : [
+                        { "x" : -2, "y" : -2},
+                        { "x" : -2, "y" : 2}
+                    ],
+                    "rules" : [
+                        {
+                            "constraints" : [
+                            {"type" : "emptyTarg"},
+                            {
+                                "type" : "attackVector",
+                                "vector" : [
+                                    {"x" : -1, "y" : -1},
+                                    {"x" : -1, "y" : 1}
+                                ]
+                            }
+                            ],
+                        "effects" : [
+                            {"type" : "makeMove"},
+                            { "type" : "capture"}
+                        ]
+                        },
+                        {
+                            "constraints" : [
+                                {"type" : "endRow"}
+                            ],
+                            "effects" : [
+                                {
+                                    "type" : "promote",
+                                    "piece" : {
+                                        "name" : "King"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+
+
+        {
+            "name" : "King",
+            "value" : 1,
+            "actions" : [
+                {
+                    "name" : "step",
+                    "type" : "move",
+                    "typeVector" : [
+                        { "x" : -1, "y" : -1 },
+                        { "x" : -1, "y" : 1 },
+                        { "x" : 1, "y" : -1 },
+                        { "x" : 1, "y" : 1 }
+                    ],
+
+                    "rules" : [
+                        {
+                            "constraints" : [
+                                { "type" : "emptyTarg" },
+                                {  "type" : "mustAttack" }
+
+                            ],
+                            "effects" : [
+                                {"type" : "makeMove"}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name" : "jump" ,
+                    "type" : "attack",
+                    "typeVector" : [
+                        { "x" : -2, "y" : -2},
+                        { "x" : -2, "y" : 2},
+                         { "x" : 2, "y" : -2},
+                        { "x" : 2, "y" : 2}
+                    ],
+                    "rules" : [
+                        {
+                            "constraints" : [
+                                {"type" : "emptyTarg"},
+                                {
+                                    "type" : "attackVector",
+                                    "vector" : [
+                                        {"x" : -1, "y" : -1},
+                                        {"x" : -1, "y" : 1},
+                                        {"x" : 1, "y" : -1},
+                                        {"x" : 1, "y" : 1}
+                                    ]
+                                }
+                            ],
+                            "effects" : [
+                                {"type" : "makeMove"},
+                                { "type" : "capture"}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],   
+    "gameRules" : [
+         {
+            "constraints" : [
+                {  "type" : "mustAttack" }
+            ],
+            "effects" : [
+                {"type" : "makeMove"}
+            ]
+        }
+    ],
+    "winConditions" : [
+         {
+            "constraints" : [
+                {  "type" : "allCaptured" }
+            ],
+            "effects" : [
+                {"type" : "win"}
+            ]
+        }
+    ],
+    "drawConditions" : [
+        {
+            "constraints" : [
+                { "type" : "noMoves"}
+            ],
+            "effects" : [
+                { "type" : "draw"}
+            ]
+        }
+    ],
+    "board" : {
+        "type" : "rectangle",
+        "dimensions" : {
+            "height" : 8,
+            "width" : 8
+        },
+        "initState" : 
+            [
+                {
+                    "x" : 0, "y" : 0, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                    "x" : 0, "y" : 2, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                     "x" : 0, "y" : 4, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                  {
+                     "x" : 0, "y" : 6, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                     "x" : 1, "y" : 1, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 3, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 5, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 7, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                 {
+                      "x" : 3, "y" : 0, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 3, "y" : 2, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 3, "y" : 4, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 3, "y" : 6, 
+                    "piece" : { "name" : "Checker","player" : 1}
+                },
+                {
+                      "x" : 5, "y" : 1, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 3, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 5, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 7, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 0, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 2, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 4, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 6, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 1, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 3, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 5, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 7, 
+                    "piece" : { "name" : "Checker","player" : 2}
+                }
+            ]
+
+    }
+    
+}

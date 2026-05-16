@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+
+  "required": [
+    "game",
+    "board",
+    "pieces"
+  ],
+
+  "properties": {
+
+    "game": {
+      "type": "string"
+    },
+
+    "board": {
+      "$ref": "#/definitions/board"
+    },
+
+    "pieces": {
+      "type": "array",
+
+      "items": {
+        "$ref": "#/definitions/piece"
+      },
+      "minItems": 1
+    },
+    "gameRules" : {
+      "type" : "array",
+      "items" : { "$ref": "#/definitions/rule"}
+    },
+    "winConditions" : {
+      "type" : "array",
+      "items" : { "$ref" : "#/definitions/rule"}
+    },
+    "drawConditions" : {
+      "type" : "array",
+      "items" : { "$ref" : "#/definitions/rule"}
+    }
+  },
+
+  "additionalProperties": false,
+
+  "definitions" : {
+    "position" : {
+      "type" : "object",
+      "properties" : {
+        "x" : { "type" : "integer" },
+        "y" : { "type" : "integer" },
+        "piece" : { "$ref" : "#/definitions/piece"}
+        
+      },
+      "required": ["x", "y"]
+    },
+    "action" : {
+      "type" : "object",
+      "properties": {
+        "name" : { "type" : "string"},
+        "type" : { "type" : "string"},
+        "typeVector" : {
+          "type" : "array",
+          "items" : {"$ref" : "#/definitions/position"}
+        },
+        "distance" : { "type" : "integer"},
+        "start" : { "$ref" : "#/definitions/position" },
+        "dest" : { "$ref" : "#/definitions/position" },
+        "attackPos" : { "$ref" : "#/definitions/position" },
+        "rules" : {
+          "type" : "array",
+          "items" : { "$ref" : "#/definitions/rule"}
+        }
+      },
+      "required": ["name", "type"],
+      "additionalProperties": false
+    },
+    "piece" : {
+      "type" : "object",
+      "properties": {
+        "name" : { "type" : "string"},
+        "player": {"type" : "integer"},
+        "value" : {"type" : "integer"},
+        "actions" : {
+          "type" : "array",
+          "items" : { "$ref" : "#/definitions/action"}
+        }
+      }
+    },
+    "dimensions" : {
+      "type" : "object",
+      "properties" : {
+        "height" : { "type" : "integer"},
+        "width" : { "type" : "integer"}
+      }
+    },
+    "board" : {
+      "type" : "object",
+      "properties": {
+        "type" : { "type" : "string"},
+        "dimensions" : {
+          "$ref" : "#/definitions/dimensions"
+        },
+        "initState" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/position"
+          }
+        }
+      }
+    },
+    "constraintType": {
+      "type": "string",
+      "enum": [
+        "emptyTarg",
+        "mustAttack",
+        "endRow",
+        "attackVector",
+        "allCaptured",
+        "noMoves"
+      ]
+    },
+
+    "effectType": {
+      "type": "string",
+      "enum": [
+        "makeMove",
+        "promote",
+        "capture",
+        "win",
+        "draw"
+      ]
+    },
+     "constraint": {
+        "type": "object",
+        "properties": {
+          "type": { "$ref": "#/definitions/constraintType" },
+
+          "vector": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/position" }
+          },
+
+          "value": {}
+        },
+        "required": ["type"],
+        "additionalProperties": false
+      },
+      "effect": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "#/definitions/effectType" },
+
+        "target": {
+          "$ref": "#/definitions/position"
+        },
+
+        "piece": {
+          "$ref": "#/definitions/piece"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/constraint"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/effect"
+          }
+        }
+      },
+      "required": ["constraints", "effects"],
+      "additionalProperties": false
+    }
+  }
+}
