@@ -7,6 +7,8 @@ import gamesuite.core.control.GameManagerFactory;
 
 public class CheckersGameFactory extends GameManagerFactory {
 
+    private static final boolean multiGame = true;
+
     @Override
     public GameManager createGame(String playerName) {
         
@@ -16,6 +18,10 @@ public class CheckersGameFactory extends GameManagerFactory {
 
         return gm;
     }
-    
 
+    @Override
+    public boolean isMultiGame() {
+        return multiGame;
+    }
+    
 }

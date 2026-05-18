@@ -26,30 +26,30 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     private Map<String, WebSocketSession> webSocketSessions = new ConcurrentHashMap<>();
     //private Map<String, 
     private ServerGameRepo gmRepo;
-    private InputStream schemaStream;
-    private JsonNode schemaRoot;
+    //private InputStream schemaStream;
+    //private JsonNode schemaRoot;
 
     @Autowired
     public WebSocketMessageHandler(ServerGameRepo gmRepo) {
         this.gmRepo = gmRepo;
-        this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            this.schemaRoot = mapper.readTree(schemaStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
+        // ObjectMapper mapper = new ObjectMapper();
+        // try {
+        //     this.schemaRoot = mapper.readTree(schemaStream);
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
 
     }
 
     public WebSocketMessageHandler() {
-         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            this.schemaRoot = mapper.readTree(schemaStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //  this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
+        // ObjectMapper mapper = new ObjectMapper();
+        // try {
+        //     this.schemaRoot = mapper.readTree(schemaStream);
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
 	}
 
     public void setGmRepo(ServerGameRepo gmRepo) {

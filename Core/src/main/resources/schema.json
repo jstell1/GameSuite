@@ -101,6 +101,7 @@
           "type": "object",
           "properties": {
             "game": {"type": "string"},
+            "subGame" : { "type" : "string" },
             "name": {"type": "string"}
           },
           "required": ["game", "name"],
@@ -148,6 +149,7 @@
           "type": "object",
           "properties": {
             "name": {"type": "string"},
+            "subgame" : { "type" : "string" },
             "gameId": {"type": "string"}
           },
           "required": ["name", "gameId"],

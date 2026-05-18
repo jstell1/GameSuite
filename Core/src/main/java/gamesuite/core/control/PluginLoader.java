@@ -22,6 +22,8 @@ public class PluginLoader {
     private Map<String, URLClassLoader> gameBoardClassLoaders;
     File[] jars;
     File[] uiJars;
+    private final ArrayList<String> games = new ArrayList<>(); 
+    private final String gameDefsPath = "gameDefinitions";
 
     public PluginLoader(String pluginDirPath) {
         this.pluginDir = new File(pluginDirPath);
@@ -139,11 +141,25 @@ public class PluginLoader {
         gameClasses.put(gameName, clazz);
         classLoaders.put(gameName, classLoader);
 
+        if(temp.isMultiGame()) {
+            File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
+            File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
+
+            for(File file : gameDefs) {
+                String game = file.getName().replaceFirst("\\.jar$", "");
+                this.games.add(game);
+            }
+
+        } else {
+            this.games.add(gameName);
+        }
+
         System.out.println("Registered game plugin: " + gameName);
     }
 
     public Set<String> listAvailableGames() {
-        return Collections.unmodifiableSet(gameClasses.keySet());
+        return new HashSet<String>(this.games);
+        //return Collections.unmodifiableSet(gameClasses.keySet());
     }
 
     public GameBoardFactory createBoardFactory(String gameName) {
