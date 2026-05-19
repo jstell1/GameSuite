@@ -79,17 +79,21 @@ tasks.register('buildPlugins') {
             from jarFiles[1]
             into "$pluginsDir/ui"
         }
-        // jarFiles.each { jar ->
-        //     if (jar.exists()) {
-        //         copy {
-        //             from jar
-        //             into pluginsDir
-        //         }
-        //         println "Copied ${jar.name} to plugins"
-        //     } else {
-        //         println "Jar not found: ${jar}"
-        //     }
-        // }
+   
+        def defsDir = file("$rootDir/Checkers/src/main/resources/gameDefinitions")
+
+        if (defsDir.exists()) {
+
+            def targetDir = file("$pluginsDir/Checkers")
+            targetDir.mkdirs()
+
+            copy {
+                from defsDir
+                into targetDir
+            }
+
+            println "Copied game definitions"
+        }
     }
 }
 
