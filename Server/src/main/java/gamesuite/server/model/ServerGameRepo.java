@@ -33,9 +33,13 @@ public class ServerGameRepo {
             this.loader.loadAll();
             this.loader.watchForChanges();
 
-            Set<String> list = this.loader.listAvailableGames();
-            for(String name : list) {
+            Map<String, ArrayList<String>> list = this.loader.listAvailableGames();
+            for(String name : list.keySet()) {
                 Map<String, Integer> games = new ConcurrentHashMap<>();
+
+                if(list.get(name) == null) {
+
+                }
                 this.activeList.put(name, games);   
             }
         } catch (Exception e) {
@@ -218,9 +222,9 @@ public class ServerGameRepo {
         }
     }
 
-    public List<String> getGamesList() {
-        String[] gamesList = this.loader.listAvailableGames().toArray(new String[0]);
-        List<String> list = Arrays.asList(gamesList);
-        return list;
+    public Map<String, ArrayList<String>> getGamesList() {
+        Map<String, ArrayList<String>> gamesList = this.loader.listAvailableGames();
+        //List<String> list = Arrays.asList(gamesList);
+        return gamesList;
     }
 }

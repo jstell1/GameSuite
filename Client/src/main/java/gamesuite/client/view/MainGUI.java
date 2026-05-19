@@ -13,7 +13,10 @@ import gamesuite.client.control.ClientManager;
 import gamesuite.core.ui.UIListener;
 
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -30,10 +33,12 @@ public class MainGUI {
     private JButton selectBtn;
     private JButton refreshBtn;
     private UIListener listener;
+    private Map<String, String> gamesMap; 
 
     public MainGUI(ClientManager cmg, UIListener listener) {
         this.cmg = cmg;
         this.listener = listener;
+        this.gamesMap = new HashMap<>();
         this.window = new JFrame("GameSuite");
         this.window.setSize(800, 800);
         this.window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -60,10 +65,12 @@ public class MainGUI {
         
         this.selectBtn.addActionListener(a -> {
             String val = this.gamesList.getSelectedValue();
-            if(val != null) {
-                this.listener.initActiveList(val);
+            //if(val != null && this.gamesMap.get(val) == null) {
+                this.listener.initActiveList(val);//, null);
                 //this.cmg.getActiveGames(val);
-            }
+            //} else if (val != null) {
+               // this.listener.initActiveList(val, this.gamesMap.get(val));
+           // }
         });
 
         JPanel btnPanel = new JPanel(new GridLayout(2, 1));
@@ -84,9 +91,23 @@ public class MainGUI {
         this.window.setResizable(true);
     }
 
-    public void setGamesList(String[] gamesList) {
+    public void setGamesList(Map<String, ArrayList<String>> gamesList) {
         SwingUtilities.invokeLater(() -> {
-            this.gamesList.setListData(gamesList);
+            ArrayList<String> tmp = new ArrayList<>();
+            for(String game : gamesList.keySet()) {
+                if(gamesList.get(game) == null) {
+                    tmp.add(game);
+                    this.gamesMap.put(game, null);
+                } else {
+                    ArrayList<String> tmp2 = gamesList.get(game);
+
+                    for(String name : tmp2) {
+                        tmp.add(name);
+                        this.gamesMap.put(name, game);
+                    }
+                }
+            }
+            this.gamesList.setListData(tmp.toArray(new String[0]));
         });
     }
 

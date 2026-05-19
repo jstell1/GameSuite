@@ -134,7 +134,10 @@ public class GUIManager implements GameUI, UIListener {
     @Override
     public void refreshActiveList(String game) {
         new Thread(() -> {
-            this.gm.getActiveGames(game);
+           // if(this.gui.getGroup(game) == null)
+                this.gm.getActiveGames(game);//, null);
+            //else
+              //  this.gm.getActiveGames(game, this.gui.getGroup(game));
         }).start();
     }
 

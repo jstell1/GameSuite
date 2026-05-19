@@ -3,6 +3,7 @@ package gamesuite.server.control;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -276,12 +277,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     }
     
     private void sendGamesList(WebSocketSession session, ObjectNode payload) throws Exception {
-        List<String> list = this.gmRepo.getGamesList();
+        Map<String, ArrayList<String>> list = this.gmRepo.getGamesList();
         ObjectMapper mapper = new ObjectMapper();
         try {
             String msgType = "gamesListResponse";
             ObjectNode respPayload = mapper.createObjectNode();
-            respPayload.set("gamesList", mapper.valueToTree(list.toArray(new String[0])));
+            respPayload.set("games", mapper.valueToTree(list));
             sendMessage(msgType, respPayload, session);
         } catch(Exception e) {
             mapper = new ObjectMapper();

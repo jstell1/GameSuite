@@ -25,6 +25,7 @@ import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Map;
 
 public class GameGUI {
     private JFrame window;
@@ -44,6 +45,7 @@ public class GameGUI {
     private JButton createGameBtn;
     private String game;
     private JButton refreshButton;
+    //private Map<String, String> gamesMap;
 
     //Gameboard ready
     public GameGUI(GameBoardUI gameBoard, UIListener listener) {
@@ -189,6 +191,11 @@ public class GameGUI {
         this.window.setResizable(true);
 
     }
+
+    //public void setGamesMap(Map<String, String> games) {
+    //    this.gamesMap = games;
+   // }
+   // public String getGroup(String name) { return this.gamesMap.get(name); }
 
     public void setGame(String game) { this.game = game; }
 

@@ -22,7 +22,8 @@ public class PluginLoader {
     private Map<String, URLClassLoader> gameBoardClassLoaders;
     File[] jars;
     File[] uiJars;
-    private final ArrayList<String> games = new ArrayList<>(); 
+    private final Map<String, ArrayList<String>> games = new HashMap<>();
+    //private final ArrayList<String> games = new ArrayList<>(); 
     private final String gameDefsPath = "gameDefinitions";
 
     public PluginLoader(String pluginDirPath) {
@@ -140,25 +141,26 @@ public class PluginLoader {
 
         gameClasses.put(gameName, clazz);
         classLoaders.put(gameName, classLoader);
+        ArrayList<String> tmp = null;
 
         if(temp.isMultiGame()) {
             File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
             File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
-
+            tmp = new ArrayList<>();
             for(File file : gameDefs) {
-                String game = file.getName().replaceFirst("\\.jar$", "");
-                this.games.add(game);
+                String game = file.getName().replaceFirst("\\.json$", "");
+                tmp.add(game);
             }
-
-        } else {
-            this.games.add(gameName);
-        }
+        }// else {
+           // this.games.add(gameName);
+        //}
+        this.games.put(gameName, tmp);
 
         System.out.println("Registered game plugin: " + gameName);
     }
 
-    public Set<String> listAvailableGames() {
-        return new HashSet<String>(this.games);
+    public Map<String, ArrayList<String>> listAvailableGames() {
+        return this.games;
         //return Collections.unmodifiableSet(gameClasses.keySet());
     }
 

@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -23,6 +25,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -197,13 +200,13 @@ public class ClientManager {
                             break;
                         case "gamesListResponse":
                             JsonNode gamesListJson = payload.get("gamesList"); 
-                            String[] gamesList = mapper.treeToValue(gamesListJson, String[].class);
+                            Map<String, ArrayList<String>> gamesList = mapper.treeToValue(gamesListJson, new TypeReference<Map<String, ArrayList<String>>>(){});
                             ClientManager.this.main.setGamesList(gamesList);
                             break;
                         case "activeGamesResponse":
                             gamesListJson = payload.get("gamesList");
-                            gamesList = mapper.treeToValue(gamesListJson, String[].class); 
-                            ClientManager.this.guiGM.setActiveGamesList(gamesList);
+                            String[] activeGamesList = mapper.treeToValue(gamesListJson, String[].class); 
+                            ClientManager.this.guiGM.setActiveGamesList(activeGamesList);
                             break;
                         default: break;
                     }
@@ -359,7 +362,9 @@ public class ClientManager {
         response.thenAccept(resp -> {
             ObjectMapper mapper = new ObjectMapper();
             try {
-                String[] list = mapper.readValue(resp.body(), String[].class);
+                Map<String, ArrayList<String>> list = mapper.readValue(
+                                                    resp.body(), 
+                                                    new TypeReference<Map<String, ArrayList<String>>>() {});
                 this.main.setGamesList(list);
                 System.out.println("Retrieved games list");
             } catch (Exception e) {
@@ -397,10 +402,20 @@ public class ClientManager {
 
     public void getActiveGames(String gameName) {
         System.out.println("getting active list");
-         HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(this.baseUrl + "/games/" + gameName))
-                        .GET()
-                        .build();
+         HttpRequest.Builder requestB = HttpRequest.newBuilder(); 
+         HttpRequest request;
+        //if(group != null) {
+
+        //    request = requestB
+        //                   .uri(URI.create(this.baseUrl + "/games/" + group + "/" + gameName))
+        //                   .GET()
+        //                   .build();
+       // } else {
+            request = requestB
+                           .uri(URI.create(this.baseUrl + "/games/" + gameName))
+                           .GET()
+                           .build();
+       // }
 
         CompletableFuture<HttpResponse<String>> response = this.restClient.sendAsync(request,
                                                     HttpResponse.BodyHandlers.ofString());

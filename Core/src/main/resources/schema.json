@@ -365,13 +365,19 @@
       "type": "object",
       "properties": {
         "gamesListResponse": {
+         "type": "object",
           "properties": {
-            "gamesList": {
-              "type": "array",
-              "items": {"type": "string"}
+            "games": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           },
-          "required": ["gamesList"],
+          "required": ["games"],
           "additionalProperties": false
         }
       },
