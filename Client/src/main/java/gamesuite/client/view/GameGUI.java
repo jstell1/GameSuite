@@ -45,7 +45,7 @@ public class GameGUI {
     private JButton createGameBtn;
     private String game;
     private JButton refreshButton;
-    //private Map<String, String> gamesMap;
+    private Map<String, String> gamesMap;
 
     //Gameboard ready
     public GameGUI(GameBoardUI gameBoard, UIListener listener) {
@@ -164,7 +164,7 @@ public class GameGUI {
         this.createGameBtn.setPreferredSize(new Dimension(120, 30));
         this.createGameBtn.addActionListener(e -> {
              if(!this.name.getText().equals("")) {
-                 this.listener.createGame(game, name.getText());  
+                 this.listener.createGame(game, this.gamesMap.get(game), name.getText());  
              } 
          });
         
@@ -192,10 +192,10 @@ public class GameGUI {
 
     }
 
-    //public void setGamesMap(Map<String, String> games) {
-    //    this.gamesMap = games;
-   // }
-   // public String getGroup(String name) { return this.gamesMap.get(name); }
+    public void setGamesMap(Map<String, String> games) {
+        this.gamesMap = games;
+    }
+    public String getGroup(String name) { return this.gamesMap.get(name); }
 
     public void setGame(String game) { this.game = game; }
 

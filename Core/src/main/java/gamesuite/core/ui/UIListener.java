@@ -7,7 +7,7 @@ public interface UIListener {
     public void disabledBoard();
     public void sendMove(JsonNode move);
     public void sendYellowedPanel(JsonNode pos);
-    public void createGame(String game, String name);
+    public void createGame(String game, String group, String name);
     public void joinGame(String game, String name, String gameId);
     public void quitGame(boolean hardQuit);
     public boolean isPlayerTurn();

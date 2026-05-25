@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class PluginLoader {
     private final File pluginDir;
     private File uiPluginDir;
@@ -25,6 +28,7 @@ public class PluginLoader {
     private final Map<String, ArrayList<String>> games = new HashMap<>();
     //private final ArrayList<String> games = new ArrayList<>(); 
     private final String gameDefsPath = "gameDefinitions";
+    private final Map<String, JsonNode> gameDefs = new HashMap<>();
 
     public PluginLoader(String pluginDirPath) {
         this.pluginDir = new File(pluginDirPath);
@@ -146,10 +150,13 @@ public class PluginLoader {
         if(temp.isMultiGame()) {
             File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
             File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
+
             tmp = new ArrayList<>();
             for(File file : gameDefs) {
                 String game = file.getName().replaceFirst("\\.json$", "");
                 tmp.add(game);
+                ObjectMapper mapper = new ObjectMapper();
+                this.gameDefs.put(game, mapper.readTree(file));
             }
         }// else {
            // this.games.add(gameName);
@@ -182,6 +189,14 @@ public class PluginLoader {
         } catch (Exception e) {
             throw new RuntimeException("Failed to instantiate " + gameName, e);
         }
+    }
+
+    public boolean isMultiGame(String game) {
+        return this.games.get(game).isEmpty();
+    }
+
+    public JsonNode getGameDef(String game) {
+        return this.gameDefs.get(game);
     }
 }
 

@@ -150,6 +150,22 @@ public class CheckersGameState implements GameState {
         return null;
     }
 
+    public CheckersPlayer getPlayerById(String id) {
+        if(this.player1.getUserId().equals(id))
+            return this.player1;
+        else if(this.player2.getUserId().equals(id))
+            return this.player2;
+        else 
+            return null;
+    }
+
+    public boolean playerIdExists(String id) {
+        if(this.player1.getUserId().equals(id) || this.player2.getUserId().equals(id)) {
+            return true;
+        }
+       return false;    
+    }
+
     public CheckersPlayer[] getPlayers() { 
         CheckersPlayer[] players = new CheckersPlayer[2];
         players[0] = this.player1;

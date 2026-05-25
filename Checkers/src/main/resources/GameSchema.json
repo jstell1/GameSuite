@@ -15,6 +15,10 @@
       "type": "string"
     },
 
+    "numPlayers" : {
+      "type" : "integer"
+    },
+
     "board": {
       "$ref": "#/definitions/board"
     },
@@ -38,6 +42,10 @@
     "drawConditions" : {
       "type" : "array",
       "items" : { "$ref" : "#/definitions/rule"}
+    },
+    "players" : {
+      "type" : "array",
+      "items" : { "$ref" : "#/definitions/player"}
     }
   },
 
@@ -117,7 +125,13 @@
         "endRow",
         "attackVector",
         "allCaptured",
-        "noMoves"
+        "hasMoves",
+        "turnCheck",
+        "furtherAttacks",
+        "turnPiece",
+        "validMove",
+        "validAttack",
+        ""
       ]
     },
 
@@ -180,6 +194,17 @@
       },
       "required": ["constraints", "effects"],
       "additionalProperties": false
+    },
+    "player" : {
+      "type" : "object",
+      "properties" : {
+        "points" : { "type" : "integer" },
+        "name" : { "type" : "string" },
+        "userId" : { "type" : "string" },
+        "turn" : { "type" : "integer" },
+        "turnName" : { "type" : "string"}
+
+      }
     }
   }
 }

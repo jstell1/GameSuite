@@ -12,9 +12,9 @@ public interface GameManager {
 
     
     //public abstract void initGame();
-    public JsonNode joinGame(String player);
+    public JsonNode joinGame(String player, String playerId);
     public void sendMove(Move move);
-    public void sendMove(ObjectNode move);
+    public void sendMove(ObjectNode move, String playerId);
     public boolean addPlayer(String player);
     public boolean isGameReady();
     public String getBoardString();

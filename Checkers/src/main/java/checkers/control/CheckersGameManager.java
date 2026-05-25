@@ -58,10 +58,11 @@ public class CheckersGameManager implements GameManager {
     } 
 
     @Override
-    public void sendMove(ObjectNode move) {
+    public void sendMove(ObjectNode move, String playerId) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             CheckersMove mv = mapper.treeToValue(move, CheckersMove.class);
+            mv.setPlayerId(playerId);
             //CheckersMoveView mvView = new CheckersMoveView(mv);
             sendMove(mv);
         } catch (JsonProcessingException e) {
@@ -137,9 +138,10 @@ public class CheckersGameManager implements GameManager {
     }
 
     @Override
-    public JsonNode joinGame(String player) {
+    public JsonNode joinGame(String player, String playerId) {
         CheckersPlayer p = game.getPlayer(2);
-        if(p == null) {
+        p.setUserId(playerId);
+        if(p != null) {
 
             boolean added = addPlayer(player);
             if(added) {

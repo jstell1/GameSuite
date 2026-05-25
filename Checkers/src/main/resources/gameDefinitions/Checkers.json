@@ -3,7 +3,7 @@
     "game" : "Checkers",
     "pieces" : [
         {
-            "name" : "Checker",
+            "name" : "C",
             "value" : 1,
             "actions" : [
                 {
@@ -84,7 +84,7 @@
 
 
         {
-            "name" : "King",
+            "name" : "K",
             "value" : 1,
             "actions" : [
                 {
@@ -171,6 +171,18 @@
             "effects" : [
                 { "type" : "draw"}
             ]
+        }
+    ],
+    "players" : [
+        {
+            "points" : 0,
+            "turnName" : "B",
+            "turn" : 1
+        },
+        {
+            "points" : 0,
+            "turnName" : "R",
+            "turn" : 2
         }
     ],
     "board" : {

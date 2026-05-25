@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManagerFactory;
 import gamesuite.core.control.PluginLoader;
@@ -49,10 +51,16 @@ public class ServerGameRepo {
     }
 
     
-    public String createGame(String game, String p1, String sessionId) {
+    public String createGame(String game, String group, String p1, String sessionId) {
         
-        GameManagerFactory gmFact = loader.createGameManager(game);
-        GameManager gm = gmFact.createGame(p1);
+        GameManagerFactory gmFact = loader.createGameManager(group);
+        GameManager gm;
+
+        if(loader.isMultiGame(group)) {
+            gm = gmFact.createGame(p1, sessionId, loader.getGameDef(game));
+        } else {
+            gm = gmFact.createGame(p1, sessionId, null);
+        }
         
         String gameId = UUID.randomUUID().toString();
         this.games.put(gameId, gm);
@@ -113,12 +121,12 @@ public class ServerGameRepo {
         //this.userPlayerNumMap.put(sessionId, num);
     //}
 
-    public JsonNode joinGame(String player, String gameId) {
+    public JsonNode joinGame(String player, String playerId, String gameId) {
         
         GameManager gm = this.games.get(gameId);
         JsonNode node = null;
         synchronized(gm) {
-            node = gm.joinGame(player);
+            node = gm.joinGame(player, playerId);
             synchronized(this.activeList) {
                 this.activeList.get(gm.getName()).put(gameId, 2);
             }

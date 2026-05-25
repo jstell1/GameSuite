@@ -248,7 +248,7 @@ public class ClientManager {
         }
     }
 
-    public synchronized String createGame(String game, String playerName) throws Exception {
+    public synchronized String createGame(String game, String group, String playerName) throws Exception {
         
         if(this.session != null) {
             System.out.println("Already connected");
@@ -261,7 +261,8 @@ public class ClientManager {
             ObjectMapper mapper = new ObjectMapper();
             String msgType = "createGameRequest";
             ObjectNode inner = mapper.createObjectNode();
-            inner.put("game", game);
+            inner.put("game", group);
+            inner.put("subGame", game);
             inner.put("name", playerName);
             ObjectNode payload = mapper.createObjectNode();
             payload.set(msgType, inner);

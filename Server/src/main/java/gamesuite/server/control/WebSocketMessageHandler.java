@@ -306,13 +306,14 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
         System.out.println("passed the check");
         String gameNm = payload.get("game").asText();
+        String group = payload.get("subGame").asText();
         String name = payload.get("name").asText();
 
         try {
             mapper = new ObjectMapper();
             //Player player1 = new Player(name, 0);
             //GameBoard board = new GameBoard(8);
-            String gameId = this.gmRepo.createGame(gameNm, name, session.getId());
+            String gameId = this.gmRepo.createGame(gameNm, group, name, session.getId());
             JsonNode game = this.gmRepo.getGameView(gameId);
             this.gmRepo.getGM(gameId);
             String msgType = "gameCreatedResponse";
@@ -372,7 +373,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             try {
                 
                 //Player p2 = new Player(player, 0);
-                JsonNode boardJson = this.gmRepo.joinGame(player, gameId);
+                JsonNode boardJson = this.gmRepo.joinGame(player, session.getId(), gameId);
                 mapper = new ObjectMapper();
                 JsonNode game = this.gmRepo.getGM(gameId).getGameStateJson();
                 this.gmRepo.addWebSocketToGame(gameId, session.getId());
@@ -452,7 +453,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 return;
             }
 
-            gm.sendMove(move);
+            gm.sendMove(move, session.getId());
             JsonNode game = gm.getGameStateJson();
             String msgType = "stateUpdateResponse";
             JsonNode tmp = mapper.createObjectNode();

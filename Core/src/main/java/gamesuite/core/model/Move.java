@@ -12,6 +12,10 @@ public interface Move {
 
     public int getEndY();
 
+    public void setPlayerId(String id);
+    
+    public String getPlayerId();
+
     //public void setJsonNode(JsonNode node);
     //public JsonNode getJsonNode();
 

@@ -25,7 +25,7 @@ public interface GameState {
 
     public int getTurn();
 
-    public Player getPlayer(int playerNum);
+    public Player getPlayer(int gameTurn);
     
 
     public Player[] getPlayers();

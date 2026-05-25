@@ -91,6 +91,10 @@ public class MainGUI {
         this.window.setResizable(true);
     }
 
+    public Map<String, String> getGamesMap() {
+        return this.gamesMap;
+    }
+
     public void setGamesList(Map<String, ArrayList<String>> gamesList) {
         SwingUtilities.invokeLater(() -> {
             ArrayList<String> tmp = new ArrayList<>();

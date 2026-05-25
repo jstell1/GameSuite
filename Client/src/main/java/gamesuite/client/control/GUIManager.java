@@ -1,6 +1,8 @@
 package gamesuite.client.control;
 
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.SwingUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -122,8 +124,10 @@ public class GUIManager implements GameUI, UIListener {
     @Override
     public void initActiveList(String game) {
         SwingUtilities.invokeLater(() -> {
+            Map<String, String> tmp = this.main.getGamesMap();
             this.main.closeWindow();
             this.gui.setGame(game);
+            this.gui.setGamesMap(tmp);
             this.gui.activate();
             new Thread(() -> {
                 this.gm.getActiveGames(game);
@@ -195,11 +199,11 @@ public class GUIManager implements GameUI, UIListener {
     }
 
     @Override
-    public void createGame(String game, String name) {
+    public void createGame(String game, String group, String name) {
      //   this.playerTurn = 1;
         new Thread(() -> {
             try {
-                this.gm.createGame(game, name);
+                this.gm.createGame(game, group, name);
             } catch (Exception e) {
             }
         }).start();

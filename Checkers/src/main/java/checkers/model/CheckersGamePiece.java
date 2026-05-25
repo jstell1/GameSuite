@@ -1,6 +1,8 @@
 package checkers.model;
 
 import java.util.Arrays;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gamesuite.core.model.GamePiece;
@@ -13,6 +15,7 @@ public class CheckersGamePiece implements GamePiece {
     private boolean king;
     private final int[][] validMoves = {{-1, -1}, {-1, 1}};
     private final int[][] validJumps = {{-2, -2}, {-2, 2}};
+    private int[][] attackVectors;
     private final int[][] validKingMoves = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
     private final int[][] validKingJumps = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
 
@@ -23,6 +26,12 @@ public class CheckersGamePiece implements GamePiece {
         this.type = type;
         this.val = val;
     }
+
+    public void setAttackVectors(int[][] vector) {
+        this.attackVectors = vector;
+    }
+
+    public int[][] getAttackVectors() { return this.attackVectors; }
 
     public void setKing(boolean king) {
         this.king = king;

@@ -96,8 +96,8 @@ public class GameStateManager {
         if(this.game.isBoardInit())
             return false;
 
-        initPlayerSide("B", "C", 1, 0, 2);
-        initPlayerSide("R", "C", 1, 5, 7);
+        //initPlayerSide("B", "C", 1, 0, 2);
+       // initPlayerSide("R", "C", 1, 5, 7);
         this.game.setBoardInit();
         return true;
     }

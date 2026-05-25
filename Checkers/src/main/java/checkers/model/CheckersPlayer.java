@@ -6,6 +6,8 @@ public class CheckersPlayer implements Player {
     private int points;
     private String name;
     private String userId;
+    private int turn;
+    private String turnName;
 
     public CheckersPlayer() {}
 
@@ -22,6 +24,14 @@ public class CheckersPlayer implements Player {
         }
         return false;
     }
+
+    public void setTurnName(String name) { this.turnName = name; }
+
+    public String getTurnName() { return this.turnName; }
+
+    public void setTurn(int num) { this.turn = num; }
+
+    public int getTurn() { return this.turn; }
 
     public int addPoints(int num) {
         points += num;

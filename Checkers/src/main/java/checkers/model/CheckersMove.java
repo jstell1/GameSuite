@@ -8,6 +8,8 @@ import gamesuite.core.model.Move;
 public class CheckersMove implements Move {
     int startX, startY;
     int endX, endY;
+    String playerId;
+    String action;
 
     public CheckersMove() {
         this.startX = -1; this.startY = -1;
@@ -18,6 +20,12 @@ public class CheckersMove implements Move {
         this.startX = startX; this.startY = startY;
         this.endX = endX; this.endY = endY;
     }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getAction() { return this.action; }
 
     public void setStartX(int x) {
         if( x >= 0 && this.startX == -1) 
@@ -38,6 +46,10 @@ public class CheckersMove implements Move {
         if( y >= 0 && this.endY == -1)  
             this.endY = y;
     }
+
+    public void setPlayerId(String id) { this.playerId = id; }
+
+    public String getPlayerId() { return this.playerId; }
 
     public int getStartX() { return this.startX; }
 
