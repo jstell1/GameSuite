@@ -18,6 +18,7 @@ public class FurtherAttacksConst extends Constraint {
 
     @Override
     public Result checkMove(CheckersMove move) {
+        CheckersCoordPair 
            if(pos == null || pos.getPiece() == null)
             return false;
         CheckersGamePiece piece = pos.getPiece();

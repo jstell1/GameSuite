@@ -10,6 +10,8 @@ import checkers.model.CheckersMove;
 
 public class HasMovesConst extends Constraint {
 
+    private FurtherAttacksConst
+
     public HasMovesConst(CheckersGameState gameState, CheckersGameBoard board) {
         super(gameState, board);
         this.name = "allCaptured";
