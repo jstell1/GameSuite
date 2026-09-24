@@ -1,0 +1,58 @@
+package gamesuite.boardgame.model;
+
+import gamesuite.core.model.Player;
+
+public class CheckersPlayer implements Player {
+    private int points;
+    private String name;
+    private String userId;
+    private int turn;
+    private String turnName;
+
+    public CheckersPlayer() {}
+
+    public CheckersPlayer(String name, int points) { 
+        this.name = name;
+        this.points = points; 
+        this.userId = null;
+    }
+
+    public boolean setUserId(String id) {
+        if(this.userId == null) {
+            this.userId = id;
+            return true;
+        }
+        return false;
+    }
+
+    public void setTurnName(String name) { this.turnName = name; }
+
+    public String getTurnName() { return this.turnName; }
+
+    public void setTurn(int num) { this.turn = num; }
+
+    public int getTurn() { return this.turn; }
+
+    public int addPoints(int num) {
+        points += num;
+        return points;
+    }
+
+    public void setPoints(int num) {
+        if(this.points == 0)
+            this.points = num;
+    }
+
+    public void setName(String name) {
+        if(this.name == null) 
+            this.name = name;
+    }
+
+    public int getPoints() { return this.points; }
+
+    public String getUserId() { return this.userId; }
+
+    public String getName() { return this.name; }
+
+    public CheckersPlayer copy() { return new CheckersPlayer(this.name, this.points); }
+}

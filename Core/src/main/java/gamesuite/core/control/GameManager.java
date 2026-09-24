@@ -1,5 +1,7 @@
 package gamesuite.core.control;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -25,7 +27,9 @@ public interface GameManager {
     public int getTurn();
     public GameState getGameState();
     public JsonNode getGameStateJson();
-    public GameState quitGame(int playerNum);
+    public GameState quitGame(String playerId);
     public int getNumPlayers();
     public String getName();
+    public boolean checkPlayerSession(String playerId);
+    public List<String> getUserIdList();
 }

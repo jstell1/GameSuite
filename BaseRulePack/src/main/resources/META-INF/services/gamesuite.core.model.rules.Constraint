@@ -1,0 +1,10 @@
+gamesuite.baserules.EmptyTargConst
+gamesuite.baserules.FurtherAttacksConst
+gamesuite.baserules.FurtherMovesConst
+gamesuite.baserules.HasNoAttacksConst
+gamesuite.baserules.HasNoMovesConst
+gamesuite.baserules.InBoundsConst
+gamesuite.baserules.NotFurtherAttackConst
+gamesuite.baserules.TurnCheckConst
+gamesuite.baserules.ValidAttackConst
+gamesuite.baserules.ValidMoveConst

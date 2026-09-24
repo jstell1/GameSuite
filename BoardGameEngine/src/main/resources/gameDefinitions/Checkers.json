@@ -1,0 +1,281 @@
+{
+
+    "game" : "Checkers",
+    "rulePack" : "BaseRulePack.jar",
+    "validMove" : "validMove",
+    "validAttack" : "validAttack",
+    "turnControl" : {
+        "type" : "incrTurn",
+        "attackVectors" : [
+            { "x" : 2, "y" : 2 },
+            { "x" : 2, "y" : -2 },
+            { "x" : -2, "y" : 2 },
+            { "x" : -2, "y" : -2 }
+        ],
+        "jumpsAllowed" : [
+            "C", "K"
+        ],
+        "exactVector" : [
+            "C", "K"
+        ],
+        "fullVector" : true
+    },
+    "pieces" : [
+        {
+            "name" : "C",
+            "value" : 1,
+            "actions" : [
+                {
+                    "name" : "step",
+                    "type" : "move",
+                    "typeVector" : [
+                        { "x" : -1, "y" : -1 },
+                        { "x" : -1, "y" : 1 }
+                    ],
+                    "constraints" : [
+                    {  "type" : "hasNoAttacks" }
+
+                    ],
+                    "effects" : [
+                        {"type" : "makeMove"}
+                    ]
+                },
+                {
+                    "name" : "jump" ,
+                    "type" : "attack",
+                    "typeVector" : [
+                        { "x" : -2, "y" : -2},
+                        { "x" : -2, "y" : 2}
+                    ],
+                    "attackVector" : [
+                        {"x" : -1, "y" : -1},
+                        {"x" : -1, "y" : 1}
+                    ],
+                    "constraints" : [],
+                    "effects" : [
+                        { "type" : "capture"},
+                        {"type" : "makeMove"}
+                    ]
+                }
+            ]
+        },
+
+
+        {
+            "name" : "K",
+            "value" : 1,
+            "actions" : [
+               
+                {
+                    "name" : "step",
+                    "type" : "move",
+                    "typeVector" : [
+                        { "x" : -1, "y" : -1 },
+                        { "x" : -1, "y" : 1 },
+                        { "x" : 1, "y" : -1 },
+                        { "x" : 1, "y" : 1 }
+                    ],
+                    "constraints" : [
+                        {  "type" : "hasNoAttacks" }
+
+                    ],
+                    "effects" : [
+                        {"type" : "makeMove"}
+                    ]
+                },
+                {
+                    "name" : "jump" ,
+                    "type" : "attack",
+                    "typeVector" : [
+                        { "x" : -2, "y" : -2},
+                        { "x" : -2, "y" : 2},
+                        { "x" : 2, "y" : -2},
+                        { "x" : 2, "y" : 2}
+                    ],
+                    "attackVector" : [
+                        {"x" : -1, "y" : -1},
+                        {"x" : -1, "y" : 1},
+                        {"x" : 1, "y" : -1},
+                        {"x" : 1, "y" : 1}
+                    ],
+                    "constraints" : [],
+                    "effects" : [
+                        { "type" : "capture"},
+                        {"type" : "makeMove"}
+                    ]
+                }
+            ]
+        }
+    ],   
+    "gameRules" : [
+         {
+            "constraints" : [
+                { "type" : "turnCheck" },
+                { "type" : "inBounds" },
+                { "type" : "emptyTarg" },
+                { "type" : "NotFurtherAttack" }
+            ]
+        }
+    ],
+
+    "postChecks" : [
+        {
+            "name" : "promote",
+            "type" : "promotion",
+            "constraints" : [
+                { "type" : "endRow" }
+            ],
+            "effects" : [
+                { 
+                    "type" : "promote",
+                    "piece" : {
+                        "name" : "King"
+                    }
+                }
+            ]
+        },
+        {
+            "name" : "mustAttack",
+            "type" : "postEffect",
+            "constraints" : [
+                { "type" : "furtherAttacks" }
+            ],
+            "effects" : [
+                { "type" : "mustAttack" }
+            ]
+        }
+    ],
+    
+    "winConditions" : [
+         {
+            "name" : "winCheck",
+            "type" : "endCheck",
+            "constraints" : [
+                {  "type" : "hasNoMoves" }
+            ],
+            "effects" : [
+                {"type" : "win"}
+            ]
+        }
+    ],
+    "players" : [
+        {
+            "points" : 0,
+            "turnName" : "B",
+            "turn" : 1
+        },
+        {
+            "points" : 0,
+            "turnName" : "R",
+            "turn" : 2
+        }
+    ],
+    "board" : {
+        "type" : "rectangle",
+        "dimensions" : {
+            "height" : 8,
+            "width" : 8
+        },
+        "initState" :  
+            [
+                {
+                    "x" : 0, "y" : 0, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                    "x" : 0, "y" : 2, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                     "x" : 0, "y" : 4, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                  {
+                     "x" : 0, "y" : 6, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                     "x" : 1, "y" : 1, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 3, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 5, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 7, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                 {
+                      "x" : 3, "y" : 0, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 3, "y" : 2, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 3, "y" : 4, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 3, "y" : 6, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 5, "y" : 1, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 3, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 5, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 7, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 0, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 2, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 4, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 6, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 1, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 3, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 5, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 7, 
+                    "piece" : { "name" : "C","player" : 2}
+                }
+            ]
+
+    }
+    
+}

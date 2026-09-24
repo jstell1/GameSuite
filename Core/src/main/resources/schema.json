@@ -36,7 +36,9 @@
       "properties": {
         "points": {"type": "integer"},
         "name": {"type": "string"},
-        "userId": {"anyOf": [{"type": "string"}, {"type": "null"}]}
+        "userId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "turn": {"type": "integer"},
+        "turnName": {"anyOf": [{"type": "string"},{"type": "null"}]}
       },
       "required": ["points", "name"],
       "additionalProperties": false
@@ -51,7 +53,7 @@
         "furtherJumps": {"anyOf": [{"$ref": "#/definitions/CoordPair"},{"type":"null"}]},
          "turnFactor": {"type": "integer"},
         "boardInit": {"type": "boolean"},
-        "pieceNames": {
+        "teamNames": {
           "type": "array",
           "items": {"type": "string"}
         },
@@ -73,7 +75,7 @@
             ]}
         }
       },
-      "required": ["numPlayers", "turn", "draw", "turnFactor", "boardInit", "gameOver", "pieceNames"],
+      "required": ["numPlayers", "turn", "turnFactor", "boardInit", "gameOver", "teamNames"],
       "additionalProperties": false
     }
   },

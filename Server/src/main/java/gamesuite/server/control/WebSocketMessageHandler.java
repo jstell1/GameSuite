@@ -108,8 +108,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     }
 
     public void notifyPlayerJoined(String gameId, String msg) {
-        Map<String, Integer> userSessions = this.gmRepo.getGameUserMap(gameId);
-        for (String sessionId : userSessions.keySet()) {
+        //Map<String, Integer> userSessions = this.gmRepo.getGameUserMap(gameId);
+        List<String> userSessions = this.gmRepo.getGameSessions(gameId);//getGameUserMap(gameId);
+        for (String sessionId : userSessions) {
             try {
                 WebSocketSession s = this.webSocketSessions.get(sessionId);
                 s.sendMessage(new TextMessage(msg));
@@ -262,7 +263,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String game = payload.get("game").asText();
-            String[] list = this.gmRepo.getActiveGames(game);
+            String[] list = this.gmRepo.getJoinableGames(game);
             String msgType = "activeGamesResponse";
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.set("gamesList", mapper.valueToTree(list));
@@ -305,8 +306,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             return;
         }
         System.out.println("passed the check");
-        String gameNm = payload.get("game").asText();
-        String group = payload.get("subGame").asText();
+        String group = payload.get("game").asText();
+        String gameNm = payload.get("subGame").asText();
         String name = payload.get("name").asText();
 
         try {
@@ -436,13 +437,16 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 sendMessage(msgType, respPayload, session);
                 return;
             }
-            Map<String, Integer> sessionList = this.gmRepo.getGameUserMap(gameId);
+           // Map<String, Integer> sessionList = this.gmRepo.getGameUserMap(gameId);
+           List<String> sessionList = this.gmRepo.getGameSessions(gameId);//getGameUserMap(gameId);
     
             //gm = this.gmRepo.getGM(gameId);
 
-            int currTurn = gm.getTurn();
-            int userTurnNum = sessionList.get(session.getId());
+            //this is game engine responsibility!!! not supposed to be here!
+            //int currTurn = gm.getTurn();
+            //int userTurnNum = sessionList.get(session.getId());
 
+            /*
             if(currTurn != userTurnNum) {
                 mapper = new ObjectMapper();
                 String msgType = "moveUpdateError";
@@ -452,6 +456,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 sendMessage(msgType, respPayload, session);
                 return;
             }
+                */
 
             gm.sendMove(move, session.getId());
             JsonNode game = gm.getGameStateJson();
@@ -467,7 +472,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             String str = mapper.writeValueAsString(outer);
             TextMessage msg = new TextMessage(str);
     
-            for(String user : sessionList.keySet())
+            for(String user : sessionList)
                 this.webSocketSessions.get(user).sendMessage(msg);
         }
     }

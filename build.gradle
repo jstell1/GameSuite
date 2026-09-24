@@ -17,7 +17,7 @@ subprojects {
     // Apply a specific Java toolchain to ease working on different environments.
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
 
@@ -61,14 +61,15 @@ tasks.register('preparePluginsDir') {
 tasks.register('buildPlugins') {
     group = 'build'
     description = 'Builds Core, Server, Client jars and puts them in plugins folder'
-    dependsOn ':Client:fatJar', ':Checkers:CheckersJar', ':Checkers:UIJar' // adjust task names if needed
+    dependsOn ':Client:fatJar', ':BoardGameEngine:CheckersJar', ':BoardGameEngine:UIJar', ':BaseRulePack:jar' // adjust task names if needed
     dependsOn 'preparePluginsDir'
 
     doLast {
         def pluginsDir = file("$rootDir/plugins")
         def jarFiles = [
-            file("$rootDir/Checkers/build/libs/Checkers.jar"),
-            file("$rootDir/Checkers/build/libs/CheckersUI.jar"),
+            file("$rootDir/BoardGameEngine/build/libs/BoardGameEngine.jar"),
+            file("$rootDir/BoardGameEngine/build/libs/BoardGameUI.jar"),
+            file("$rootDir/BaseRulePack/build/libs/BaseRulePack.jar")
         ]
 
         copy {
@@ -79,12 +80,16 @@ tasks.register('buildPlugins') {
             from jarFiles[1]
             into "$pluginsDir/ui"
         }
+        copy {
+            from jarFiles[2]
+            into "$pluginsDir/rules"
+        }
    
-        def defsDir = file("$rootDir/Checkers/src/main/resources/gameDefinitions")
+        def defsDir = file("$rootDir/BoardGameEngine/src/main/resources/gameDefinitions")
 
         if (defsDir.exists()) {
 
-            def targetDir = file("$pluginsDir/Checkers")
+            def targetDir = file("$pluginsDir/gameDefinitions/BoardGameEngine")
             targetDir.mkdirs()
 
             copy {

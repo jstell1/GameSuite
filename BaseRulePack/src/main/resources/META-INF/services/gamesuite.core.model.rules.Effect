@@ -1,0 +1,6 @@
+gamesuite.baserules.CaptureEffect
+gamesuite.baserules.IncrTurnEffect
+gamesuite.baserules.MakeMoveEffect
+gamesuite.baserules.MustAttackEffect
+gamesuite.baserules.PromoteEffect
+gamesuite.baserules.WinEffect

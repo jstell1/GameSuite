@@ -79,7 +79,7 @@ public class HttpMessageHandler {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            String[] games = this.gmRepo.getActiveGames(game);
+            String[] games = this.gmRepo.getJoinableGames(game);
             JsonNode n = mapper.valueToTree(games);
             System.out.println(n);
             return new ResponseEntity<>(n, HttpStatus.OK);

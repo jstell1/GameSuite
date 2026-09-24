@@ -1,6 +1,11 @@
 package gamesuite.core.control;
 
+//import gamesuite.boardgame.model.Rules.Constraint;
+//import gamesuite.boardgame.model.Rules.Rules.Effect;
+
 import gamesuite.core.control.GameManager;
+import gamesuite.core.model.rules.Constraint;
+import gamesuite.core.model.rules.Effect;
 import gamesuite.core.ui.GameBoardFactory;
 
 import java.io.File;
@@ -25,9 +30,13 @@ public class PluginLoader {
     private Map<String, URLClassLoader> gameBoardClassLoaders;
     File[] jars;
     File[] uiJars;
+    File[] rulePacks;
+
+    //this is for multi-game game engine jars that can have multiple game defs and rulePacks
     private final Map<String, ArrayList<String>> games = new HashMap<>();
     //private final ArrayList<String> games = new ArrayList<>(); 
     private final String gameDefsPath = "gameDefinitions";
+    private final String rulesPath = "rules";
     private final Map<String, JsonNode> gameDefs = new HashMap<>();
 
     public PluginLoader(String pluginDirPath) {
@@ -60,6 +69,7 @@ public class PluginLoader {
         }
         return check;
     }
+    
 
     private void loadGameUIs(File jarFile) throws Exception {
         URL jarUrl = jarFile.toURI().toURL();
@@ -96,6 +106,113 @@ public class PluginLoader {
         }
     }
 
+     private void loadPlugin(File jarFile) throws Exception {
+        URL jarUrl = jarFile.toURI().toURL();
+        String gameName = jarFile.getName();
+
+        gameName = jarFile.getName().replaceFirst("\\.jar$", "");
+
+        URLClassLoader classLoader = 
+            new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
+
+        ServiceLoader<GameManagerFactory> serviceLoader = 
+            ServiceLoader.load(GameManagerFactory.class, classLoader);
+        Iterator<GameManagerFactory> iterator = serviceLoader.iterator();
+
+        if (!iterator.hasNext()) {
+            System.err.println("No GameManager found in " + jarFile.getName());
+            return;
+        }
+
+        GameManagerFactory temp = iterator.next();
+        Class<? extends GameManagerFactory> clazz = (Class<? extends GameManagerFactory>) temp.getClass();
+
+        gameClasses.put(gameName, clazz);
+        classLoaders.put(gameName, classLoader);
+        ArrayList<String> tmp = null;
+
+        if(temp.isMultiGame()) {  
+            File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
+            File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
+
+            tmp = new ArrayList<>();
+            for(File file : gameDefs) {
+                String game = file.getName().replaceFirst("\\.json$", "");
+                tmp.add(game);
+                ObjectMapper mapper = new ObjectMapper();
+                this.gameDefs.put(game, mapper.readTree(file));
+            }
+        } //else {
+           // this.games.add(gameName);
+           this.games.put(gameName, tmp);
+        //}
+
+        System.out.println("Registered game plugin: " + gameName);
+    }
+
+    public Map<String, Constraint> loadConstraints(String packName) throws Exception {
+
+        File jarFile = new File(this.pluginDir + "/rules/" + packName);
+        URL jarUrl = jarFile.toURI().toURL();
+        String pack = jarFile.getName().replaceFirst("\\.jar$", "");
+
+        URLClassLoader classLoader = 
+            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));//this.getClass().getClassLoader());
+
+        ServiceLoader<Constraint> serviceLoader = 
+            ServiceLoader.load( Constraint.class, classLoader);
+        Iterator<Constraint> iterator = serviceLoader.iterator();
+
+        Map<String, Constraint> ruleMap = new HashMap<>();
+
+        while (iterator.hasNext()) {
+            Constraint temp = iterator.next();
+            //Class<? extends Constraint> clazz = (Class<? extends Constraint>) temp.getClass();
+            String name = temp.getName();
+            ruleMap.put(name, temp);
+        }
+
+        return ruleMap;
+    }
+
+    public Map<String, Effect> loadEffects(String packName) throws Exception {
+
+        File jarFile = new File(this.pluginDir + "/rules/" + packName);
+        URL jarUrl = jarFile.toURI().toURL();
+        String pack = jarFile.getName().replaceFirst("\\.jar$", "");
+
+        URLClassLoader classLoader = 
+            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));//this.getClass().getClassLoader());
+
+        ServiceLoader<Effect> serviceLoader = 
+            ServiceLoader.load( Effect.class, classLoader);
+        Iterator<Effect> iterator = serviceLoader.iterator();
+
+        Map<String, Effect> ruleMap = new HashMap<>();
+
+        while (iterator.hasNext()) {
+            Effect temp = iterator.next();
+            //Class<? extends Constraint> clazz = (Class<? extends Constraint>) temp.getClass();
+            String name = temp.getName();
+            ruleMap.put(name, temp);
+        }
+
+        return ruleMap;
+    }
+
+    public void loadAllRules() throws Exception {
+        File path = new File(this.pluginDir + "/rules"); 
+        this.rulePacks = path.listFiles((dir, name) -> name.endsWith(".jar"));
+
+        //if(this.rulePacks == null) return;
+
+        // for(File pack : this.rulePacks) {
+
+        // }
+    }
+
+
+
     public void watchForChanges() throws IOException {
         WatchService watchService = FileSystems.getDefault().newWatchService();
         Path path = pluginDir.toPath();
@@ -124,47 +241,7 @@ public class PluginLoader {
         }, "PluginWatcher").start();
     }
 
-    private void loadPlugin(File jarFile) throws Exception {
-        URL jarUrl = jarFile.toURI().toURL();
-        String gameName = jarFile.getName();
-
-        gameName = jarFile.getName().replaceFirst("\\.jar$", "");
-
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
-
-        ServiceLoader<GameManagerFactory> serviceLoader = ServiceLoader.load(GameManagerFactory.class, classLoader);
-        Iterator<GameManagerFactory> iterator = serviceLoader.iterator();
-
-        if (!iterator.hasNext()) {
-            System.err.println("No GameManager found in " + jarFile.getName());
-            return;
-        }
-
-        GameManagerFactory temp = iterator.next();
-        Class<? extends GameManagerFactory> clazz = (Class<? extends GameManagerFactory>) temp.getClass();
-
-        gameClasses.put(gameName, clazz);
-        classLoaders.put(gameName, classLoader);
-        ArrayList<String> tmp = null;
-
-        if(temp.isMultiGame()) {
-            File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
-            File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
-
-            tmp = new ArrayList<>();
-            for(File file : gameDefs) {
-                String game = file.getName().replaceFirst("\\.json$", "");
-                tmp.add(game);
-                ObjectMapper mapper = new ObjectMapper();
-                this.gameDefs.put(game, mapper.readTree(file));
-            }
-        }// else {
-           // this.games.add(gameName);
-        //}
-        this.games.put(gameName, tmp);
-
-        System.out.println("Registered game plugin: " + gameName);
-    }
+   
 
     public Map<String, ArrayList<String>> listAvailableGames() {
         return this.games;
@@ -192,11 +269,25 @@ public class PluginLoader {
     }
 
     public boolean isMultiGame(String game) {
-        return this.games.get(game).isEmpty();
+         return !this.games.get(game).isEmpty();
     }
 
     public JsonNode getGameDef(String game) {
         return this.gameDefs.get(game);
+    }
+
+    public Constraint getGameConstraint(String name) {
+        //Map<String, Constraint> constraints = new HashMap<>();
+        JsonNode gameDef = this.gameDefs.get(name);
+        
+        return null;
+    }
+
+    public Effect getGameEffect(String name) {
+        
+        
+
+        return null;
     }
 }
 

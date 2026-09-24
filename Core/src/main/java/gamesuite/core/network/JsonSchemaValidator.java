@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class JsonSchemaValidator {
     private static final JsonSchema schema;
-    private static final JsonSchema gameSchema;
+    //private static final JsonSchema gameSchema;
     
     static {
         try {
@@ -19,12 +19,12 @@ public class JsonSchemaValidator {
                 JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
                 schema = factory.getSchema(schemaStream);
 
-            schemaStream = JsonSchemaValidator.class
+            /*schemaStream = JsonSchemaValidator.class
                 .getClassLoader()
                 .getResourceAsStream("GameSchema.json");
              factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
                 gameSchema = factory.getSchema(schemaStream);
-            
+            */
         } catch (Exception e) {
             throw new RuntimeException("Failed to load JSON schema", e);
         }
@@ -44,7 +44,7 @@ public class JsonSchemaValidator {
         Set<ValidationMessage> errors = validate(json);
         return errors.isEmpty();
     }
-
+/* 
     public static boolean isValidGameSchema(String json) {
 
         try {
@@ -56,4 +56,5 @@ public class JsonSchemaValidator {
         }
         return false;
     }
+        */
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface GameState {
 
-    public String[] getPieceNames();
+    public String[] getTeamNames();
 
     //public boolean isJustKinged(CoordPair pos);
 
