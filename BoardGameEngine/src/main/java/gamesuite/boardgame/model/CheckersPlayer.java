@@ -17,6 +17,15 @@ public class CheckersPlayer implements Player {
         this.userId = null;
     }
 
+    private CheckersPlayer(int points, String name, String userId, int turn, String turnName) {
+        this.points = points;
+        this.name = name;
+        this.userId = userId;
+        this.turn = turn;
+        this.turnName = turnName;
+        
+    }
+
     public boolean setUserId(String id) {
         if(this.userId == null) {
             this.userId = id;
@@ -54,5 +63,7 @@ public class CheckersPlayer implements Player {
 
     public String getName() { return this.name; }
 
-    public CheckersPlayer copy() { return new CheckersPlayer(this.name, this.points); }
+    public CheckersPlayer copy() { 
+        return new CheckersPlayer(this.points, this.name, this.userId, this.turn, this.turnName);
+    }
 }
