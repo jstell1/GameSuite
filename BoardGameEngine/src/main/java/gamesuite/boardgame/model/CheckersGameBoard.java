@@ -1,5 +1,7 @@
 package gamesuite.boardgame.model;
 
+import java.util.Arrays;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,6 +14,9 @@ public class CheckersGameBoard implements GameBoard {
     private int size;
 
     public CheckersGameBoard(int sideLength) {
+        if(sideLength < 1) {
+            throw new IllegalArgumentException("sidelengths cannot be less than 1");
+        }
         this.sideLength = sideLength;
         this.board = new CheckersCoordPair[sideLength][sideLength];
         this.size = sideLength * sideLength;
@@ -27,16 +32,19 @@ public class CheckersGameBoard implements GameBoard {
     }
     
 
-    public CheckersCoordPair[][] getBoard() { return this.board; }
+    public CheckersCoordPair[][] getBoard() { 
+        CheckersCoordPair[][] b = new CheckersCoordPair[this.board.length][];
+        for(int i = 0; i < b.length; i++) {
+            b[i] = Arrays.copyOf(this.board[i], this.board[i].length);
+        }
+        return b; 
+    }
 
     public CheckersGameBoard copy() {
         CheckersGameBoard board = new CheckersGameBoard(this.sideLength);
         for(CheckersCoordPair[] row: this.board)
             for(CheckersCoordPair pos : row) 
-                if(pos.getPiece() != null)
-                    board.setBoardPos(pos.getX(), pos.getY(), pos.getPiece());
-                else    
-                    board.setBoardPos(pos.getX(), pos.getY(), null);      
+                board.setBoardPos(pos.getX(), pos.getY(), pos.getPiece());     
         return board;
     }
 
@@ -80,7 +88,7 @@ public class CheckersGameBoard implements GameBoard {
                     if(piece == null)
                          str += "  |";
                     else
-                        str += piece.getName() + piece.getType() + "|";
+                        str += piece.getName() + "|";
                 }
             }
             str += "\n";

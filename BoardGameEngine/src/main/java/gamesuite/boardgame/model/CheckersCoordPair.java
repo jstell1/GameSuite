@@ -15,19 +15,37 @@ public class CheckersCoordPair implements CoordPair {
     }
 
     public CheckersCoordPair(int x, int y) {
+        if(x < 0 || y < 0) {
+            throw new IllegalArgumentException("coords are always positive in arrays");
+        }
         this.x = x;
         this.y = y;
         this.piece = null;
     }
 
+    private CheckersCoordPair(int x, int y, CheckersGamePiece piece) {
+        if(x < 0 || y < 0) {
+            throw new IllegalArgumentException("coords are always positive in arrays");
+        }
+        this.x = x;
+        this.y = y;
+        this.piece = piece;
+    }
+
     public void setX(int x) {
-        if(this.x == -1)
-            this.x = x;
+        if(this.x != -1)
+            throw new IllegalStateException("coords are immutable once set");
+        if(x < 0)
+            throw new IllegalArgumentException("coords are always positive in arrays");
+        this.x = x;
     }
 
     public void setY(int y) {
-        if(this.y == -1)
-            this.y = y;
+        if(this.y != -1)
+            throw new IllegalStateException("coords are immutable once set");
+        if(y < 0)
+            throw new IllegalArgumentException("coords are always positive in arrays");
+        this.y = y;
     }
 
     public int getX() { return this.x; }
@@ -47,15 +65,16 @@ public class CheckersCoordPair implements CoordPair {
 
     public CheckersCoordPair copy() { 
         CheckersCoordPair pos = new CheckersCoordPair(x, y); 
-        if(this.piece != null)
-            pos.setPiece(this.piece.copy());
+        //if(this.piece != null) {
+            pos.setPiece(this.piece);
+        //}
         return pos;
     }
 
     public CheckersCoordPair toCoordPair(int[] arr) {
-        if(arr.length == 2) 
-            return new CheckersCoordPair(arr[0], arr[1]);
-        return null;
+        if(arr.length != 2)
+            throw new IllegalArgumentException("must have 2 coord values"); 
+        return new CheckersCoordPair(arr[0], arr[1]);
     }
 
     public static int[] toArray(CheckersCoordPair pos) {

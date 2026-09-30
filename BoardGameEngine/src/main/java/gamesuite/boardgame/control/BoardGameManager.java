@@ -231,12 +231,12 @@ public class BoardGameManager implements GameManager {
     public boolean addPlayer(CheckersPlayer player) {
         //CheckersPlayer pl = new CheckersPlayer(player.getName(), player.getPoints());
         mapSessionPlayer(player.getUserId());
-        return this.stateManager.addPlayer(player);
+        return this.game.addPlayer(player);
     }
 
     public boolean addPlayer(String name) {
         CheckersPlayer player = new CheckersPlayer(name, getTurn());
-        return this.stateManager.addPlayer(player);
+        return this.game.addPlayer(player);
     }
 
     public boolean isGameReady() {

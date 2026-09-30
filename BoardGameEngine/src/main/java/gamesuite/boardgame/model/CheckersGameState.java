@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gamesuite.core.model.GameState;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -102,7 +103,7 @@ public class CheckersGameState implements GameState {
         if(this.player2 != null) {
             throw new IllegalStateException("once player2 is set it cannot be changed");
         }
-        this.player2 = player2.copy();
+        this.player2 = player2;
         this.numPlayers++;
         
     }
@@ -199,7 +200,7 @@ public class CheckersGameState implements GameState {
 
     public CheckersPlayer getPlayer(int playerNum) { 
 
-        checkPlayerTurnRange(playerNum);
+        //checkPlayerTurnRange(playerNum);
         if(playerNum == 1) 
             return player1;
         else if(playerNum == 2) 
@@ -328,7 +329,7 @@ public class CheckersGameState implements GameState {
         private CheckersPlayer player1;
         private CheckersPlayer player2;
         private int numPlayers;
-        private int turn;
+        private int turn = 1;
         private CheckersPlayer winner;
         private boolean isDraw;
         private Set<CheckersCoordPair> p1Attacks = new HashSet<>();
@@ -336,30 +337,30 @@ public class CheckersGameState implements GameState {
         private Set<CheckersCoordPair> p1Moves = new HashSet<>();
         private Set<CheckersCoordPair> p2Moves = new HashSet<>();
         private CheckersCoordPair furtherAttacks;
-        private int boardSize;
-        private int turnFactor;
+        private int boardSize = 1;
+        private int turnFactor = 1;
         private boolean boardInit;
-        private String[] teamNames = new String[0];
+        private String[] teamNames = {"B", "R"};
         private List<CheckersCoordPair> changedPos = new ArrayList<>();
         private boolean gameOver;
         private Set<CheckersCoordPair> justPromoted = new HashSet<>();
+        private List<Field> failedFields = new ArrayList<>(); 
+        private Field[] allFields = this.getClass().getDeclaredFields();
 
         public Builder setPlayer1(CheckersPlayer player1) {
-            CheckersPlayer p = player1.copy();
-            this.player1 = p;
+            this.player1 = player1;
             return this;
         }
 
         public Builder setPlayer2(CheckersPlayer player2) {
-            CheckersPlayer p = player2.copy();
-            this.player2 = p;
+            this.player2 = player2;
             return this;
         }
 
         public Builder setNumPlayers(int numPlayers) {
-
+            
             if(numPlayers < 0 || numPlayers > 2) {
-                throw new IllegalArgumentException("numPlayers must be in range [0,2]");
+                this.failedFields.add(this.allFields[2]);//throw new IllegalArgumentException("numPlayers must be in range [0,2]");
             }
             this.numPlayers = numPlayers;
             return this;
@@ -368,19 +369,14 @@ public class CheckersGameState implements GameState {
         public Builder setTurn(int turn) {
 
             if(turn < 1 || turn > 2) {
-                throw new IllegalArgumentException("turnNum must be in range [1,2]");
+                this.failedFields.add(this.allFields[3]);//throw new IllegalArgumentException("turnNum must be in range [1,2]");
             }
             this.turn = turn;
             return this;
         }
 
         public Builder setWinner(CheckersPlayer winner) {
-            if(winner != null) {
-                CheckersPlayer p = winner.copy();
-                this.winner = p;
-            } else {
-                this.winner = winner;
-            }
+            this.winner = winner;
             return this;
         }
 
@@ -392,8 +388,8 @@ public class CheckersGameState implements GameState {
         private static Set<CheckersCoordPair> copySet(Set<CheckersCoordPair> set) {
             Set<CheckersCoordPair> s = new HashSet<>();
             for(CheckersCoordPair pos : set) {
-                CheckersCoordPair p = pos.copy();
-                s.add(p);
+                //CheckersCoordPair p = pos;
+                s.add(pos);
             }
             return s;
         }
@@ -419,10 +415,10 @@ public class CheckersGameState implements GameState {
         }
 
         public Builder setFurtherAttacks(CheckersCoordPair furtherAttacks) {
-            if(furtherAttacks != null) {
-                CheckersCoordPair pos = furtherAttacks.copy();
-                this.furtherAttacks = pos;
-            }
+           // if(furtherAttacks != null) {
+            //    CheckersCoordPair pos = furtherAttacks.copy();
+            //    this.furtherAttacks = pos;
+          //  }
 
             this.furtherAttacks = furtherAttacks;
             return this;
@@ -430,7 +426,7 @@ public class CheckersGameState implements GameState {
         
         public Builder setBoardSize(int boardSize) {
             if(boardSize < 1) {
-                throw new IllegalArgumentException("board size cannot be less than 1");
+                this.failedFields.add(this.allFields[11]);//throw new IllegalArgumentException("board size cannot be less than 1");
             }
             this.boardSize = boardSize;
             return this;
@@ -438,7 +434,7 @@ public class CheckersGameState implements GameState {
 
         public Builder setTurnFactor(int turnFactor) {
             if(turnFactor != 1 || turnFactor != -1) {
-                throw new IllegalArgumentException("turnFactor can only be 1 or -1");
+                this.failedFields.add(this.allFields[12]);//throw new IllegalArgumentException("turnFactor can only be 1 or -1");
             }
             this.turnFactor = turnFactor;
             return this;
@@ -451,7 +447,7 @@ public class CheckersGameState implements GameState {
 
         public Builder setTeamNames(String[] pieceNames) {
             if(pieceNames == null || pieceNames.length != 2) {
-                throw new IllegalArgumentException("there must be 2 teamNames for each player");
+                this.failedFields.add(this.allFields[14]);//throw new IllegalArgumentException("there must be 2 teamNames for each player");
             }
             this.teamNames = Arrays.copyOf(pieceNames, pieceNames.length);
             return this;
@@ -460,8 +456,8 @@ public class CheckersGameState implements GameState {
         private static List<CheckersCoordPair> copyList(List<CheckersCoordPair> list) {
             List<CheckersCoordPair> l = new ArrayList<>();
             for(CheckersCoordPair pos : list) {
-                CheckersCoordPair p = pos.copy();
-                l.add(p);
+                //CheckersCoordPair p = pos.copy();
+                l.add(pos);
             }
             return l;
         }
@@ -482,6 +478,19 @@ public class CheckersGameState implements GameState {
         }
 
         public CheckersGameState build() {
+
+            if(this.failedFields.size() != 0) {
+                int len = this.failedFields.size();
+                String fields = "[";
+
+                for(int i = 0; i < len - 1; i++) {
+                    fields += this.failedFields.get(i).getName() + ",\n";
+                }
+                fields += this.failedFields.get(len - 1) + "\n]\n";
+
+                throw new IllegalArgumentException("Build failed due to invalid inputs set to CheckersGameState.Buidler\nFailed Fields:\n"  + fields);
+            }
+
             return new CheckersGameState(
                 this.player1, this.player2,
                 this.numPlayers, this.turn,
