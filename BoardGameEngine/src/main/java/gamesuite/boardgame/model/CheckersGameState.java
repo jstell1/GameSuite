@@ -481,7 +481,7 @@ public class CheckersGameState implements GameState {
 
             if(this.failedFields.size() != 0) {
                 int len = this.failedFields.size();
-                String fields = "[";
+                String fields = "[\n";
 
                 for(int i = 0; i < len - 1; i++) {
                     fields += this.failedFields.get(i).getName() + ",\n";
