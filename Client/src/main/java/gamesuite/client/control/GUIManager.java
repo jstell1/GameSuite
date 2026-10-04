@@ -36,8 +36,9 @@ public class GUIManager implements GameUI, UIListener {
     // }
 
     public void setGamManager(ClientManager gm) {
-        if(this.gm == null)
-            this.gm = gm;
+        if(this.gm != null)
+            throw new IllegalStateException("cannot be changed once set");
+        this.gm = gm;
     } 
     public void setMainGUI(MainGUI gui) {
         this.main = gui;
@@ -49,6 +50,12 @@ public class GUIManager implements GameUI, UIListener {
         });
 
             //this.gameView = game;
+    }
+
+    public void setErrorMsg(String error) {
+        SwingUtilities.invokeLater(() -> {
+            this.main.setErrorMsg(error);
+        });
     }
 
     public void setPlayerTurn(int playerTurn) {

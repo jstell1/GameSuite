@@ -2,6 +2,7 @@ package gamesuite.client.control;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.hc.client5.http.impl.Operations.CompletedFuture;
+import org.json.JSONException;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.RestClient;
@@ -62,7 +64,7 @@ public class ClientManager {
     private MainGUI main;
     private CompletableFuture<WebSocketSession> connectionFuture; 
     
-    public ClientManager(String ip, int port) {
+    public ClientManager(String ip, int port) throws IOException {
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         container.setDefaultMaxTextMessageBufferSize(512 * 1024);
@@ -72,13 +74,14 @@ public class ClientManager {
             this.connectionFuture = new CompletableFuture<>();
             this.loader = new PluginLoader("../plugins/");
             this.loader.loadAll();
-            this.loader.watchForChanges();
+            //this.loader.watchForChanges();
 
             this.loader.setUIPluginLoader("../plugins/ui");
             this.loader.loadGameBoards();
             
         } catch (Exception e) {
             // TODO: handle exception
+            throw new RuntimeException("issue loading plugins");
         }
         this.ip = ip;
         this.port = port;
@@ -87,11 +90,11 @@ public class ClientManager {
         this.restClient = HttpClient.newHttpClient();
         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
         ObjectMapper mapper = new ObjectMapper();
-        try {
+        //try {
             this.schemaRoot = mapper.readTree(schemaStream);
-        } catch (Exception e) {
-            
-        }
+      // } catch (Exception e) {
+           // throw new 
+       // }
     }
 
     public void loadGame(String gameName) {
@@ -102,11 +105,12 @@ public class ClientManager {
         this.main = gui;
     }
     public void setGUIManager(GUIManager guiGM) {
-        if(this.guiGM == null)
-            this.guiGM = guiGM;
+        if(this.guiGM != null)
+            throw new IllegalStateException("cannot be changed once set");
+        this.guiGM = guiGM;
     }
 
-    public void connect() throws Exception {
+    public void connect() {
         this.connectionFuture = new CompletableFuture<>();
         try {
             connect(this.wsUrl);
@@ -115,12 +119,15 @@ public class ClientManager {
             try {
                 this.wsUrl = "ws://" + this.ip + ":" + this.port + "/ingame";
                 connect(this.wsUrl);
-            } catch (Exception e2) {}
+            } catch (Exception e2) {
+                e.printStackTrace();
+                sendMainGuiError("could not connect to the server:\n" + e2.getMessage());
+            }
         }
         
     }
 
-    private void connect(String wsUrl) throws Exception {
+    private void connect(String wsUrl) throws InterruptedException, ExecutionException {
         this.client.execute(new AbstractWebSocketHandler() {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
@@ -131,19 +138,41 @@ public class ClientManager {
             }
 
             @Override
-            public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+            public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
                 synchronized(ClientManager.this) {
 
                     ObjectMapper mapper = new ObjectMapper();
                     String netWorkMsg = message.getPayload().toString();
     
-                    if(!JsonSchemaValidator.isValid(netWorkMsg)) {
-                        ObjectNode inner = mapper.createObjectNode();
-                        ObjectNode err = mapper.createObjectNode();
-                        inner.put("message", "don't recognize message type");
-                        err.set("badRequestError", inner);
-                        String str = mapper.writeValueAsString(err);
-                        session.sendMessage(new TextMessage(str));
+                    try {
+                        
+                        if(!JsonSchemaValidator.isValid(netWorkMsg)) {
+                            ObjectNode inner = mapper.createObjectNode();
+                            ObjectNode err = mapper.createObjectNode();
+                            inner.put("message", "don't recognize message type");
+                            err.set("badRequestError", inner);
+                            String str = null;
+                            try {
+                                str = mapper.writeValueAsString(err);
+                                
+                            } catch (JsonProcessingException e) {
+                                // TODO: handle exception
+                                throw new IllegalArgumentException("set up error messages incorrectly");
+                            }
+                            session.sendMessage(new TextMessage(str));
+                            sendMainGuiError("recieved invalid Json from the server");
+                            return;
+                        }
+                    }catch(IllegalArgumentException a) {
+                        throw new IllegalArgumentException(a.getMessage());
+                    } catch (JsonProcessingException e) {
+                        // TODO: handle exception
+                        e.printStackTrace();
+                        sendMainGuiError("revcieved malformed json from the server");
+                        return;
+                    } catch(IOException e2) {
+                        e2.printStackTrace();
+                        sendMainGuiError("problem wrting message to socket");
                         return;
                     }
     
@@ -152,13 +181,29 @@ public class ClientManager {
     
                     try {
                         outer = (ObjectNode) mapper.readTree(netWorkMsg);
-                    } catch (Exception e) {
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
                         ObjectNode inner = mapper.createObjectNode();
                         ObjectNode err = mapper.createObjectNode();
                         inner.put("message", "don't recognize message type");
                         err.set("badRequestError", inner);
-                        String str = mapper.writeValueAsString(err);
-                        session.sendMessage(new TextMessage(str));
+
+                        String str = null;
+                        try {
+                            
+                            str = mapper.writeValueAsString(err);
+                        } catch (JsonProcessingException e2) {
+                            // TODO: handle exception
+                            throw new IllegalArgumentException("set up error message incorrectly");
+                        }
+
+                        try {
+                            session.sendMessage(new TextMessage(str));
+                        } catch (IOException e3) {
+                            // TODO: handle exception
+                            e3.printStackTrace();
+                            sendMainGuiError("problem writing message to socket");
+                        }
                         return;
                     }
                     
@@ -192,7 +237,16 @@ public class ClientManager {
                                 ClientManager.this.guiGM.setPlayerTurn(2);
                             }
 
-                            GameBoardFactory fact = ClientManager.this.loader.createBoardFactory("CheckersUI");
+                            GameBoardFactory fact;
+                            try {
+                                fact = ClientManager.this.loader.createBoardFactory("BoardGameUI");
+                            } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                                    | NoSuchMethodException | SecurityException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                                sendMainGuiError("issue creating board UI from plugin");
+                                return; 
+                            }
                             GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManager.this.guiGM);
                             //ClientManager.this.guiGM.setBoard(gbu);
                             //ClientManager.this.guiGM.setGameState(gameJson);
@@ -207,13 +261,27 @@ public class ClientManager {
                             break;
                         case "gamesListResponse":
                             JsonNode gamesListJson = payload.get("gamesList"); 
-                            Map<String, ArrayList<String>> gamesList = mapper.treeToValue(gamesListJson, new TypeReference<Map<String, ArrayList<String>>>(){});
-                            ClientManager.this.main.setGamesList(gamesList);
+                            try {
+                                
+                                Map<String, ArrayList<String>> gamesList = mapper.treeToValue(gamesListJson, new TypeReference<Map<String, ArrayList<String>>>(){});
+                                ClientManager.this.main.setGamesList(gamesList);
+                            } catch (JsonProcessingException e) {
+                                // TODO: handle exception
+                                e.printStackTrace();
+                                sendMainGuiError("server error on getting gamesList");
+                            }
                             break;
                         case "activeGamesResponse":
                             gamesListJson = payload.get("gamesList");
-                            String[] activeGamesList = mapper.treeToValue(gamesListJson, String[].class); 
-                            ClientManager.this.guiGM.setActiveGamesList(activeGamesList);
+                            String[] activeGamesList;
+                            try {
+                                activeGamesList = mapper.treeToValue(gamesListJson, String[].class);
+                                ClientManager.this.guiGM.setActiveGamesList(activeGamesList);
+                            } catch (JsonProcessingException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                                sendMainGuiError("server error on getting activeGamesList");
+                            } 
                             break;
                         default: break;
                     }
@@ -227,7 +295,7 @@ public class ClientManager {
         }, this.wsUrl).get();
     }
 
-    public String awaitSessionId() throws Exception {
+    public String awaitSessionId() throws InterruptedException, ExecutionException {
         return sessionIdFuture.get();
     }
 
@@ -243,26 +311,35 @@ public class ClientManager {
             payload.put("gameId", this.gameId);
             payload.set("move", move);
             ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
-            
+            String str = null;
             try {
-                String str = mapper.writeValueAsString(outer);
-                TextMessage msg = new TextMessage(str);
-                session.sendMessage(msg);
+                str = mapper.writeValueAsString(outer);
                 
-            } catch (Exception e) {
+                
+            } catch (JsonProcessingException e) {
                 e.printStackTrace();
+                throw new IllegalArgumentException("problem writing move message");
+                
+            }
+            TextMessage msg = new TextMessage(str);
+            try {
+                session.sendMessage(msg);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                sendMainGuiError("problem wrting mesage to socket");
             }
         }
     }
 
-    public synchronized String createGame(String game, String group, String playerName) throws Exception {
+    public synchronized String createGame(String game, String group, String playerName) {
         
         if(this.session != null) {
             System.out.println("Already connected");
             return "";
         }
         connect();
-        this.session = this.connectionFuture.get();
+        //this.session = this.connectionFuture.get();
 
         if(this.session != null && this.session.isOpen()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -273,9 +350,23 @@ public class ClientManager {
             inner.put("name", playerName);
             ObjectNode payload = mapper.createObjectNode();
             payload.set(msgType, inner);
-            String str = mapper.writeValueAsString(payload);
+            String str;
+            try {
+                str = mapper.writeValueAsString(payload);
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new IllegalArgumentException("error creating createGame Message");
+            }
             TextMessage msg = new TextMessage(str);
-            this.session.sendMessage(msg);
+            try {
+                this.session.sendMessage(msg);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                sendMainGuiError("problem writing message to socket");
+                return null;
+            }
             System.out.println("Sent");
         }
        return null;
@@ -284,7 +375,7 @@ public class ClientManager {
     public synchronized String joinGame(String game, String name, String gameId) {
 
         
-        try {
+        //try {
             if(this.session != null) {
                 System.out.println("Already connected");
                 return "";
@@ -294,7 +385,7 @@ public class ClientManager {
                 return "";
             }
             connect();
-            this.session = this.connectionFuture.get();
+            //this.session = this.connectionFuture.get();
             System.out.println(this.session != null ? this.session.getId(): "no session");
             System.out.println(this.session == null);
             System.out.println(this.session.isOpen());
@@ -307,21 +398,35 @@ public class ClientManager {
                 payload.put("gameId", gameId);
                 ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
                 System.out.println("made payload");
-                try {
-                    String str = mapper.writeValueAsString(outer);
+               //try {
+                    String str;
+                    try {
+                        str = mapper.writeValueAsString(outer);
+                    } catch (JsonProcessingException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        throw new IllegalArgumentException();
+                    }
                     TextMessage msg = new TextMessage(str);
                     System.out.println(str);
-                    this.session.sendMessage(msg);
-                } catch (Exception e) {
+                    try {
+                        this.session.sendMessage(msg);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        sendMainGuiError("problem writing message to socket");
+                        return gameId;
+                    }
+               // } catch (Exception e) {
                     
-                }
+              //  }
                 System.out.println("Sent");
                 return gameId;
             }
-        } catch (Exception e) {
+        //} catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+         //   e.printStackTrace();
+       // }
 
        return null;
     }
@@ -340,6 +445,7 @@ public class ClientManager {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            
         }
 
         if(!hardQuit && this.session == null) {
@@ -367,6 +473,8 @@ public class ClientManager {
         CompletableFuture<HttpResponse<String>> response = this.restClient.sendAsync(request,
                                                     HttpResponse.BodyHandlers.ofString());
 
+
+ 
         response.thenAccept(resp -> {
             ObjectMapper mapper = new ObjectMapper();
             try {
@@ -375,12 +483,12 @@ public class ClientManager {
                                                     new TypeReference<Map<String, ArrayList<String>>>() {});
                 this.main.setGamesList(list);
                 System.out.println("Retrieved games list");
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+               e.printStackTrace();
+               sendMainGuiError("error processing server Available games list:\n" + e.getMessage());
             }
             
         }).join();
-
 
 
 
@@ -406,6 +514,10 @@ public class ClientManager {
         //     }
         // }
         return null;
+    }
+
+      private void sendMainGuiError(String error) {
+        this.guiGM.setErrorMsg(error);
     }
 
     public void getActiveGames(String gameName) {
@@ -434,8 +546,9 @@ public class ClientManager {
                 String[] list = mapper.readValue(resp.body(), String[].class);
                 this.guiGM.setActiveGamesList(list);
                 System.out.println("retrieved active list");
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
+                sendMainGuiError("Error processing server Active Games List:\n" + e.getMessage());
             }
             
         }).join();

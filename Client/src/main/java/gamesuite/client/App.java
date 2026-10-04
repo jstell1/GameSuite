@@ -1,5 +1,6 @@
 package gamesuite.client;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import gamesuite.client.control.ClientConfigurer;
@@ -33,24 +34,32 @@ public class App {
         if(ip.equals("localhost") && port == 0) {
             //runLocal(uiType, ip, port, player1, player2, in);
         } else {
-            ClientManager cmg = new ClientManager(ip, port);
-            
-            
-            GUIManager guiGM = new GUIManager();
-            guiGM.setGamManager(cmg);
-            cmg.setGUIManager(guiGM);
-    
-            try {
-                //cmg.connect();
 
-                GameGUI ui = new GameGUI(guiGM);
-                guiGM.setGameGUI(ui);
-                MainGUI main = new MainGUI(cmg, guiGM);
-                cmg.setMainGUI(main);
-                guiGM.setMainGUI(main);
-                main.activate();
-                //ui.activate();
+            try {
+                
+                ClientManager cmg = new ClientManager(ip, port);
+                
+                
+                GUIManager guiGM = new GUIManager();
+                guiGM.setGamManager(cmg);
+                cmg.setGUIManager(guiGM);
+        
+                //try {
+                    //cmg.connect();
+    
+                    GameGUI ui = new GameGUI(guiGM);
+                    guiGM.setGameGUI(ui);
+                    MainGUI main = new MainGUI(cmg, guiGM);
+                    cmg.setMainGUI(main);
+                    guiGM.setMainGUI(main);
+                    main.activate();
+                    //ui.activate();
+                //} catch (Exception e) {
+                  //  e.printStackTrace();
+                  //  return;
+                ///
             } catch (Exception e) {
+                // TODO: handle exception
                 e.printStackTrace();
             }
         }

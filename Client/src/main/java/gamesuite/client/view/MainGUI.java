@@ -9,6 +9,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gamesuite.client.control.ClientManager;
 import gamesuite.core.ui.UIListener;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -129,12 +132,19 @@ public class MainGUI {
         this.window.dispose();
     }
 
+    public void setErrorMsg(String error) {
+        
+    }
+
     public void activate() {
         SwingUtilities.invokeLater(() -> {
             this.window.pack();
             this.window.setVisible(true);    
             new Thread(() -> {
-                List<String> games = this.cmg.getAvailableGames();
+               
+                    
+                    List<String> games = this.cmg.getAvailableGames();
+             
             }).start();
         });
     }
