@@ -36,6 +36,8 @@ import gamesuite.core.control.PluginLoader;
 import gamesuite.core.network.*;
 import gamesuite.core.ui.GameBoardFactory;
 import gamesuite.core.ui.GameBoardUI;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.WebSocketContainer;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -43,7 +45,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ClientManager {
-    private final WebSocketClient client = new StandardWebSocketClient();
+    private WebSocketClient client; //= new StandardWebSocketClient();
     private HttpClient restClient;
     private WebSocketSession session;
     private String sessionId;
@@ -61,6 +63,11 @@ public class ClientManager {
     private CompletableFuture<WebSocketSession> connectionFuture; 
     
     public ClientManager(String ip, int port) {
+
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.setDefaultMaxTextMessageBufferSize(512 * 1024);
+        container.setDefaultMaxBinaryMessageBufferSize(512 * 1024);
+        this.client = new StandardWebSocketClient(container);
         try {
             this.connectionFuture = new CompletableFuture<>();
             this.loader = new PluginLoader("../plugins/");
@@ -215,7 +222,7 @@ public class ClientManager {
 
             @Override
             public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-                //System.out.println("WebSocket closed");
+                System.out.println("WebSocket closed");
             }
         }, this.wsUrl).get();
     }
