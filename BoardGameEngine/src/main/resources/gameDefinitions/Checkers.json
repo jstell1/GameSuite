@@ -148,7 +148,7 @@
         { "type" : "turnCheck" },
         { "type" : "inBounds" },
         { "type" : "emptyTarg" },
-        { "type" : "NotFurtherAttack" }
+        { "type" : "notFurtherAttack" }
     ],
 
     "postChecks" : [

@@ -112,6 +112,10 @@ public class CheckersGameState implements GameState {
         return Arrays.copyOf(this.teamNames, this.teamNames.length); 
     }
 
+    public void setTeamNames(String[] teamNames) {
+        this.teamNames = teamNames;
+    }
+
     // public JsonNode getGameStateJson() {
     //     ObjectMapper mapper = new ObjectMapper();
     //     JsonNode json = mapper.valueToTree(this);
@@ -155,7 +159,7 @@ public class CheckersGameState implements GameState {
     public void flipTurnFactor() { this.turnFactor *= -1; }
 
     private static void checkPlayerTurnRange(int num) {
-        if(num != 1 || num != 2) {
+        if(num < 1 || num > 2) {
             throw new IllegalArgumentException("urnNums must be in range [1,2]");
         }
     }

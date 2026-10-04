@@ -72,11 +72,11 @@ public class ClientManager {
         this.client = new StandardWebSocketClient(container);
         try {
             this.connectionFuture = new CompletableFuture<>();
-            this.loader = new PluginLoader("../plugins/");
+            this.loader = new PluginLoader("plugins/");
             this.loader.loadAll();
             //this.loader.watchForChanges();
 
-            this.loader.setUIPluginLoader("../plugins/ui");
+            this.loader.setUIPluginLoader("plugins/ui");
             this.loader.loadGameBoards();
             
         } catch (Exception e) {
@@ -247,10 +247,18 @@ public class ClientManager {
                                 sendMainGuiError("issue creating board UI from plugin");
                                 return; 
                             }
-                            GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManager.this.guiGM);
-                            //ClientManager.this.guiGM.setBoard(gbu);
-                            //ClientManager.this.guiGM.setGameState(gameJson);
-                            ClientManager.this.guiGM.initGame(gbu);
+                            try {
+                                System.out.println(boardJson);
+                                System.out.println("\n\n");
+                                System.out.println(gameJson);
+                                GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManager.this.guiGM);
+                                //ClientManager.this.guiGM.setBoard(gbu);
+                                //ClientManager.this.guiGM.setGameState(gameJson);
+                                ClientManager.this.guiGM.initGame(gbu);
+                            } catch (JsonProcessingException e) {
+                                // TODO: handle exception
+                                throw new IllegalArgumentException("something is wrong with the incoming boardJson and uiJar can't be created");
+                            }
                             break;
                         case "stateUpdateResponse":
                             gameJson = mapper.valueToTree(payload.get("gameState"));

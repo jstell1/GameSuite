@@ -11,7 +11,7 @@ import gamesuite.core.model.GamePiece;
 import gamesuite.core.model.rules.Action;
 
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"moveRules", "attackRules", "validMoves", "validJumps", "attackVectors", "king", "vaidAttacks", "validKingMoves", "validKingJumps"}, ignoreUnknown = true)
 public class CheckersGamePiece implements GamePiece {
     private String name;
     private String team;

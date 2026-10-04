@@ -1,5 +1,6 @@
 package gamesuite.boardgame.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,9 +15,9 @@ import gamesuite.boardgame.model.*;
 public class CheckersGameBoardFactory implements GameBoardFactory {
 
     @Override
-    public GameBoardUI createGameBoard(JsonNode boardJson, JsonNode gameJson, UIListener listener) {
+    public GameBoardUI createGameBoard(JsonNode boardJson, JsonNode gameJson, UIListener listener) throws JsonProcessingException {
 
-        try {
+        //try {
             ObjectMapper mapper = new ObjectMapper();
             CheckersCoordPair[][] board = mapper.treeToValue(boardJson, CheckersCoordPair[][].class);
             CheckersGameBoard cBoard = new CheckersGameBoard(board);
@@ -24,9 +25,9 @@ public class CheckersGameBoardFactory implements GameBoardFactory {
             CheckersGameBoardPanel gameBoard = new CheckersGameBoardPanel(cBoard, 600, listener);
             gameBoard.setGameState(game);
             return gameBoard;
-        } catch (Exception e) {}
+        // catch (Exception e) {}
 
-        return null;
+        //return null;
     }
     
 }

@@ -131,13 +131,13 @@ public class CheckersGameBoardPanel extends GameBoardUI {
     public void setGameState(CheckersGameState gameView) {
         //ObjectMapper mapper = new ObjectMapper();
         //CheckersGameState gameView;
-        try {
+        //try {
             //gameView = mapper.treeToValue(gameState, CheckersGameState.class);
             this.gameView = gameView;
-        } catch (IllegalArgumentException e) {
+        //} catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        //    e.printStackTrace();
+       // }
     }
     
     public int getTurn() {
@@ -151,13 +151,13 @@ public class CheckersGameBoardPanel extends GameBoardUI {
     public void addYellowedPanel(CheckersCoordPairPanel pos) {
         //ObjectMapper mapper = new ObjectMapper();
         //CheckersCoordPairPanel p;
-        try {
+        //try {
             //p = mapper.treeToValue(pos, CheckersCoordPairPanel.class);
             this.yellowed.add(pos);
-        } catch (IllegalArgumentException e) {
+        //} catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        //    e.printStackTrace();
+        //}
     }
 
     public CheckersCoordPairPanel getBoardPos(int x, int y) {
