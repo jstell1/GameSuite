@@ -47,6 +47,13 @@ public class BoardGameManager implements GameManager {
         //this.runList = new ArrayList<>();
     }
 
+    public BoardGameManager(CheckersGameBoard board, CheckersGameState game, MoveController moveController) {
+        this.board = board;
+        this.game = game;
+        this.moveController = moveController;
+        this.sessionPlayerMap = new ArrayList<>();
+    }
+
     public BoardGameManager(CheckersGameBoard board, RulesValidator validator, CheckersGameState game, MoveController moveController, GameStateManager mang) {
         this.board = board;
         this.game = game;
@@ -166,12 +173,12 @@ public class BoardGameManager implements GameManager {
     } 
 
     @Override
-    public void sendMove(ObjectNode move, String playerId) {
+    public boolean sendMove(ObjectNode move, String playerId) {
 
         if(gameOver()) {
-            return;
+            return false;
         }
-
+        boolean moveSuccess = false;
         move.put("playerId", playerId);
 
         boolean endCheck = this.moveController.endCheck(move);
@@ -189,7 +196,7 @@ public class BoardGameManager implements GameManager {
                 result = this.moveController.moveCheck(move);
             }
     
-            boolean moveSuccess = false;
+            
             if(result) {
                 this.moveController.applyEffects(move);
                 moveSuccess = true;
@@ -213,6 +220,8 @@ public class BoardGameManager implements GameManager {
             }
             
         }
+
+        return moveSuccess;
         // ObjectMapper mapper = new ObjectMapper();
         // try {
         //     CheckersMove mv = mapper.treeToValue(move, CheckersMove.class);
@@ -243,25 +252,27 @@ public class BoardGameManager implements GameManager {
         return this.game.isBoardInit();
     }
 
-    public String getBoardString() { return this.stateManager.getBoardString(); }
+    public String getBoardString() { return this.board.toString(); }
 
     public CheckersPlayer getWinner() { 
-        if(this.stateManager.getWinner() != null) 
-            return this.stateManager.getWinner().copy();
+        if(this.game.getWinner() != null) 
+            return this.game.getWinner();
         return null; 
     }
 
     public CheckersGameBoard getBoard() { return this.board; }
 
     public boolean gameOver() {
-        if(this.stateManager.getWinner() != null)//|| this.stateManager.getDraw())
+        if(this.game.getWinner() != null)//|| this.stateManager.getDraw())
             return true;
         return false;
     }
     
     public boolean initBoard() { 
-        if(this.validator.playersReady()) {
-            this.stateManager.initBoard(); 
+        if(this.game.getNumPlayers() == 2) {
+             if(this.game.isBoardInit())
+                return false;
+            this.game.setBoardInit();
             return true;
         }
         return false;
@@ -269,7 +280,7 @@ public class BoardGameManager implements GameManager {
 
 
 
-    public int getTurn() { return this.stateManager.getTurn(); }
+    public int getTurn() { return this.game.getTurn(); }
 
     //public GameState getGameState() {
     //    return new CheckersGameStateView(this.game);
@@ -308,10 +319,10 @@ public class BoardGameManager implements GameManager {
     public JsonNode joinGame(String player, String playerId) {
         CheckersPlayer p = new CheckersPlayer(player, 0);
         p.setUserId(playerId);
-        mapSessionPlayer(playerId);
+        //mapSessionPlayer(playerId);
         if(p != null) {
 
-            boolean added = addPlayer(player);
+            boolean added = addPlayer(p);
             if(added) {
                 initBoard();
                 ObjectMapper mapper = new ObjectMapper();

@@ -1,5 +1,6 @@
 package gamesuite.boardgame.control;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,11 +25,14 @@ import gamesuite.boardgame.model.CheckersPlayer;
 public class BoardGameFactory extends GameManagerFactory {
 
     public static final boolean multiGame = true;
-    protected final Map<String, CheckersGamePiece.Builder> pieceList = new HashMap<>();
+    protected Map<String, CheckersGamePiece.Builder> pieceList;
     protected final Map<String, CheckersGamePiece> retPieces = new HashMap<>();
+    private Map<String, Constraint> constraints;
+    private Map<String, Effect> effects;
+    private Map<String, Action> actions;
 
     @Override
-    public GameManager createGame(String playerName, String playerId, JsonNode gameDef) {
+    public GameManager createGame(String playerName, String playerId, JsonNode gameDef) throws MalformedURLException {
         
         
         ObjectMapper mapper = new ObjectMapper();
@@ -41,147 +45,63 @@ public class BoardGameFactory extends GameManagerFactory {
         //Map<String, CheckersGamePiece.Builder> pieceList = 
         //setupPieceVectors(pieces);
         String pack = gameDef.get("rulePack").asText();
-        Map<String, Constraint> constraints = null;
+        //Map<String, Constraint> constraints = null;
 
         
-        try {
-            constraints = this.rulesLoader.loadConstraints(pack);
-        } catch (Throwable e) {
+        //loading constraints
+        //try {
+            this.constraints = this.rulesLoader.loadConstraints(pack);
+        //} catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        //    e.printStackTrace();
+        //}
         
-        Map<String, Effect> effects = null;
-        
-        try {
-            effects = this.rulesLoader.loadEffects(pack);
-        } catch (Exception e) {
-            e.printStackTrace();
+       // try {
+            this.effects = this.rulesLoader.loadEffects(pack);
+       // } catch (Exception e) {
+        //    e.printStackTrace();
+        //}
+
+        //building actions map
+        JsonNode actionsNode = gameDef.get("actions");
+        this.actions = buildActions(actionsNode);
+        Map<String, JsonNode> d = new HashMap<>();
+        for(JsonNode n : actionsNode) {
+            String nam = n.get("name").asText();
+            d.put(nam, n);
         }
 
         JsonNode turnControlNode = gameDef.get("turnControl");
         String controlName = turnControlNode.get("type").asText();
-
-        Effect turnControl = effects.get(controlName);
-
+        Effect turnControl = this.effects.get(controlName);
         if(turnControlNode.size() > 1) {
             ObjectNode tmp = turnControlNode.deepCopy();
             tmp.remove("type");
             turnControl.setExtraParams(tmp);
         }
 
-
         //setup the piecBuilders with the appropriate vectors, Actions, constraints, and effects
-        for(JsonNode piece : pieces) {
-            CheckersGamePiece.Builder builder = new CheckersGamePiece.Builder();
-            String name = piece.get("name").asText();
-            int value = piece.get("value").asInt();
-            JsonNode actions = piece.get("actions");
-            builder.setType(name).setVal(value);
-            List<Action> moveRules = new ArrayList<>();
-            List<Action> attackRules = new ArrayList<>();
-
-            for(JsonNode action : actions) {
-                String actName = action.get("name").asText();
-                String type = action.get("type").asText();
-                ArrayList<String> constNames = new ArrayList<>();
-                ArrayList<String> effectNames = new ArrayList<>();
-                JsonNode constNode = action.get("constraints");
-                JsonNode effectsNode = action.get("effects");
-
-                for(JsonNode node : constNode) {
-                    constNames.add(node.get("type").asText());
-                }
-
-                for(JsonNode node : effectsNode) {
-                    effectNames.add(node.get("type").asText());
-                }
-
-                if(action.has("typeVector")) {
-                    JsonNode typeVector = action.get("typeVector");
-                    int[][] vectList = new int[typeVector.size()][2];
-                    
-                    int i = 0;
-                    for(JsonNode vect : typeVector) {
-                        int x = vect.get("x").asInt();
-                        int y = vect.get("y").asInt();
-                        int[] temp = { x, y };
-                        vectList[i++] = temp;
-                    }
-                    
-                    if(type.equals("move")) {
-                        builder.setValidMoves(vectList);
-                    } else if(type.equals("attack")) {
-                        builder.setValidAttacks(vectList);
-                    }
-                }
-
-                if(action.has("attackVector")) {
-                     JsonNode attackVector = action.get("attackVector");
-                    int[][] vectList = new int[attackVector.size()][2];
-                    
-                    int i = 0;
-                    for(JsonNode vect : attackVector) {
-                        int x = vect.get("x").asInt();
-                        int y = vect.get("y").asInt();
-                        int[] temp = { x, y };
-                        vectList[i++] = temp;
-                    }
-
-                    builder.setAttackVectors(vectList);
-                    
-                }
-                
-                Constraint[] constFinal = new Constraint[constNames.size()];
-                Effect[] effectsFinal = new Effect[effectNames.size()];
-                int i = 0;
-                for(String nm : constNames) {
-                    constFinal[i] = constraints.get(nm);
-                    i++;
-                }
-                i = 0;
-                for(String nm : effectNames) {
-                    effectsFinal[i++] = effects.get(nm);
-                }
-
-                Action act = new Action(constFinal, effectsFinal);
-                act.setName(actName);
-                act.setType(type);
-
-                if(type.equals("move")) {
-                    moveRules.add(act);
-                } else if(type.equals("attack")) {
-                    attackRules.add(act);
-                }
-            }
-
-            builder.setAttackRules(attackRules);
-            builder.setMoveRules(moveRules);
-            this.pieceList.put(name, builder);
-        }
+        this.pieceList = buildPieceBuilders(pieces);
       
-        
         JsonNode initVector = gameDef
             .get("board")
             .get("initState");
 
         JsonNode playerNodes = gameDef.get("players");
-
-       
-       
-        
         CheckersPlayer player = new CheckersPlayer(playerName, 0);
         player.setUserId(playerId);
         
+        //setting up players
         ArrayList<String> pieceNames = new ArrayList<>();
         for(JsonNode p : playerNodes) {
             pieceNames.add(p.get("turnName").asText());
         }
 
+        //insantiating game state
         CheckersGameState game = 
             new CheckersGameState.Builder()
                 .setPlayer1(player)
-                .setNumPlayers(playerNodes.size())
+                .setNumPlayers(1)
                 .setTurn(1)
                 .setWinner(null)
                 .setIsDraw(false)
@@ -196,16 +116,16 @@ public class BoardGameFactory extends GameManagerFactory {
                 .setTeamNames(pieceNames.toArray(new String[0]))
                 .setChangedPos(new ArrayList<CheckersCoordPair>())
                 .setGameOver(false)
-                .setJustPromoted(null)
+                .setJustPromoted(new HashSet<CheckersCoordPair>())
                 .build();
 
-
-        for(Constraint constraint : constraints.values()) {
+        //adding game board and game state to constraints and effects
+        for(Constraint constraint : this.constraints.values()) {
             constraint.setBoard(board);
             constraint.setGameState(game);
         }
 
-        for(Effect effect : effects.values()) {
+        for(Effect effect : this.effects.values()) {
             effect.setBoard(board);
             effect.setGameState(game);
         }
@@ -217,7 +137,7 @@ public class BoardGameFactory extends GameManagerFactory {
             JsonNode pieceNode = node.get("piece");
             int pNum = pieceNode.get("player").asInt();
             String type = pieceNode.get("name").asText();
-            CheckersGamePiece.Builder b = pieceList.get(type);
+            CheckersGamePiece.Builder b = this.pieceList.get(type);
             
             if(pNum == 1) {
                 String team = pieceNames.get(0);
@@ -231,16 +151,14 @@ public class BoardGameFactory extends GameManagerFactory {
             //piece.setName(playerNodes.get(pNum - 1).get("turnName").asText());
             board.setBoardPos(x, y, piece);
         }
-        RulesValidator validator = new RulesValidator(game, board);
-        GameStateManager mang = new GameStateManager(game, board);
-        MoveController controller = new MoveController(validator, mang, board);
-        
+
+        MoveController controller = new MoveController(board);
         String moveName = gameDef.get("validMove").asText();
-        Constraint moveConst = constraints.get(moveName);
+        Constraint moveConst = this.constraints.get(moveName);
         controller.setMoveConstraint(moveConst);
 
         String attackName = gameDef.get("validAttack").asText();
-        Constraint attackConst = constraints.get(attackName);
+        Constraint attackConst = this.constraints.get(attackName);
         controller.setAttackConstraint(attackConst);
 
         JsonNode gameRules = gameDef.get("gameRules");
@@ -248,92 +166,48 @@ public class BoardGameFactory extends GameManagerFactory {
         JsonNode drawConditions = gameDef.get("drawConditions");
         JsonNode postChecks = gameDef.get("postChecks");
 
-        for(JsonNode rule : gameRules) {
-            JsonNode constNode = rule.get("constraints");
-            for(JsonNode constraint : constNode) {
+        //for(JsonNode rule : gameRules) {
+            //JsonNode constNode = rule.get("constraints");
+            for(JsonNode constraint : gameRules) {
                 String type = constraint.get("type").asText();
-                Constraint temp = constraints.get(type);
+                Constraint temp = this.constraints.get(type);
                 controller.addGameConstraint(temp);
             }
-        }
+       // }
 
-        
-        
         for(JsonNode action : winConditions) {
-            JsonNode constNode = action.get("constraints");
-            JsonNode effectsNode = action.get("effects");
-            List<Constraint> constList = new ArrayList<>();
-            List<Effect> effectsList = new ArrayList<>();
-
-            for(JsonNode constraint : constNode) {
-                String type = constraint.get("type").asText();
-                constList.add(constraints.get(type));
-            }
-
-            for(JsonNode effect : effectsNode) {
-                String type = effect.get("type").asText();
-                effectsList.add(effects.get(type));
-            }
-            Constraint[] tmpConst = constList.toArray(new Constraint[0]);
-            Effect[] tmpEffect = effectsList.toArray(new Effect[0]);
-            Action currAct = new Action(tmpConst, tmpEffect);
-            controller.addEndCheck(currAct);
+            Action act = this.actions.get(action.get("name").asText());
+            controller.addEndCheck(act);
         }
 
         if(drawConditions != null) {
             for(JsonNode action : drawConditions) {
-               JsonNode constNode = action.get("constraints");
-               JsonNode effectsNode = action.get("effects");
-               List<Constraint> constList = new ArrayList<>();
-               List<Effect> effectsList = new ArrayList<>();
-   
-               for(JsonNode constraint : constNode) {
-                   String type = constraint.get("type").asText();
-                   constList.add(constraints.get(type));
-               }
-   
-               for(JsonNode effect : effectsNode) {
-                   String type = effect.get("type").asText();
-                   effectsList.add(effects.get(type));
-               }
-               Constraint[] tmpConst = constList.toArray(new Constraint[0]);
-               Effect[] tmpEffect = effectsList.toArray(new Effect[0]);
-               Action currAct = new Action(tmpConst, tmpEffect);
+                Action currAct = this.actions.get(action.get("name").asText());
                controller.addEndCheck(currAct);
            }
         }
         
         Map<String, Effect> extras = new HashMap<>();
         for(JsonNode action : postChecks) {
-             JsonNode constNode = action.get("constraints");
-             JsonNode effectsNode = action.get("effects");
-             List<Constraint> constList = new ArrayList<>();
-             List<Effect> effectsList = new ArrayList<>();
-
-            for(JsonNode constraint : constNode) {
-                String type = constraint.get("type").asText();
-                constList.add(constraints.get(type));
-            }
-
+            String name = action.get("name").asText();
+            JsonNode ref = d.get(name);
+            JsonNode effectsNode = ref.get("effects");
+            Action act = this.actions.get(name);
             for(JsonNode effect : effectsNode) {
                 String t = effect.get("type").asText();
-                String type = effect.get("type").asText();
-                Effect tmp = effects.get(type);
-                effectsList.add(tmp);
+
                 if(effect.size() > 1 && !extras.containsKey(t)) {
                     ObjectNode n = effect.deepCopy();
                     n.remove("type");
+                    Effect tmp = this.effects.get(t);
                     tmp.setExtraParams(n);
                     extras.put(t, tmp);
                 }
             }
-            Constraint[] tmpConst = constList.toArray(new Constraint[0]);
-            Effect[] tmpEffect = effectsList.toArray(new Effect[0]);
-            Action currAct = new Action(tmpConst, tmpEffect);
-            controller.addPostCheck(currAct);
+            controller.addPostCheck(act);
         }
         
-        BoardGameManager gm = new BoardGameManager(board, validator, game, controller, mang);
+        BoardGameManager gm = new BoardGameManager(board, game, controller);//new BoardGameManager(board, validator, game, controller, mang);
         gm.mapSessionPlayer(playerId);
         gm.setPieceList(this.pieceList);
 
@@ -350,104 +224,118 @@ public class BoardGameFactory extends GameManagerFactory {
         return multiGame;
     }
 
+    protected Map<String, CheckersGamePiece.Builder> buildPieceBuilders(JsonNode pieces) {
+        Map<String, CheckersGamePiece.Builder> pieceList = new HashMap<>();
+        for(JsonNode piece : pieces) {
+            CheckersGamePiece.Builder builder = new CheckersGamePiece.Builder();
+            String name = piece.get("name").asText();
+            int value = piece.get("value").asInt();
+            JsonNode pieceActions = piece.get("actions");
+            builder.setType(name).setVal(value);
+            List<Action> moveRules = new ArrayList<>();
+            List<Action> attackRules = new ArrayList<>();
 
-
-    protected void setupPieceRules(JsonNode pieces) {
-        //Map<String, CheckersGamePiece> retPieces = new HashMap<>();
-        for(JsonNode pieceNode : pieces) {
-            CheckersGamePiece.Builder pieceBuilder = this.pieceList.get(pieceNode.get("name").asText());
-            JsonNode actions = pieceNode.get("actions");
-
-            for(JsonNode action : actions) {
-                JsonNode rules = action.get("rules");
-
-                for(JsonNode rule : rules) {
-                    JsonNode constraintNodes = rule.get("constraints");
-                    ArrayList<Constraint> constraints = new ArrayList<>();
-
-                    for(JsonNode constNode : constraintNodes) {
-                       // Constraint constraint = new Constraint();
-                    }
+            for(JsonNode action : pieceActions) {
+                String actName = action.get("name").asText();
+                Action act = this.actions.get(actName);
+                if(act.getType().equals("move")){
+                    moveRules.add(act);
+                } else {
+                    attackRules.add(act);
                 }
+
             }
+
+            JsonNode targVector = piece.get("targVector");
+            int[][] vectList = new int[targVector.size()][2];
             
+            int i = 0;
+            for(JsonNode vect : targVector) {
+                int x = vect.get("x").asInt();
+                int y = vect.get("y").asInt();
+                int[] temp = { x, y };
+                vectList[i++] = temp;
+            }
+            builder.setValidMoves(vectList);
+            
+            if(piece.has("moveVector")) {
+                  JsonNode moveVector = piece.get("attackVector");
+                int[][] vectList2 = new int[moveVector.size()][2];
+                
+                int j = 0;
+                for(JsonNode vect : moveVector) {
+                    int x = vect.get("x").asInt();
+                    int y = vect.get("y").asInt();
+                    int[] temp = { x, y };
+                    vectList2[j++] = temp;
+                }
+
+                builder.setAttackVectors(vectList);
+            }            
+
+            if(piece.has("attackVector")) {
+                 JsonNode attackVector = piece.get("attackVector");
+                int[][] vectList2 = new int[attackVector.size()][2];
+                
+                int j = 0;
+                for(JsonNode vect : attackVector) {
+                    int x = vect.get("x").asInt();
+                    int y = vect.get("y").asInt();
+                    int[] temp = { x, y };
+                    vectList2[j++] = temp;
+                }
+
+                builder.setAttackVectors(vectList);
+                
+            }
+
+            builder.setAttackRules(attackRules);
+            builder.setMoveRules(moveRules);
+            pieceList.put(name, builder);
         }
+        return pieceList;
+    }
+
+    protected Map<String, Action> buildActions(JsonNode actionsNode) {
+        Map<String, Action> actions = new HashMap<>();
+         for(JsonNode action : actionsNode) {
+            String actName = action.get("name").asText();
+            String type = action.get("type").asText();
+            ArrayList<String> constNames = new ArrayList<>();
+            ArrayList<String> effectNames = new ArrayList<>();
+            JsonNode constNode = action.get("constraints");
+            JsonNode effectsNode = action.get("effects");
+
+            for(JsonNode node : constNode) {
+                constNames.add(node.get("type").asText());
+            }
+
+            for(JsonNode node : effectsNode) {
+                effectNames.add(node.get("type").asText());
+            }
+
+            Constraint[] constFinal = new Constraint[constNames.size()];
+            Effect[] effectsFinal = new Effect[effectNames.size()];
+            int i = 0;
+            for(String nm : constNames) {
+                constFinal[i] = this.constraints.get(nm);
+                i++;
+            }
+            i = 0;
+            for(String nm : effectNames) {
+                effectsFinal[i++] = this.effects.get(nm);
+            }
+
+            Action act = new Action(constFinal, effectsFinal);
+            act.setName(actName);
+            act.setType(type);
+            actions.put(act.getName(), act);
+        }
+        return actions;
     }
 
     protected CheckersGameBoard setupBoard(JsonNode pieces) {
 
         return null;
     }
-
-    protected void initPieceList() {
-        
-    }
-
-    /* 
-    protected void setupPieceVectors(JsonNode pieces) {
-         //Map<String, CheckersGamePiece.Builder> pieceList = new HashMap<>();
-
-        for(JsonNode pieceNode : pieces) {
-
-            CheckersGamePiece.Builder pieceBuilder =
-                new CheckersGamePiece.Builder()
-                    .setName(null)
-                    .setType(pieceNode.get("name").asText())
-                    .setVal(pieceNode.get("value").asInt());
-
-
-            // CheckersGamePiece piece = new CheckersGamePiece(
-            //      null,
-            //      pieceNode.get("name").asText(),
-            //      pieceNode.get("value").asInt()
-            // );
-
-             JsonNode actions = pieceNode.get("actions");
-
-            for(JsonNode action : actions) {
-                JsonNode typeVector = action.get("typeVector");
-                ArrayList<int[]> vects = new ArrayList<>();
-                for(JsonNode vect : typeVector) {
-                    int[] tmpArr = new int[2];
-                    tmpArr[0] = vect.get("x").asInt();
-                    tmpArr[1] = vect.get("y").asInt();
-                    vects.add(tmpArr);
-                }
-
-                pieceBuilder.setValidMoves(vects.toArray(new int[0][]));
-                //piece.setValidMoves(vects.toArray(new int[0][]));
-
-                if(action.get("type").asText().equals("attack")) {
-                    JsonNode rulesNodes = action.get("rules");
-
-                    for(JsonNode ruleNode : rulesNodes) {
-                        
-                        JsonNode constraintsNodes = ruleNode.get("constraints");
-                        for(JsonNode constraintNode : constraintsNodes) {
-                            if(constraintNode.get("type").asText().equals("attackVector")) {
-                                
-                                //int[] tmpArr = new int[2];
-                                JsonNode vects1 = constraintNode.get("vector");
-                                ArrayList<int[]> attacksList = new ArrayList<>();
-
-                                for(JsonNode vect : vects1) {
-                                    int[] tmpArr1 = new int[2];
-                                    tmpArr1[0] = vect.get("x").asInt();
-                                    tmpArr1[1] = vect.get("y").asInt();
-                                    attacksList.add(tmpArr1);
-                                }
-                                //piece.setAttackVectors(attacksList.toArray(new int[0][]));
-                                pieceBuilder.setAttackVectors(attacksList.toArray(new int[0][]));
-                            }
-                        }
-
-                    }
-                }
-            }
-            //CheckersGamePiece piece = pieceBuilder.build();
-            this.pieceList.put(pieceNode.get("name").asText(), pieceBuilder);
-        }
-        //return pieceList;
-    }
-    */
 }

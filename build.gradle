@@ -30,7 +30,8 @@ tasks.register('exportExpoWeb', Exec) {
     group = 'build'
     description = 'Exports the Expo web app to dist folder'
     workingDir "$rootDir/Mobile/GameSuite-Mobile"
-    commandLine 'npx.cmd', 'expo', 'export', '--platform', 'web'
+    def npx = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npx.cmd' : 'npx'
+    commandLine npx, 'expo', 'export', '--platform', 'web'
 }
 
 tasks.register('copyExpoToServer', Copy) {

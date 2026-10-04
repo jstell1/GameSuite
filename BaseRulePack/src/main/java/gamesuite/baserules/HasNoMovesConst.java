@@ -26,13 +26,13 @@ public class HasNoMovesConst extends Constraint {
     private final Constraint furtherMoves = new ValidMoveConst();
 
     public HasNoMovesConst() {
-        super("hasMoves");
+        super("hasNoMoves");
         this.inBounds = new InBoundsConst();
     }
 
     public HasNoMovesConst(CheckersGameState gameState, CheckersGameBoard board) {
         super(gameState, board);
-        this.name = "hasMoves";
+        this.name = "hasNoMoves";
         this.inBounds = new InBoundsConst();
     }
 

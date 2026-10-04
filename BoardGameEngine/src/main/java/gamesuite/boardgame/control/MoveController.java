@@ -30,6 +30,17 @@ public class MoveController {
     private Constraint validAttack;
     private CheckersGameBoard board;
 
+    public MoveController(CheckersGameBoard board) {
+        if(board == null)
+            throw new IllegalArgumentException("board cannot be null");
+        this.gameConstraints = new ArrayList<>();
+        this.endChecks = new ArrayList<>();
+        this.appliedEffects = new ArrayList<>();
+        this.negateList = new ArrayList<>();
+        this.postChecks = new ArrayList<>();
+        this.board = board;
+    }
+
     public MoveController(RulesValidator validator, GameStateManager stateManager, CheckersGameBoard board) {
         this.validator = validator;
         this.stateManager = stateManager;
@@ -42,32 +53,52 @@ public class MoveController {
     }
 
     public void addGameConstraint(Constraint constraint) {
+        if(constraint == null) 
+            throw new IllegalArgumentException("gameConstraint cannot be null");
         this.gameConstraints.add(constraint);
     }
 
     public void setMoveConstraint(Constraint validMove) {
+        if(validMove == null) {
+            throw new IllegalArgumentException("validMove cannot be null");
+        }
         this.validMove = validMove;
     }
 
     public void setAttackConstraint(Constraint validAttack) {
+        if(validAttack == null) {
+            throw new IllegalArgumentException("validAttack cannot be null");
+        }
         this.validAttack = validAttack;
     }
 
     public void addAppliedEffect(Effect effect) {
+        if(effect == null) {
+            throw new IllegalArgumentException("effects in appliedEffects cannot be null");
+        }
         this.appliedEffects.add(effect);
     }
 
     public void clearEffects() { this.appliedEffects = new ArrayList<>(); }
 
     public void addEndCheck(Action action) {
+        if(action == null) {
+            throw new IllegalArgumentException("endCheck actions cannot be null");
+        }
         this.endChecks.add(action);
     }
 
     public void addPostCheck(Action action) {
+        if(action == null) {
+            throw new IllegalArgumentException("postCheck action cannot be null");
+        }
         this.postChecks.add(action);
     }
 
     public void addNegation(String name) {
+        if(name == null) {
+            throw new IllegalArgumentException("negations cannot be null");
+        }
         this.negateList.add(name);
     }
 

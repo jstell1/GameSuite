@@ -304,7 +304,11 @@ public class CheckersGameState implements GameState {
 
     public boolean addPlayer(CheckersPlayer player) {
         Objects.requireNonNull(player, "player");
-        
+        if(this.player1 == null) {
+            this.player1 = player;
+            this.numPlayers++;
+            return true;
+        }
         if(this.player2 != null) {
             throw new IllegalStateException("once player 2 is set they cannot be changed");
         }
@@ -433,7 +437,7 @@ public class CheckersGameState implements GameState {
         }
 
         public Builder setTurnFactor(int turnFactor) {
-            if(turnFactor != 1 || turnFactor != -1) {
+            if(turnFactor != 1 && turnFactor != -1) {
                 this.failedFields.add(this.allFields[12]);//throw new IllegalArgumentException("turnFactor can only be 1 or -1");
             }
             this.turnFactor = turnFactor;

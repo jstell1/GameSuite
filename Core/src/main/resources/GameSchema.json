@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "definitions" : {
+    "Constraint": {
+      "type": "object",
+      "properties": {
+        "type": {"type" : "string"}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "Effect" : {
+      "type" : "object",
+      "properties" : {
+        "type": {"type": "string"}
+      },
+      "required": ["type"],
+      "additionalProperties": true
+    },
+    "Action" : {
+      "type" : "object",
+      "properties": {
+        "name": {"type": "string"},
+        "type": {"type": "string"},
+        "constraints": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/Constraint"}
+        },
+        "effects": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Effect" }
+        }
+      },
+      "required": ["name","type","effects"],
+      "additionalProperties": false
+    },
+    "Vector": {
+      "type": "object",
+      "properties": {
+        "x": {"type": "integer"},
+        "y": {"type": "integer"}
+      },
+      "required": ["x","y"],
+      "additionalProperties": false
+    },
+    "Piece": {
+      "type":  "object",
+      "properties": {
+        "name": {"type": "string"},
+        "value": {"type": "integer"},
+        "moveVector": {
+          "type" : "array",
+          "items": {"$ref": "#/definitions/Vector" }
+        },
+        "targVector": {
+          "type" : "array",
+          "items": {"$ref": "#/definitions/Vector"}
+        },
+        "attackVector": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Vector"}
+        },
+        "actions": {
+          "type": "array",
+          "items": { 
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"}
+            },
+            "required": ["name"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["name","value","targVector","actions"],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+
+  "required": [
+    "game",
+    "rulePack",
+    "validMove",
+    "validAttack",
+    "turnControl",
+    "constraints",
+    "effects",
+    "actions",
+    "pieces",
+    "gameRules",
+    "postChecks",
+    "winConditions",
+    "players",
+    "board"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "game": {"type": "string"},
+    "rulePack": {"type": "string"},
+    "validMove": {"type": "string"},
+    "validAttack": {"type": "string"},
+    "turnControl": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string"},
+        "attackVectors": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/Vector"}
+        },
+        "jumpsAllowed": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "exactVector" : {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "fullVector": { "type": "boolean"}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "constraints": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "effects": {
+      "type" : "array",
+      "items": {"type": "string"}
+    },
+    "actions": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/Action"}
+    },
+    "pieces": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/Piece"}
+    },
+    "gameRules": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/Constraint"}
+    },
+    "postChecks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"}
+        },
+        "required": ["name"],
+        "additionalProperties": false
+      }
+    },
+    "winConditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name" : {"type": "string"}
+        },
+        "required": ["name"],
+        "additionalProperties": false
+      }
+    },
+    "players": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "points": {"type": "integer"},
+          "turnName": {"type": "string"},
+          "turn": {"type": "integer"}
+        },
+        "required": ["points", "turnName", "turn"],
+        "additionalProperties": false
+      }
+    },
+    "board": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string"},
+        "dimensions": {
+          "type": "object",
+          "properties": {
+            "height": {"type": "integer"},
+            "width": {"type": "integer"}
+          },
+          "required": ["height", "width"],
+          "additionalProperties": false
+        },
+        "initState": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "x": {"type": "integer"},
+              "y": {"type": "integer"},
+              "piece": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "player": {"type": "integer"}
+                },
+                "required": ["name", "player"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["x","y","piece"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["type", "dimensions", "initState"],
+      "additionalProperties": false
+    }
+  }
+}

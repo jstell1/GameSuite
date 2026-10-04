@@ -6,10 +6,13 @@ package gamesuite.core.control;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
+import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.core.ui.GameBoardFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.*;
@@ -49,7 +52,7 @@ public class PluginLoader {
         if(!this.uiPluginDir.exists()) this.uiPluginDir.mkdir();
     }
 
-    public boolean loadGameBoards() {
+    public boolean loadGameBoards() throws MalformedURLException {
         boolean check = true;
         if(this.uiPluginDir == null) {
             check = false;
@@ -63,15 +66,18 @@ public class PluginLoader {
         //String p = this.path + "/ui";
         this.uiJars = uiPluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
         for(File jar : this.uiJars) {
-            try {
+            //try {
                 loadGameUIs(jar);
-            } catch (Exception e) { check = false; }
+            //} catch (MalformedURLException e) { 
+             //   check = false; 
+             //   e.printStackTrace();
+            //}
         }
         return check;
     }
     
 
-    private void loadGameUIs(File jarFile) throws Exception {
+    private void loadGameUIs(File jarFile) throws MalformedURLException {
         URL jarUrl = jarFile.toURI().toURL();
         String gameName = jarFile.getName();
 
@@ -96,7 +102,7 @@ public class PluginLoader {
         System.out.println("Registered game plugin: " + gameName);
     }
 
-    public void loadAll() throws Exception {
+    public void loadAll() throws MalformedURLException, IOException {
         this.jars = pluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
         if (this.jars == null) return;
         for (File jar : this.jars) {
@@ -106,7 +112,7 @@ public class PluginLoader {
         }
     }
 
-     private void loadPlugin(File jarFile) throws Exception {
+     private void loadPlugin(File jarFile) throws MalformedURLException, IOException {
         URL jarUrl = jarFile.toURI().toURL();
         String gameName = jarFile.getName();
 
@@ -138,9 +144,14 @@ public class PluginLoader {
             tmp = new ArrayList<>();
             for(File file : gameDefs) {
                 String game = file.getName().replaceFirst("\\.json$", "");
-                tmp.add(game);
                 ObjectMapper mapper = new ObjectMapper();
-                this.gameDefs.put(game, mapper.readTree(file));
+                JsonNode schema = mapper.readTree(file);
+                if(JsonSchemaValidator.isValidGameSchema(schema)) {
+                    this.gameDefs.put(game, schema);
+                    tmp.add(game);
+                } else {
+                    System.out.println("Schema failed validation: " + game);
+                }
             }
         } //else {
            // this.games.add(gameName);
@@ -150,7 +161,7 @@ public class PluginLoader {
         System.out.println("Registered game plugin: " + gameName);
     }
 
-    public Map<String, Constraint> loadConstraints(String packName) throws Exception {
+    public Map<String, Constraint> loadConstraints(String packName) throws MalformedURLException {
 
         File jarFile = new File(this.pluginDir + "/rules/" + packName);
         URL jarUrl = jarFile.toURI().toURL();
@@ -175,7 +186,7 @@ public class PluginLoader {
         return ruleMap;
     }
 
-    public Map<String, Effect> loadEffects(String packName) throws Exception {
+    public Map<String, Effect> loadEffects(String packName) throws MalformedURLException {
 
         File jarFile = new File(this.pluginDir + "/rules/" + packName);
         URL jarUrl = jarFile.toURI().toURL();
@@ -200,7 +211,7 @@ public class PluginLoader {
         return ruleMap;
     }
 
-    public void loadAllRules() throws Exception {
+    public void loadAllRules() {
         File path = new File(this.pluginDir + "/rules"); 
         this.rulePacks = path.listFiles((dir, name) -> name.endsWith(".jar"));
 
@@ -248,24 +259,30 @@ public class PluginLoader {
         //return Collections.unmodifiableSet(gameClasses.keySet());
     }
 
-    public GameBoardFactory createBoardFactory(String gameName) {
+    public GameBoardFactory createBoardFactory(String gameName) throws InstantiationException, IllegalAccessException,
+                                                                         InvocationTargetException, NoSuchMethodException, 
+                                                                         SecurityException 
+    {
         Class<? extends GameBoardFactory> clazz = this.gameBoards.get(gameName);
         if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);
-        try {
+        //try {
             return clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to instantiate " + gameName, e);
-        }
+        //} catch (Exception e) {
+        //    throw new RuntimeException("Failed to instantiate " + gameName, e);
+        //}
     }
 
-    public GameManagerFactory createGameManager(String gameName) {
+    public GameManagerFactory createGameManager(String gameName) throws NoSuchMethodException, SecurityException,
+                                                                        InstantiationException, InvocationTargetException,
+                                                                        IllegalAccessException
+{
         Class<? extends GameManagerFactory> clazz = gameClasses.get(gameName);
         if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);
-        try {
+        //try {
             return clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to instantiate " + gameName, e);
-        }
+        //} catch (Exception e) {
+        //    throw new RuntimeException("Failed to instantiate " + gameName, e);
+       // }
     }
 
     public boolean isMultiGame(String game) {
@@ -273,7 +290,10 @@ public class PluginLoader {
     }
 
     public JsonNode getGameDef(String game) {
-        return this.gameDefs.get(game);
+        JsonNode g = this.gameDefs.get(game);
+        //if(g == null)
+         //   throw new IllegalArgumentException("this game does not exist in this gameDef"); 
+        return g;
     }
 
     public Constraint getGameConstraint(String name) {

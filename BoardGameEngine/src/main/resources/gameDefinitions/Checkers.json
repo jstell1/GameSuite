@@ -98,25 +98,21 @@
         {
             "name" : "C",
             "value" : 1,
+             "moveVector" : [
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 1 }
+            ],
+             "targVector" : [
+                { "x" : -2, "y" : -2},
+                { "x" : -2, "y" : 2}
+            ],
+            "attackVector" : [
+                {"x" : -1, "y" : -1},
+                {"x" : -1, "y" : 1}
+            ],
             "actions" : [
-                {
-                    "name" : "step",
-                    "typeVector" : [
-                        { "x" : -1, "y" : -1 },
-                        { "x" : -1, "y" : 1 }
-                    ]
-                },
-                {
-                    "name" : "jump" ,
-                    "typeVector" : [
-                        { "x" : -2, "y" : -2},
-                        { "x" : -2, "y" : 2}
-                    ],
-                    "attackVector" : [
-                        {"x" : -1, "y" : -1},
-                        {"x" : -1, "y" : 1}
-                    ]
-                }
+                { "name" : "step" },
+                { "name" : "jump" }
             ]
         },
 
@@ -124,44 +120,35 @@
         {
             "name" : "K",
             "value" : 1,
+             "moveVector" : [
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 1 },
+                { "x" : 1, "y" : -1 },
+                { "x" : 1, "y" : 1 }
+            ],
+            "targVector" : [
+                { "x" : -2, "y" : -2},
+                { "x" : -2, "y" : 2},
+                { "x" : 2, "y" : -2},
+                { "x" : 2, "y" : 2}
+            ],
+            "attackVector" : [
+                {"x" : -1, "y" : -1},
+                {"x" : -1, "y" : 1},
+                {"x" : 1, "y" : -1},
+                {"x" : 1, "y" : 1}
+            ],
             "actions" : [
-               
-                {
-                    "name" : "step",
-                    "typeVector" : [
-                        { "x" : -1, "y" : -1 },
-                        { "x" : -1, "y" : 1 },
-                        { "x" : 1, "y" : -1 },
-                        { "x" : 1, "y" : 1 }
-                    ]
-                },
-                {
-                    "name" : "jump" ,
-                    "typeVector" : [
-                        { "x" : -2, "y" : -2},
-                        { "x" : -2, "y" : 2},
-                        { "x" : 2, "y" : -2},
-                        { "x" : 2, "y" : 2}
-                    ],
-                    "attackVector" : [
-                        {"x" : -1, "y" : -1},
-                        {"x" : -1, "y" : 1},
-                        {"x" : 1, "y" : -1},
-                        {"x" : 1, "y" : 1}
-                    ]
-                }
+                { "name" : "step" },
+                { "name" : "jump" }
             ]
         }
     ],   
     "gameRules" : [
-         {
-            "constraints" : [
-                { "type" : "turnCheck" },
-                { "type" : "inBounds" },
-                { "type" : "emptyTarg" },
-                { "type" : "NotFurtherAttack" }
-            ]
-        }
+        { "type" : "turnCheck" },
+        { "type" : "inBounds" },
+        { "type" : "emptyTarg" },
+        { "type" : "NotFurtherAttack" }
     ],
 
     "postChecks" : [
