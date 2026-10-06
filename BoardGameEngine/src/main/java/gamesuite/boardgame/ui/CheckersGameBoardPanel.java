@@ -19,6 +19,7 @@ import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
+import gamesuite.boardgame.model.CheckersGamePiece;
 import gamesuite.boardgame.model.CheckersGameState;
 import gamesuite.boardgame.model.CheckersMove;
 
@@ -82,8 +83,13 @@ public class CheckersGameBoardPanel extends GameBoardUI {
         if(this.changed != null) {
             CheckersCoordPairPanel[] updateList = new CheckersCoordPairPanel[this.changed.size()];
             for(int i = 0; i < this.changed.size(); i++) {
-                updateList[i] = this.boardPanel[this.changed.get(i).getX()][this.changed.get(i).getY()];
-                updateList[i].setPiece(this.changed.get(i).getPiece());
+                CheckersCoordPair pos = this.changed.get(i);
+                CheckersGamePiece piece = pos.getPiece();
+                CheckersCoordPairPanel p = this.boardPanel[pos.getX()][pos.getY()];
+                p.setPiece(piece);
+                
+                //updateList[i] = this.boardPanel[this.changed.get(i).getX()][this.changed.get(i).getY()];
+                //updateList[i].setPiece(this.changed.get(i).getPiece());
             }
             this.changed = null;        
         }

@@ -123,6 +123,17 @@ public class BoardGameFactory extends GameManagerFactory {
         for(Constraint constraint : this.constraints.values()) {
             constraint.setBoard(board);
             constraint.setGameState(game);
+
+            if(constraint instanceof ConstDependent) {
+                ConstDependent dependent = (ConstDependent)constraint;
+                List<String> dependencies = dependent.getDependencyList();
+                Map<String, Constraint> dConst = new HashMap<>();
+
+                for(String nm : dependencies) {
+                    dConst.put(nm, this.constraints.get(nm));
+                }
+                dependent.addDependencies(dConst);
+            }
         }
 
         for(Effect effect : this.effects.values()) {

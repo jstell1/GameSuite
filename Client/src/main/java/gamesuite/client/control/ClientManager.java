@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.hc.client5.http.impl.Operations.CompletedFuture;
 import org.json.JSONException;
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.RestClient;
@@ -72,11 +73,11 @@ public class ClientManager {
         this.client = new StandardWebSocketClient(container);
         try {
             this.connectionFuture = new CompletableFuture<>();
-            this.loader = new PluginLoader("plugins/");
+            this.loader = new PluginLoader("../plugins/");
             this.loader.loadAll();
             //this.loader.watchForChanges();
 
-            this.loader.setUIPluginLoader("plugins/ui");
+            this.loader.setUIPluginLoader("../plugins/ui");
             this.loader.loadGameBoards();
             
         } catch (Exception e) {
@@ -249,9 +250,11 @@ public class ClientManager {
                             }
                             try {
                                 System.out.println(boardJson);
-                                System.out.println("\n\n");
+                                System.out.println();
                                 System.out.println(gameJson);
+                                System.out.println("\n" + ClientManager.this.guiGM.getPlayerTurn() + "\n");
                                 GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManager.this.guiGM);
+                                System.out.println("created board");
                                 //ClientManager.this.guiGM.setBoard(gbu);
                                 //ClientManager.this.guiGM.setGameState(gameJson);
                                 ClientManager.this.guiGM.initGame(gbu);
@@ -263,7 +266,8 @@ public class ClientManager {
                         case "stateUpdateResponse":
                             gameJson = mapper.valueToTree(payload.get("gameState"));
                             //GameState game = mapper.treeToValue(gameJson, GameState.class);
-
+                            System.out.println(gameJson + "\n");
+                            System.out.println(ClientManager.this.guiGM.getPlayerTurn() + "\n");
                             //ClientManager.this.guiGM.setGameState(game);
                             ClientManager.this.guiGM.update(gameJson);
                             break;

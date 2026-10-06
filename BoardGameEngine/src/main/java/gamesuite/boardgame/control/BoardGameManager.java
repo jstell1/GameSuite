@@ -103,7 +103,7 @@ public class BoardGameManager implements GameManager {
     public boolean checkPlayerSession(String playerId) {
 
          int turn = this.game.getTurn();
-        if(this.sessionPlayerMap.get(turn).equals(playerId)) {
+        if(this.sessionPlayerMap.get(turn - 1).equals(playerId)) {
             return true;
         }
         return false;

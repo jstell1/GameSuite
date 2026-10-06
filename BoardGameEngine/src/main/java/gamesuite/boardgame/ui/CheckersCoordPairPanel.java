@@ -43,6 +43,7 @@ public class CheckersCoordPairPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                System.out.println("squre pressed");
                 if(listener.getIsBoardEnabled()) {
                     Color currCol = getBackground();
                     if(currCol != Color.YELLOW) {
@@ -73,13 +74,14 @@ public class CheckersCoordPairPanel extends JPanel {
     public CheckersCoordPair getCoordPair() { return this.pos; }
 
     private void setPiece() {
+        CheckersGamePiece piece = this.pos.getPiece();
         if(this.pos.getPiece() == null)
             this.piece = null;
-        else if(this.pos.getPiece().getName().equals("B")) {
-            this.piece = new GamePieceAsset(Color.BLACK,this.pos.getPiece().isKing());
+        else if(this.pos.getPiece().getTeam().equals("B")) {
+            this.piece = new GamePieceAsset(Color.BLACK,piece.getName(), piece.getTeam(), piece.getType());
             //add(this.piece);
         } else {
-            this.piece = new GamePieceAsset(Color.RED,this.pos.getPiece().isKing());
+            this.piece = new GamePieceAsset(Color.RED,piece.getName(), piece.getTeam(), piece.getType());
             //add(this.piece);
         }
         repaint();
@@ -88,13 +90,13 @@ public class CheckersCoordPairPanel extends JPanel {
     public void setPiece(CheckersGamePiece piece) {
         if(piece == null) {
             this.piece = null;
-        } else if(piece.getName().equals("B")) {
+        } else if(piece.getTeam().equals("B")) {
             //remove(this.piece);
-            this.piece = new GamePieceAsset(Color.BLACK,piece.isKing());
+            this.piece = new GamePieceAsset(Color.BLACK, piece.getName(), piece.getTeam(), piece.getType());
             //add(this.piece);
         } else {
             //remove(this.piece);
-            this.piece = new GamePieceAsset(Color.RED,piece.isKing());
+            this.piece = new GamePieceAsset(Color.RED,piece.getName(), piece.getTeam(), piece.getType());
             //add(this.piece);
         }
         repaint();
@@ -122,7 +124,7 @@ public class CheckersCoordPairPanel extends JPanel {
             g2d.fillOval(x, y, diameter, diameter);
             g2d.drawOval(x, y, diameter, diameter);
     
-            if (this.piece.isKing()) {
+            if (this.piece.getType().equals("K")) {
                 g2d.setColor(Color.YELLOW);
                 g2d.setStroke(new BasicStroke(2f));
                 int inset = diameter / 4;

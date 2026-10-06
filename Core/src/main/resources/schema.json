@@ -15,7 +15,9 @@
             "startX": {"type": "integer"},
             "startY": {"type": "integer"},
             "endX": {"type": "integer"},
-            "endY": {"type": "integer"}
+            "endY": {"type": "integer"},
+            "playerId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+            "action": {"anyOf": [{"type": "string"}, {"type": "null"}]}
         },
         "required": ["startX", "startY", "endX", "endY"],
         "additionalProperties": false

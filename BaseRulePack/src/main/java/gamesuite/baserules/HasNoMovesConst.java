@@ -1,5 +1,8 @@
 package gamesuite.baserules;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,19 +15,20 @@ import gamesuite.boardgame.model.CheckersGameState;
 import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
+import gamesuite.core.model.rules.ConstDependent;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Result;
 
-public class HasNoMovesConst extends Constraint {
+public class HasNoMovesConst extends Constraint implements ConstDependent {
 
     //private FurtherAttacksConst;
     private CheckersGameState gameState;
     private CheckersGameBoard board;
     //private String[] names;
     private Constraint inBounds;
-    private final Constraint furtherAttacks = new ValidAttackConst();
-    private final Constraint furtherMoves = new ValidMoveConst();
-
+    private Constraint furtherAttacks;// = new ValidAttackConst();
+    private Constraint furtherMoves; //= new ValidMoveConst();
+    private static final String[] dependencies = {"furtherAttacks", "furtherMoves"};
     public HasNoMovesConst() {
         super("hasNoMoves");
         this.inBounds = new InBoundsConst();
@@ -256,6 +260,17 @@ public class HasNoMovesConst extends Constraint {
     @Override
     public void setBoard(GameBoard board) {
         this.board = (CheckersGameBoard) board;
+    }
+
+    @Override
+    public void addDependencies(Map<String, Constraint> dependencies) {
+        this.furtherAttacks = dependencies.get("furtherAttacks");
+        this.furtherMoves = dependencies.get("furtherMoves");
+    }
+
+    @Override
+    public List<String> getDependencyList() {
+        return Arrays.asList(Arrays.copyOf(dependencies, dependencies.length));
     }
     
 }

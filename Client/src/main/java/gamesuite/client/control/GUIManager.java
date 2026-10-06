@@ -54,7 +54,9 @@ public class GUIManager implements GameUI, UIListener {
 
     public void setErrorMsg(String error) {
         SwingUtilities.invokeLater(() -> {
+            
             this.main.setErrorMsg(error);
+            //this.gui.setErrorMsg(error);
         });
     }
 
@@ -174,6 +176,8 @@ public class GUIManager implements GameUI, UIListener {
             //setBoard(panel);
             this.gui = new GameGUI(boardUI, this);
             this.gui.setPlayerTurn(turn);
+            System.out.println(this.gui.getPlayerTurn());
+            System.out.println(boardUI.getTurn());
             if(!this.gui.isPlayerTurn())
                 this.gui.disableGUI();
     
