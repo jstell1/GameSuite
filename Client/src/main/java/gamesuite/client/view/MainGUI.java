@@ -12,6 +12,7 @@ import javax.swing.border.Border;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gamesuite.client.control.ClientManager;
+import gamesuite.client.control.ClientManagerImpl;
 import gamesuite.core.ui.UIListener;
 
 import java.awt.event.WindowListener;

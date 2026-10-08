@@ -5,7 +5,9 @@ import java.util.Scanner;
 
 import gamesuite.client.control.ClientConfigurer;
 import gamesuite.client.control.ClientManager;
+import gamesuite.client.control.ClientManagerImpl;
 import gamesuite.client.control.GUIManager;
+import gamesuite.client.test.MockClientManager;
 import gamesuite.client.view.GameGUI;
 //import gamesuite.client.view.TextGameCLI;
 import gamesuite.client.view.MainGUI;
@@ -13,6 +15,12 @@ import gamesuite.client.view.MainGUI;
 public class App {
 
     public static void main(String[] args) {
+
+        if(args.length > 0 && args[0].equals("test")) {
+
+            runTest();
+            return;
+        }
 
         ClientConfigurer config = new ClientConfigurer(args);
         
@@ -37,7 +45,7 @@ public class App {
 
             try {
                 
-                ClientManager cmg = new ClientManager(ip, port);
+                ClientManagerImpl cmg = new ClientManagerImpl(ip, port);
                 
                 
                 GUIManager guiGM = new GUIManager();
@@ -64,6 +72,24 @@ public class App {
             }
         }
 
+
+    }
+
+
+
+    public static void runTest() {
+        System.out.println("running test");
+        ClientManager cmg = new MockClientManager();
+         GUIManager guiGM = new GUIManager();
+        guiGM.setGamManager(cmg);
+        cmg.setGUIManager(guiGM);
+
+        GameGUI ui = new GameGUI(guiGM);
+        guiGM.setGameGUI(ui);
+        MainGUI main = new MainGUI(cmg, guiGM);
+        cmg.setMainGUI(main);
+        guiGM.setMainGUI(main);
+        main.activate();
 
     }
 

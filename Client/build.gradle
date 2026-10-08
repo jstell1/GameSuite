@@ -34,6 +34,15 @@ tasks.register('runCli', JavaExec) {
     standardInput = System.in
 }
 
+tasks.register('runTest', JavaExec) {
+    group = 'test'
+    description = 'runs the MockClientManager'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    args = ['test']
+    standardInput = System.in
+}
+
 
 tasks.register('fatJar', Jar) {
     archiveClassifier.set('all')

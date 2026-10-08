@@ -6,7 +6,8 @@
         "properties": {
             "name": {"type": "string"},
             "type": {"type": "string"},
-            "val": {"type": "integer"}
+            "val": {"type": "integer"},
+            "team": {"type": "string"}
         }
     },
     "Move": {

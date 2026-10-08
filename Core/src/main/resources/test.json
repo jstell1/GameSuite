@@ -1,0 +1,371 @@
+{
+
+     "board" : [
+        [
+            {
+                "x": 0, "y": 0,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 0, "y": 1,
+                "piece": null
+            },
+            {
+                  "x": 0, "y": 2,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 0, "y": 3,
+                "piece": null
+            },
+            {
+                  "x": 0, "y": 4,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 0, "y": 5,
+                "piece": null
+            },
+            {
+                  "x": 0, "y": 6,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 0, "y": 7,
+                "piece": null
+            }
+        ],
+        [
+             {
+                  "x": 1, "y": 0,
+                "piece": null
+            },
+            {
+                  "x": 1, "y": 1,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 1, "y": 2,
+                "piece": null
+            },
+            {
+                  "x": 1, "y": 3,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 1, "y": 4,
+                "piece": null
+            },
+            {
+                  "x": 1, "y": 5,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            },
+            {
+                  "x": 1, "y": 6,
+                "piece": null
+            },
+            {
+                  "x": 1, "y": 7,
+                "piece": {
+                    "name": "BC",
+                    "type": "C",
+                    "val": 0,
+                    "team": "B"
+                }
+            }
+        ],
+        [
+            {
+                  "x": 2, "y": 0,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 1,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 2,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 3,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 4,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 5,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 6,
+                "piece": null
+            },
+             {
+                  "x": 2, "y": 7,
+                "piece": null
+            }
+        ],
+          [
+            {
+                  "x": 3, "y": 0,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 1,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 2,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 3,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 4,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 5,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 6,
+                "piece": null
+            },
+             {
+                  "x": 3, "y": 7,
+                "piece": null
+            }
+        ],
+          [
+            {
+                  "x": 4, "y": 0,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 1,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 2,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 3,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 4,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 5,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 6,
+                "piece": null
+            },
+             {
+                  "x": 4, "y": 7,
+                "piece": null
+            }
+        ],
+          [
+            {
+                  "x": 5, "y": 0,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 1,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 2,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 3,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 4,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 5,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 6,
+                "piece": null
+            },
+             {
+                  "x": 5, "y": 7,
+                "piece": null
+            }
+        ],
+          [
+            {
+                  "x": 6, "y": 0,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 1,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 2,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 3,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 4,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 5,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 6,
+                "piece": null
+            },
+             {
+                  "x": 6, "y": 7,
+                "piece": null
+            }
+        ],
+          [
+            {
+                  "x": 7, "y": 0,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 1,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 2,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 3,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 4,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 5,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 6,
+                "piece": null
+            },
+             {
+                  "x": 7, "y": 7,
+                "piece": null
+            }
+        ]
+    ],
+    "gameId": "gameId",
+    "gameState" : {
+        "numPlayers": 2,
+        "turn": 1,
+        "winner": null,
+        "furtherJumps": null,
+        "turnFactor": -1,
+        "boardInit": true,
+        "teamNames": [ "B", "R"],
+        "changedPos": [],
+        "gameOver": false,
+        "draw": false,
+        "players": [
+            {
+                "points": 0,
+                "name": "Bob",
+                "userId": "asdfasdf",
+                "turn": "1",
+                "turnName": "B"
+            },
+            {
+                  "points": 0,
+                "name": "Sam",
+                "userId": "asdfasdf",
+                "turn": "2",
+                "turnName": "R"
+            }
+        ]
+    },
+    "changes": [
+        {
+            "x": 0, "y": 0,
+            "piece": null
+        },
+        {
+            "x":1, "y":3,
+            "piece": {
+                "name": "RC",
+                "type": "C",
+                "val": 0,
+                "team": "R"
+            }
+        },
+        {
+            "x":1, "y":7,
+            "piece": {
+                "name": "RK",
+                "type": "K",
+                "val": 0,
+                "team": "R"
+            }
+        }
+    ]
+   
+}

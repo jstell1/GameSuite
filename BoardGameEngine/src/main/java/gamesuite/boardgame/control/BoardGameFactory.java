@@ -267,7 +267,7 @@ public class BoardGameFactory extends GameManagerFactory {
                 int[] temp = { x, y };
                 vectList[i++] = temp;
             }
-            builder.setValidMoves(vectList);
+            builder.setValidAttacks(vectList);
             
             if(piece.has("moveVector")) {
                   JsonNode moveVector = piece.get("attackVector");
@@ -281,7 +281,7 @@ public class BoardGameFactory extends GameManagerFactory {
                     vectList2[j++] = temp;
                 }
 
-                builder.setAttackVectors(vectList);
+                builder.setValidMoves(vectList);
             }            
 
             if(piece.has("attackVector")) {

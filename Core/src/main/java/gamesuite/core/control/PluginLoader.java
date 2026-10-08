@@ -52,12 +52,10 @@ public class PluginLoader {
         if(!this.uiPluginDir.exists()) this.uiPluginDir.mkdir();
     }
 
-    public boolean loadGameBoards() throws MalformedURLException {
+    public boolean loadGameBoards() throws IOException {
         boolean check = true;
         if(this.uiPluginDir == null) {
-            check = false;
-            System.out.println("PROBLEM!!!!");
-            return check;
+           throw new IOException();
         }
 
 

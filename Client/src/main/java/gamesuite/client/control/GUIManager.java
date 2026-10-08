@@ -213,10 +213,9 @@ public class GUIManager implements GameUI, UIListener {
     public void createGame(String game, String group, String name) {
      //   this.playerTurn = 1;
         new Thread(() -> {
-            try {
-                this.gm.createGame(game, group, name);
-            } catch (Exception e) {
-            }
+            
+            this.gm.createGame(game, group, name);
+           
         }).start();
     }
 
@@ -239,12 +238,8 @@ public class GUIManager implements GameUI, UIListener {
         SwingUtilities.invokeLater(() -> {
             this.gui.disableGUI();
             new Thread(() -> {
-                try {
-                    
-                    this.gm.quitGame(hardQuit);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                }
+                this.gm.quitGame(hardQuit);
+               
             }).start();
         });
     }
