@@ -3,6 +3,7 @@ package gamesuite.baserules;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
@@ -69,6 +70,8 @@ public class MakeMoveEffect extends Effect {
         this.gameState.addChangedPos(pos);
         this.gameState.addChangedPos(end);
         this.gameState.setFurtherJumps(null);
+        ((ObjectNode) move).put("startX", eX);
+        ((ObjectNode) move).put("startY", eY);
     }
     
 }

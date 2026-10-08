@@ -69,9 +69,9 @@ public class InBoundsConst extends Constraint {
         int y = pos.getY();
         
         if(x >= 0 && x < length && y >= 0 && y < length) 
-            if(x % 2 == 0 && y % 2 != 0)
+            if(x % 2 == 0 && y % 2 == 0)
                 return true;
-            else if(x % 2 != 0 && y % 2 == 0)
+            else if(x % 2 != 0 && y % 2 != 0)
                 return true;
         return false;
     }

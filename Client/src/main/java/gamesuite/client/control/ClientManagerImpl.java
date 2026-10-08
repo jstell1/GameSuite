@@ -63,7 +63,7 @@ public class ClientManagerImpl implements ClientManager {
     private int port;
     private PluginLoader loader;
     private MainGUI main;
-    private CompletableFuture<WebSocketSession> connectionFuture; 
+    //private CompletableFuture<WebSocketSession> connectionFuture; 
     
     public ClientManagerImpl(String ip, int port) throws IOException {
 
@@ -72,7 +72,7 @@ public class ClientManagerImpl implements ClientManager {
         container.setDefaultMaxBinaryMessageBufferSize(512 * 1024);
         this.client = new StandardWebSocketClient(container);
         try {
-            this.connectionFuture = new CompletableFuture<>();
+            //this.connectionFuture = new CompletableFuture<>();
             this.loader = new PluginLoader("../plugins/");
             this.loader.loadAll();
             //this.loader.watchForChanges();
@@ -108,7 +108,7 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     public void connect() {
-        this.connectionFuture = new CompletableFuture<>();
+        //this.connectionFuture = new CompletableFuture<>();
         try {
             connect(this.wsUrl);
         } catch (Exception e) {
@@ -130,7 +130,7 @@ public class ClientManagerImpl implements ClientManager {
             public void afterConnectionEstablished(WebSocketSession session) {
                 //System.out.println("Connected to WebSocket");
                 ClientManagerImpl.this.session = session;
-                ClientManagerImpl.this.connectionFuture.complete(session);
+                //ClientManagerImpl.this.connectionFuture.complete(session);
                 //ClientGameManager.this.sessionId = session.getId();
             }
 
@@ -449,7 +449,7 @@ public class ClientManagerImpl implements ClientManager {
             this.session = null;
             this.gameId = null;
             this.sessionId = null;
-            this.connectionFuture = new CompletableFuture<>();
+           //this.connectionFuture = new CompletableFuture<>();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

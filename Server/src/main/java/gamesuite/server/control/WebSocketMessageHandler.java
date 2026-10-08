@@ -322,7 +322,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             sendMessage(msgType, respPayload, session);
             System.out.println("sent");
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException
-                | MalformedURLException e) {
+                | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             mapper = new ObjectMapper();

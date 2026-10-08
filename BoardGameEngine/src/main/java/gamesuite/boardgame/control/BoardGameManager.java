@@ -175,6 +175,7 @@ public class BoardGameManager implements GameManager {
     @Override
     public boolean sendMove(ObjectNode move, String playerId) {
 
+        this.game.resetChangedPos();
         if(gameOver()) {
             return false;
         }
@@ -319,6 +320,7 @@ public class BoardGameManager implements GameManager {
     public JsonNode joinGame(String player, String playerId) {
         CheckersPlayer p = new CheckersPlayer(player, 0);
         p.setUserId(playerId);
+        p.setTurn(2);
         //mapSessionPlayer(playerId);
         if(p != null) {
 

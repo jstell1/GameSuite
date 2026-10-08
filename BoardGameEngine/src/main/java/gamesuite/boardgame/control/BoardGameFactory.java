@@ -1,5 +1,6 @@
 package gamesuite.boardgame.control;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class BoardGameFactory extends GameManagerFactory {
     private Map<String, Action> actions;
 
     @Override
-    public GameManager createGame(String playerName, String playerId, JsonNode gameDef) throws MalformedURLException {
+    public GameManager createGame(String playerName, String playerId, JsonNode gameDef) throws IOException {
         
         
         ObjectMapper mapper = new ObjectMapper();
@@ -64,7 +65,9 @@ public class BoardGameFactory extends GameManagerFactory {
 
         //building actions map
         JsonNode actionsNode = gameDef.get("actions");
+        
         this.actions = buildActions(actionsNode);
+       
         Map<String, JsonNode> d = new HashMap<>();
         for(JsonNode n : actionsNode) {
             String nam = n.get("name").asText();
@@ -90,7 +93,7 @@ public class BoardGameFactory extends GameManagerFactory {
         JsonNode playerNodes = gameDef.get("players");
         CheckersPlayer player = new CheckersPlayer(playerName, 0);
         player.setUserId(playerId);
-        
+        player.setTurn(1);
         //setting up players
         ArrayList<String> pieceNames = new ArrayList<>();
         for(JsonNode p : playerNodes) {
@@ -139,6 +142,17 @@ public class BoardGameFactory extends GameManagerFactory {
         for(Effect effect : this.effects.values()) {
             effect.setBoard(board);
             effect.setGameState(game);
+
+            if(effect instanceof ConstDependent) {
+                ConstDependent dependent = (ConstDependent)effect;
+                List<String> dependencies = dependent.getDependencyList();
+                Map<String, Constraint> dConst = new HashMap<>();
+
+                for(String nm : dependencies) {
+                    dConst.put(nm, this.constraints.get(nm));
+                }
+                dependent.addDependencies(dConst);
+            }
         }
         
          //setting the pieces on the board from the gameDef
@@ -270,7 +284,7 @@ public class BoardGameFactory extends GameManagerFactory {
             builder.setValidAttacks(vectList);
             
             if(piece.has("moveVector")) {
-                  JsonNode moveVector = piece.get("attackVector");
+                  JsonNode moveVector = piece.get("moveVector");
                 int[][] vectList2 = new int[moveVector.size()][2];
                 
                 int j = 0;
@@ -281,7 +295,7 @@ public class BoardGameFactory extends GameManagerFactory {
                     vectList2[j++] = temp;
                 }
 
-                builder.setValidMoves(vectList);
+                builder.setValidMoves(vectList2);
             }            
 
             if(piece.has("attackVector")) {
@@ -296,7 +310,7 @@ public class BoardGameFactory extends GameManagerFactory {
                     vectList2[j++] = temp;
                 }
 
-                builder.setAttackVectors(vectList);
+                builder.setAttackVectors(vectList2);
                 
             }
 
@@ -307,7 +321,7 @@ public class BoardGameFactory extends GameManagerFactory {
         return pieceList;
     }
 
-    protected Map<String, Action> buildActions(JsonNode actionsNode) {
+    protected Map<String, Action> buildActions(JsonNode actionsNode) throws IOException {
         Map<String, Action> actions = new HashMap<>();
          for(JsonNode action : actionsNode) {
             String actName = action.get("name").asText();
@@ -329,12 +343,20 @@ public class BoardGameFactory extends GameManagerFactory {
             Effect[] effectsFinal = new Effect[effectNames.size()];
             int i = 0;
             for(String nm : constNames) {
+                
                 constFinal[i] = this.constraints.get(nm);
+                if(constFinal[i] == null) {
+                    throw new IOException("this constraint was not in the manifest");
+                }
                 i++;
             }
             i = 0;
             for(String nm : effectNames) {
-                effectsFinal[i++] = this.effects.get(nm);
+                effectsFinal[i] = this.effects.get(nm);
+                if(effectsFinal[i] == null) {
+                    throw new IOException("this effect was not in the manifest");
+                }
+                i++;
             }
 
             Action act = new Action(constFinal, effectsFinal);

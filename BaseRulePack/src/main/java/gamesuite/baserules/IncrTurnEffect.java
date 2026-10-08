@@ -1,8 +1,10 @@
 package gamesuite.baserules;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,10 +18,11 @@ import gamesuite.boardgame.model.CheckersGameState;
 import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
+import gamesuite.core.model.rules.ConstDependent;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
 
-public class IncrTurnEffect extends Effect {
+public class IncrTurnEffect extends Effect implements ConstDependent {
 
     private CheckersGameBoard board;
     private CheckersGameState gameState;
@@ -28,16 +31,14 @@ public class IncrTurnEffect extends Effect {
     private Set exactVectors;
     private boolean fullVector;
     private Constraint furtherAttacks;
+    static final String[] dependencies = {"furtherAttacks"};
 
     public IncrTurnEffect() {
         super("incrTurn");
-        this.furtherAttacks = new FurtherAttacksConst();
     }
 
     public IncrTurnEffect(String name, GameState gameState) {
         super(name, gameState);
-        //TODO Auto-generated constructor stub
-        this.furtherAttacks = new FurtherAttacksConst();
     }
 
     @Override
@@ -96,7 +97,7 @@ public class IncrTurnEffect extends Effect {
        //ObjectMapper mapper = new ObjectMapper();
         updateAttacksList();
       
-        this.gameState.setChangedPos(new ArrayList<CheckersCoordPair>());
+        //this.gameState.setChangedPos(new ArrayList<CheckersCoordPair>());
         if(this.gameState.getFurtherJumps() != null) {
             return;
         }
@@ -269,6 +270,17 @@ public class IncrTurnEffect extends Effect {
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public void addDependencies(Map<String, Constraint> arg0) {
+        this.furtherAttacks = arg0.get("furtherAttacks");
+    }
+
+    @Override
+    public List<String> getDependencyList() {
+        List<String> list = Arrays.asList(dependencies);
+        return list;
     }
     
 }

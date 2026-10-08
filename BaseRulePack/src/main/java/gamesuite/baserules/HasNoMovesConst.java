@@ -79,11 +79,11 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
             CheckersGamePiece piece = pos.getPiece();
 
             if(piece == null) {
-                break;
+                continue;
             }
 
             if(!piece.getTeam().equals(team)) {
-                break;
+                continue;
             }
 
             CheckersMove cMove = new CheckersMove();
@@ -93,11 +93,11 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
             JsonNode node = mapper.valueToTree(cMove);
             
             if(this.furtherMoves.checkMove(node)) {
-                return false;
+                return true;
             }
 
             if(this.furtherAttacks.checkMove(node)) {
-                return false;
+                return true;
             }
             
 

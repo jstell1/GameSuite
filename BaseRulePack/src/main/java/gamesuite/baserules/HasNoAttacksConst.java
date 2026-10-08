@@ -37,7 +37,7 @@ public class HasNoAttacksConst extends Constraint {
         Set<CheckersCoordPair> tmp;
         tmp = this.gameState.getJumps(playerNum);
         
-        if(tmp == null) {
+        if(tmp.size() == 0) {
             return true;
         } 
         return false;

@@ -212,7 +212,7 @@ public class MoveController {
             
             for(Constraint constraint : constraints) {
 
-                if(constraint.checkMove(move)) {
+                if(!constraint.checkMove(move)) {
                     success = false;
                     break;
                 }
