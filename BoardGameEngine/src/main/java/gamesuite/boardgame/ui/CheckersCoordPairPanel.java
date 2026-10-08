@@ -48,13 +48,13 @@ public class CheckersCoordPairPanel extends JPanel {
                     Color currCol = getBackground();
                     if(currCol != Color.YELLOW) {
                         setBackground(Color.YELLOW);
-                        repaint();
+                        //repaint();
                         gameBoard.addYellowedPanel(getSelf());
-                        gameBoard.sendChange(row, col);
                     } else {
                         setBackground(baseColor);
-                        repaint();
                     }
+                    repaint();
+                    gameBoard.sendChange(row, col);
                 }
             }
         });
