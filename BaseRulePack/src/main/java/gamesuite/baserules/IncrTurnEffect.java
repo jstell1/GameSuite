@@ -136,8 +136,8 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         CheckersMove m = new CheckersMove();
         int x = pos.getX();
         int y = pos.getY();
-        m.setStartX(x);
-        m.setStartY(y);
+        m.setEndX(x);
+        m.setEndY(y);
         CheckersGamePiece piece = pos.getPiece();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +179,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
     }
 
     private boolean inBounds(int num) {
-        return num > 0 && num < this.board.getSideLength();
+        return num >= 0 && num < this.board.getSideLength();
     }
 
     protected void checkToEnd(int[] vect, CheckersCoordPair pos) {

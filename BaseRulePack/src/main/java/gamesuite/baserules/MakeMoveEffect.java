@@ -1,6 +1,8 @@
 package gamesuite.baserules;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,12 +13,16 @@ import gamesuite.boardgame.model.CheckersGamePiece;
 import gamesuite.boardgame.model.CheckersGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
+import gamesuite.core.model.rules.ConstDependent;
+import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
 
-public class MakeMoveEffect extends Effect {
+public class MakeMoveEffect extends Effect implements ConstDependent {
 
     private CheckersGameBoard board;
     private CheckersGameState gameState;
+    private Constraint validAttack;
+    static final String[] dependencies = {"validAttack"};
 
     public MakeMoveEffect() {
         super("makeMove");
@@ -51,6 +57,11 @@ public class MakeMoveEffect extends Effect {
 
     @Override
     public void updateState(JsonNode move) {
+
+       // if(this.validAttack.checkMove(move)) {
+        //    this.gameState.setLastJumped(true);
+       // }
+
         int sX = move.get("startX").asInt();
         int sY = move.get("startY").asInt();
         int eX = move.get("endX").asInt();
@@ -70,8 +81,18 @@ public class MakeMoveEffect extends Effect {
         this.gameState.addChangedPos(pos);
         this.gameState.addChangedPos(end);
         this.gameState.setFurtherJumps(null);
-        ((ObjectNode) move).put("startX", eX);
-        ((ObjectNode) move).put("startY", eY);
+        //((ObjectNode) move).put("startX", eX);
+        //((ObjectNode) move).put("startY", eY);
+    }
+
+    @Override
+    public void addDependencies(Map<String, Constraint> arg0) {
+        this.validAttack = arg0.get("validAttack");
+    }
+
+    @Override
+    public List<String> getDependencyList() {
+        return Arrays.asList(dependencies);
     }
     
 }

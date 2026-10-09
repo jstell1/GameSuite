@@ -69,7 +69,7 @@
                 { 
                     "type" : "promote",
                     "piece" : {
-                        "name" : "King"
+                        "name" : "K"
                     }
                 }
             ]

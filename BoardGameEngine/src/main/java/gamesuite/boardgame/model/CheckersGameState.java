@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"lastJumped"},ignoreUnknown = true)
 public class CheckersGameState implements GameState {
 
     private CheckersPlayer player1;
@@ -36,6 +36,7 @@ public class CheckersGameState implements GameState {
     private List<CheckersCoordPair> changedPos;
     private boolean gameOver;
     private Set<CheckersCoordPair> justKinged;
+    private boolean lastJumped;
 
     public CheckersGameState() {}
 
@@ -53,6 +54,7 @@ public class CheckersGameState implements GameState {
         this.boardInit = false;
         this.gameOver = false;
         this.justKinged = new HashSet<>();
+        this.lastJumped = false;
     }
 
 
@@ -69,6 +71,7 @@ public class CheckersGameState implements GameState {
         this.boardInit = false;
         this.gameOver = false;
         this.justKinged = new HashSet<>();
+        this.lastJumped = false;
     }
 
     private CheckersGameState(
@@ -83,7 +86,7 @@ public class CheckersGameState implements GameState {
         int boardSize, int turnFactor,
         boolean boardInit, String[] teamNames,
         List<CheckersCoordPair> changedPos,
-        boolean gameOver,
+        boolean gameOver, boolean lastJumped,
         Set<CheckersCoordPair> justPromoted
     ) {
         this.player1 = player1; this.player2 = player2;
@@ -96,6 +99,7 @@ public class CheckersGameState implements GameState {
         this.boardInit = boardInit; this.teamNames = teamNames;
         this.changedPos = changedPos; this.gameOver = gameOver;
         this.justKinged = justPromoted;
+        this.lastJumped = lastJumped;
     }
 
     public void setPlayer2(CheckersPlayer player2) {
@@ -115,6 +119,9 @@ public class CheckersGameState implements GameState {
     public void setTeamNames(String[] teamNames) {
         this.teamNames = teamNames;
     }
+
+    public boolean getLastJumped() { return this.lastJumped; }
+    public void setLastJumped(boolean lastJumped) { this.lastJumped = lastJumped; }
 
     // public JsonNode getGameStateJson() {
     //     ObjectMapper mapper = new ObjectMapper();
@@ -352,6 +359,7 @@ public class CheckersGameState implements GameState {
         private List<CheckersCoordPair> changedPos = new ArrayList<>();
         private boolean gameOver;
         private Set<CheckersCoordPair> justPromoted = new HashSet<>();
+        private boolean lastJumped = false;
         private List<Field> failedFields = new ArrayList<>(); 
         private Field[] allFields = this.getClass().getDeclaredFields();
 
@@ -362,6 +370,11 @@ public class CheckersGameState implements GameState {
 
         public Builder setPlayer2(CheckersPlayer player2) {
             this.player2 = player2;
+            return this;
+        }
+
+        public Builder setLastJumped(boolean lastJumped) {
+            this.lastJumped = lastJumped;
             return this;
         }
 
@@ -508,7 +521,8 @@ public class CheckersGameState implements GameState {
                 this.furtherAttacks, this.boardSize,
                 this.turnFactor, this.boardInit,
                 this.teamNames, this.changedPos,
-                this.gameOver, this.justPromoted
+                this.gameOver, this.lastJumped,
+                this.justPromoted
             );
         }
     }

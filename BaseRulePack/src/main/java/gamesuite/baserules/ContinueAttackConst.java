@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import gamesuite.boardgame.model.CheckersGameBoard;
 import gamesuite.boardgame.model.CheckersGameState;
@@ -33,10 +34,10 @@ public class ContinueAttackConst extends Constraint implements ConstDependent {
 
     @Override
     public boolean checkMove(JsonNode arg0) {
-        if(!this.validAttack.checkMove(arg0)) {
+        if(!this.gameState.getLastJumped()) {
             return false;
         }
-
+       
         return this.furtherAttacks.checkMove(arg0);
     }
 

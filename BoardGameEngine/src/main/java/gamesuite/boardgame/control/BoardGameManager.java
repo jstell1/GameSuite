@@ -176,6 +176,7 @@ public class BoardGameManager implements GameManager {
     public boolean sendMove(ObjectNode move, String playerId) {
 
         this.game.resetChangedPos();
+        this.game.setLastJumped(false);
         if(gameOver()) {
             return false;
         }

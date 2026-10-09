@@ -50,8 +50,8 @@ public class FurtherMovesConst extends Constraint {
     @Override
     public boolean checkMove(JsonNode move) {
         
-          int tmpx = move.get("startX").asInt();
-        int tmpy = move.get("startY").asInt();
+          int tmpx = move.get("endX").asInt();
+        int tmpy = move.get("endY").asInt();
         CheckersCoordPair pos = this.board.getBoardPos(tmpx, tmpy);
         if(pos == null || pos.getPiece() == null) {
             return false;

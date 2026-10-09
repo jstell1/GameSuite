@@ -87,8 +87,8 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
             }
 
             CheckersMove cMove = new CheckersMove();
-            cMove.setStartX(pos.getX());
-            cMove.setStartY(pos.getY());
+            cMove.setEndX(pos.getX());
+            cMove.setEndY(pos.getY());
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.valueToTree(cMove);
             
