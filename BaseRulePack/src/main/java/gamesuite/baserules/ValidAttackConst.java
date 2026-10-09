@@ -1,5 +1,6 @@
 package gamesuite.baserules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,8 +45,8 @@ public class ValidAttackConst extends Constraint {
         int turn = this.gameState.getTurn();
         CheckersCoordPair start = this.board.getBoardPos(sX, sY);
         CheckersCoordPair end = this.board.getBoardPos(eX, eY);
-        if(start == null || end == null)
-            return false;
+        //if(start == null || end == null)
+        //    return false;
 
 
         CheckersGamePiece piece = start.getPiece();
@@ -55,37 +56,35 @@ public class ValidAttackConst extends Constraint {
         if(!teamNames[turn - 1].equals(team)) {
             return false;
         }
-
-        int[][] attackVectors = piece.getAttackVectors();
-        if(attackVectors != null) {
-            
-            
-            for(int[] pair : attackVectors) {
-                int x = start.getX() + pair[0] * turnFactor;
-                int y = start.getY() + pair[1] * turnFactor;
-
-                CheckersCoordPair attackCoord = this.board.getBoardPos(x, y);
-                CheckersGamePiece p = attackCoord.getPiece();
-                if(p == null || teamNames[turn - 1].equals(team)) {
-                    return false;
-                }
-            }
-        }
-       
-
         
-        //int turnFactor = -1;
-        //if(name.equals(pieceNames[1]))
-         //   turnFactor = 1;
-
+        
+        boolean checkJump = false;
         int[][] validJumps = piece.getValidJumps();
         for(int[] pair : validJumps) {
             int x = start.getX() + pair[0] * turnFactor;
             int y = start.getY() + pair[1] * turnFactor;
-
-            if(end.getX() == x && end.getY() == y)
-                return true;
+            
+            if(end.getX() == x && end.getY() == y) {
+                checkJump = true;
+                break;
+            }
+            
         }
+
+        if(!checkJump) {
+            return false;
+        }        
+        
+        int midX = (eX + sX) >> 1;
+        int midY = (eY + sY) >> 1;
+
+        CheckersCoordPair attackCoord = this.board.getBoardPos(midX, midY);
+        CheckersGamePiece p = attackCoord.getPiece();
+        if(p != null && !p.getTeam().equals(team)) {
+            return true;
+        }
+
+        
         return false;
     }
 

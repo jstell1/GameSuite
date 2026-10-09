@@ -291,6 +291,8 @@ public class ClientManagerImpl implements ClientManager {
                                 sendMainGuiError("server error on getting activeGamesList");
                             } 
                             break;
+                        case "moveUpdateError":
+                             
                         default: break;
                     }
                 }

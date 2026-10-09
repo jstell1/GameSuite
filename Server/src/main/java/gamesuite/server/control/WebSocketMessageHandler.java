@@ -469,7 +469,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
             boolean success = gm.sendMove(move, session.getId());
 
-            if(success) {
+            //if(success) {
 
                 JsonNode game = gm.getGameStateJson();
                 String msgType = "stateUpdateResponse";
@@ -492,6 +492,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                     // TODO: handle exception
                     throw new IllegalArgumentException();
                 }
+                /* 
             } else {
                  mapper = new ObjectMapper();
                 String msgType = "moveUpdateError";
@@ -501,6 +502,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 sendMessage(msgType, respPayload, session);
                 return;
             }
+                */
         }
     }
 

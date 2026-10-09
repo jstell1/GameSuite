@@ -28,7 +28,8 @@
         "notFurtherAttacks",
         "endRow",
         "furtherAttacks",
-        "hasNoMoves"
+        "hasNoMoves",
+        "continueAttack"
     ],
     "effects" : [
         "makeMove",
@@ -77,7 +78,7 @@
             "name" : "mustAttack",
             "type" : "postEffect",
             "constraints" : [
-                { "type" : "furtherAttacks" }
+                { "type" : "continueAttack" }
             ],
             "effects" : [
                 { "type" : "mustAttack" }

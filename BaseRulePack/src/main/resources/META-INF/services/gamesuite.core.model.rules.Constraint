@@ -9,3 +9,4 @@ gamesuite.baserules.TurnCheckConst
 gamesuite.baserules.ValidAttackConst
 gamesuite.baserules.ValidMoveConst
 gamesuite.baserules.EndRowConst
+gamesuite.baserules.ContinueAttackConst
