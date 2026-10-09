@@ -187,17 +187,17 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
         int sX = pos.getX();
         int sY = pos.getY();
-        int eX = vect[0];
-        int eY = vect[1];
-        int rise = eY - sY;
-        int run = eX - sX;
-        int finalX = sX + eX;
-        int finalY = sY + eY;
+        int vX = vect[0];
+        int vY = vect[1];
+        int finalX = sX + vX;
+        int finalY = sY + vY;
+        int rise = finalY - sY;
+        int run = finalX - sX;
 
         if(rise == 0) {
-            if(!inBounds(finalY)) {
-                return;
-            }
+            //if(!inBounds(finalY)) {
+            //    return;
+            //}
 
             int dir = getDirection(run);
             
@@ -211,9 +211,9 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
             
             
         } else if(run == 0) {
-            if(!inBounds(finalX)) {
-                return;
-            }
+            //if(!inBounds(finalX)) {
+             //   return;
+            //}
 
             int dir = getDirection(rise);
 

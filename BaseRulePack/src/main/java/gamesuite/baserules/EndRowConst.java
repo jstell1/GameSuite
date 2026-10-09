@@ -49,8 +49,8 @@ public class EndRowConst extends Constraint {
     @Override
     public boolean checkMove(JsonNode move) {
         
-        int x = move.get("endX").asInt();
-        int y = move.get("endY").asInt();
+        int x = move.get("startX").asInt();
+        int y = move.get("startY").asInt();
         CheckersCoordPair pos = this.board.getBoardPos(x, y);
 
          CheckersGamePiece piece = pos.getPiece();

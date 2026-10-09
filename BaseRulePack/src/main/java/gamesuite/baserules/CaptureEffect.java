@@ -25,6 +25,7 @@ public class CaptureEffect extends Effect {
 
     public CaptureEffect(String name, GameState gameState) {
         super(name, gameState);
+        this.name = "capture";
     }
 
     @Override
