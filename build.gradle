@@ -111,6 +111,15 @@ tasks.register('masterBuild') {
     dependsOn 'copyExpoToServer', 'buildPlugins'
 }
 
+subprojects {
+    plugins.withType(BasePlugin) {
+        tasks.named('clean') {
+            delete('bin')
+            delete('plugins')
+        }
+    }
+}
+
 tasks.register('masterClean') {
     group = 'build'
     description = 'Cleans all subprojects, plugins folder, and Expo project'
