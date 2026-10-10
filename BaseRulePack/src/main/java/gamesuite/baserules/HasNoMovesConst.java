@@ -45,7 +45,7 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
         
         String[] teams = this.gameState.getTeamNames();
         int turn = this.gameState.getTurn();
-        String team = teams[turn - 1];
+        String team = teams[(turn % 2 + 1) - 1];
 
         if(hasValidMoves(team, move)) {
             return false;
@@ -74,8 +74,8 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
             CheckersCoordPair pos = this.board.getBoardPos(row, j);
 
             //this check is weird. There should be a thrown exception probably
-            if(pos == null)
-                return false;
+            //if(pos == null)
+            //    return false;
             CheckersGamePiece piece = pos.getPiece();
 
             if(piece == null) {

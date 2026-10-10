@@ -20,6 +20,7 @@ public class WinEffect extends Effect {
     public WinEffect(String name, GameState gameState) {
         super(name, gameState);
         //TODO Auto-generated constructor stub
+        this.name = "win";
     }
 
     @Override
@@ -46,7 +47,9 @@ public class WinEffect extends Effect {
 
     @Override
     public void updateState(JsonNode move) {
-        
+        int winnerNum = this.gameState.getTurn();
+        this.gameState.setWinnerNum(winnerNum);
+        this.gameState.setGameOver(true);
     }
     
 }

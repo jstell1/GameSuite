@@ -56,8 +56,8 @@ public class PromoteEffect extends Effect {
         int y = move.get("endY").asInt();
         CheckersCoordPair pos = this.board.getBoardPos(x, y);
         CheckersGamePiece piece = pos.getPiece(); 
-        String type = piece.getType();
-        CheckersGamePiece newPiece = this.gm.buildPiece(this.promoteName, type);
+        String team = piece.getTeam();
+        CheckersGamePiece newPiece = this.gm.buildPiece(this.promoteName, team);
         pos.setPiece(newPiece);
     }
 

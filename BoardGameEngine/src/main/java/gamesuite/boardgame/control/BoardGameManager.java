@@ -113,9 +113,9 @@ public class BoardGameManager implements GameManager {
         this.pieceList = list;
     }
     
-    public CheckersGamePiece buildPiece(String type, String name) {
+    public CheckersGamePiece buildPiece(String type, String team) {
         CheckersGamePiece.Builder tmp = this.pieceList.get(type);
-        tmp.setTeam(name).setName(name + type);
+        tmp.setTeam(team).setName(team + type);
         return tmp.build();
     }
 
