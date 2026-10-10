@@ -180,50 +180,50 @@ public class BoardGameManager implements GameManager {
         if(gameOver()) {
             return false;
         }
-        boolean moveSuccess = false;
+        //boolean moveSuccess = false;
         move.put("playerId", playerId);
 
-        boolean endCheck = this.moveController.endCheck(move);
-        if(endCheck) {
+        //if(!endCheck) {
 
+        boolean result = this.moveController.gameCheck(move); 
+        
+        if(result) {
+            result = this.moveController.moveCheck(move);
+        }
+
+        if(result) {
+            this.moveController.applyEffects(move);
+            //moveSuccess = true;
+        }
+        this.moveController.clearEffects();
+
+        boolean postCheck = false;
+        if(result) {
+            postCheck = this.moveController.postCheck(move);
+        }
+        
+        if(postCheck) {
+            this.moveController.applyEffects(move);
+        }
+        this.moveController.clearEffects();
+        
+        boolean endCheck = false;
+        if(result) {
+            endCheck = this.moveController.endCheck(move);
+        }
+
+        if(endCheck) {
             this.moveController.applyEffects(move);
         }
         this.moveController.clearEffects();
 
-        if(!endCheck) {
-
-            boolean result = this.moveController.gameCheck(move); 
-           
-            if(result) {
-                result = this.moveController.moveCheck(move);
-            }
-    
-            
-            if(result) {
-                this.moveController.applyEffects(move);
-                moveSuccess = true;
-            }
-    
-            this.moveController.clearEffects();
-    
-            boolean postCheck = false;
-            if(moveSuccess) {
-                postCheck = this.moveController.postCheck(move);
-            }
-    
-            if(postCheck) {
-                this.moveController.applyEffects(move);
-            }
-    
-            this.moveController.clearEffects();
-
-            if(moveSuccess) {
-                this.turnControl.updateState(move);
-            }
-            
+        if(result) {
+            this.turnControl.updateState(move);
         }
+            
+      //  }
 
-        return moveSuccess;
+        return result;
         // ObjectMapper mapper = new ObjectMapper();
         // try {
         //     CheckersMove mv = mapper.treeToValue(move, CheckersMove.class);
