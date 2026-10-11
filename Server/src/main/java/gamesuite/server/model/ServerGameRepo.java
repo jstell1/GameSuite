@@ -28,7 +28,7 @@ public class ServerGameRepo {
 
     //<gameId, gm> actual list of running games stored by gameId
     private final Map<String, GameManager> games = new ConcurrentHashMap<>();
-
+    private final Object gamesLock = new Object();
     //<userSessions, gameId> maps given userSession to the associated game GameManager instance
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
     //private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
@@ -80,7 +80,15 @@ public class ServerGameRepo {
         //}
     }
 
+    public void closeGame(String gameId) {
+        this.games.remove(gameId);
+        String name = this.gamePluginMap.get(gameId);
+        List<String> games = this.joinable.get(name);
+        games.remove(gameId);
+        this.gamePluginMap.remove(gameId);
+    }
 
+    public Object getGamesLock() { return this.gamesLock; } 
     
     public String createGame(String game, String group, String p1, String sessionId) throws 
                                                                                         InstantiationException, IllegalAccessException, 
@@ -196,7 +204,7 @@ public class ServerGameRepo {
 
         System.out.println("numGames: " + this.games.size());
         System.out.println("numSessions: " + this.userSessions.size());
-      //  System.out.println("PlayerNumMap: " + this.gameUserMap.get(gameId).size());
+        System.out.println("gamePluginMap: " + this.gamePluginMap.size());
     }
 
     public Set<String> getGameUsers(String gameId) {
@@ -212,7 +220,7 @@ public class ServerGameRepo {
         //this.userPlayerNumMap.put(sessionId, num);
     //}
 
-    public JsonNode joinGame(String player, String playerId, String gameId) {
+    public JsonNode joinGame(String player, String playerId, String gameId) throws Exception {
         
         GameManager gm = this.games.get(gameId);
         JsonNode node = null;
@@ -274,7 +282,7 @@ public class ServerGameRepo {
         this.games.put(gameId, gm);
     }
 
-    public boolean rightPlayer(String gameId, String sessionId) {
+    public boolean rightPlayer(String gameId, String sessionId) throws Exception {
         if(!containsGame(gameId)) //|| !this.gameUserMap.get(gameId).containsKey(sessionId))
             return false;
         GameManager gm = this.games.get(gameId);
@@ -298,38 +306,42 @@ public class ServerGameRepo {
 
     
 
-    public GameManager removePlayer(String sessionId) {
-        String gameId = null;
-        GameManager gm = null;
-        //GameState game = null;
+    public GameManager removePlayer(String sessionId) throws Exception {
+         String gameId = null;
+         GameManager gm = null;
+    //     //GameState game = null;
 
-        try {
-            gameId = this.userSessions.get(sessionId);
-            gm = this.games.get(gameId);
-            synchronized(gm) {
-                if(gm.getWinner() == null && gm.getNumPlayers() > 1) {
+    //    // try {
+             gameId = this.userSessions.get(sessionId);
+             gm = this.games.get(gameId);
+             synchronized(gm) {
+    //             if(gm.getWinner() == null && gm.getNumPlayers() > 1) {
                     
                     //Map<String, Integer> playerNums = this.gameUserMap.get(gameId);
                    // int playerNum = playerNums.get(sessionId).intValue();
-                   
+                   if(gm.getNumMappedPlayers() > 1) {
+                    String name = this.gamePluginMap.get(gameId);
+                    this.joinable.get(name).remove(gameId);
+                   }
                     gm.quitGame(sessionId);
                     this.userSessions.remove(sessionId);
+
                     //this.gameUserMap.get(gameId).remove(sessionId);
                    // this.gameUserMap.get(gameId).remove(sessionId);
                     
-                } else {
-                   // this.gameUserMap.remove(gameId);
-                    this.games.remove(gameId);
-                    this.userSessions.remove(sessionId);
-                }
-               // synchronized(this.activeList) {
-               //     this.activeList.get(gm.getName()).remove(gameId);
-               // }
-                System.out.println("numGames: " + this.games.size());
-                System.out.println("numSessions: " + this.userSessions.size());
-               // System.out.println("PlayerNumMap: " + this.gameUserMap.size());
+            //     } else {
+            //        // this.gameUserMap.remove(gameId);
+            //         this.games.remove(gameId);
+            //         this.userSessions.remove(sessionId);
+            //     }
+            //    // synchronized(this.activeList) {
+            //    //     this.activeList.get(gm.getName()).remove(gameId);
+            //    // }
+                 System.out.println("numGames: " + this.games.size());
+                 System.out.println("numSessions: " + this.userSessions.size());
+                System.out.println("gamePluginMap: " + this.gamePluginMap.size());
             }
-        } catch (Exception e) {}
+       // } catch (Exception e) {}
         
         return gm;
     }

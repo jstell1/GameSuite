@@ -16,7 +16,7 @@ public interface GameManager {
     //public abstract void initGame();
     public JsonNode joinGame(String player, String playerId);
     public void sendMove(Move move);
-    public boolean sendMove(ObjectNode move, String playerId);
+    public boolean sendMove(ObjectNode move, String playerId) throws Exception;
     public boolean addPlayer(String player);
     public boolean isGameReady();
     public String getBoardString();
@@ -32,4 +32,5 @@ public interface GameManager {
     public String getName();
     public boolean checkPlayerSession(String playerId);
     public List<String> getUserIdList();
+    public int getNumMappedPlayers();
 }

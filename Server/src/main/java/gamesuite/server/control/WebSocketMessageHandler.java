@@ -95,18 +95,32 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             //if(this.gmRepo.userSessions.containsKey(session.getId())) {
                 gameId = this.gmRepo.getUserSessionGame(session.getId());
 
-               // GameManager gm = this.gmRepo.getGM(gameId);
+               GameManager gm = this.gmRepo.getGM(gameId);
 
             //}
+            synchronized(gm) {
 
-                GameManager game = this.gmRepo.removePlayer(session.getId());
-                webSocketSessions.remove(session.getId());
-                if(gameId != null && this.gmRepo.containsGame(gameId) && game.gameOver()) {
-                    notifyGameOver(game.getGameStateJson(), gameId);
+                if(gm.getNumMappedPlayers() > 1) {
+                    GameManager game = this.gmRepo.removePlayer(session.getId());
+                    webSocketSessions.remove(session.getId());
+                    if(gm.gameOver()) {
+                        notifyGameOver(gm.getGameStateJson(), gameId);
+                    }
+                } else {
+                    webSocketSessions.remove(session.getId());
+                    this.gmRepo.removePlayer(session.getId());
+                    this.gmRepo.closeGame(gameId);
                 }
+
+
+
+
                 
+            }
+
                 System.out.println("Active sessions: " + webSocketSessions.size());
                 System.out.println("NumGames: " + this.gmRepo.getNumGames());
+                //System.out.println("mappedGames: " + this.gmRepo.get)
             //}
         }
     }
@@ -321,8 +335,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             respPayload.set("gameState", game);
             sendMessage(msgType, respPayload, session);
             System.out.println("sent");
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException
-                | IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             mapper = new ObjectMapper();
@@ -373,41 +386,43 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 return;
             }
 
-            //try {
+            JsonNode boardJson = null;
+            try {
                 
                 //Player p2 = new Player(player, 0);
-                JsonNode boardJson = this.gmRepo.joinGame(player, session.getId(), gameId);
+                boardJson = this.gmRepo.joinGame(player, session.getId(), gameId);
+                
+                
+            } catch (Exception e) {
                 mapper = new ObjectMapper();
-                JsonNode game = this.gmRepo.getGM(gameId).getGameStateJson();
-                this.gmRepo.addWebSocketToGame(gameId, session.getId());
-
-                String msgType = "gameReadyResponse";
+                String msgType = "serverError";
                 JsonNode tmp = mapper.createObjectNode();
                 ObjectNode respPayload = tmp.deepCopy();
-                respPayload.set("board", boardJson);
-                respPayload.put("gameId", gameId);
-                respPayload.set("gameState", game);
-                //sendMessage(msgType, respPayload, session);
-                ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
-                String str;
-                try {
-                    str = mapper.writeValueAsString(outer);
-                    notifyPlayerJoined(gameId, str);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    e.printStackTrace();
-                    throw new IllegalArgumentException();
-                }
-            
-                
-            //} catch (Exception e) {
-                //mapper = new ObjectMapper();
-               // String msgType = "serverError";
-               // JsonNode tmp = mapper.createObjectNode();
-               // ObjectNode respPayload = tmp.deepCopy();
-               /// respPayload.put("message", "Error processing joinGameRequest");
-               // sendMessage(msgType, respPayload, session);
-            //}
+                respPayload.put("message", "Error processing joinGameRequest");
+                sendMessage(msgType, respPayload, session);
+                return;
+            }
+            mapper = new ObjectMapper();
+            JsonNode game = this.gmRepo.getGM(gameId).getGameStateJson();
+            this.gmRepo.addWebSocketToGame(gameId, session.getId());
+
+            String msgType = "gameReadyResponse";
+            JsonNode tmp = mapper.createObjectNode();
+            ObjectNode respPayload = tmp.deepCopy();
+            respPayload.set("board", boardJson);
+            respPayload.put("gameId", gameId);
+            respPayload.set("gameState", game);
+            //sendMessage(msgType, respPayload, session);
+            ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
+            String str;
+            try {
+                str = mapper.writeValueAsString(outer);
+                notifyPlayerJoined(gameId, str);
+            } catch (Exception e) {
+               //  TODO: handle exception
+                e.printStackTrace();
+               
+            }
         }
     }
 
@@ -429,80 +444,88 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         GameManager gm = this.gmRepo.getGM(gameId);
         synchronized(gm) {
 
-            if(!this.gmRepo.rightPlayer(gameId, session.getId())) {
-                String msgType = "moveUpdateError";
-                JsonNode tmp = mapper.createObjectNode();
-                ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("message", "not in game or not your turn");
-                sendMessage(msgType, respPayload, session);
-                return;
-            }
-
-            if(!this.gmRepo.getGM(gameId).isGameReady()) {
-                String msgType = "moveUpdateError";
-                JsonNode tmp = mapper.createObjectNode();
-                ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("message", "player 2 has not joined the game");
-                sendMessage(msgType, respPayload, session);
-                return;
-            }
-           // Map<String, Integer> sessionList = this.gmRepo.getGameUserMap(gameId);
-           List<String> sessionList = this.gmRepo.getGameSessions(gameId);//getGameUserMap(gameId);
-    
-            //gm = this.gmRepo.getGM(gameId);
-
-            //this is game engine responsibility!!! not supposed to be here!
-            //int currTurn = gm.getTurn();
-            //int userTurnNum = sessionList.get(session.getId());
-
-            /*
-            if(currTurn != userTurnNum) {
-                mapper = new ObjectMapper();
-                String msgType = "moveUpdateError";
-                JsonNode tmp = mapper.createObjectNode();
-                ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("message", "this user cannot make a move yet");
-                sendMessage(msgType, respPayload, session);
-                return;
-            }
-                */
-
-            boolean success = gm.sendMove(move, session.getId());
-
-            //if(success) {
-
-                JsonNode game = gm.getGameStateJson();
-                String msgType = "stateUpdateResponse";
-                JsonNode tmp = mapper.createObjectNode();
-                ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("gameId", gameId);
-                respPayload.set("gameState", game);
-                sendMessage(msgType, respPayload, session);
-                ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
-    
-    
-                try {
-                    
-                    String str = mapper.writeValueAsString(outer);
-                    TextMessage msg = new TextMessage(str);
             
-                    for(String user : sessionList)
-                        this.webSocketSessions.get(user).sendMessage(msg);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    throw new IllegalArgumentException();
+            try {
+                
+                if(!this.gmRepo.rightPlayer(gameId, session.getId())) {
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "not in game or not your turn");
+                    sendMessage(msgType, respPayload, session);
+                    return;
                 }
-                /* 
-            } else {
-                 mapper = new ObjectMapper();
-                String msgType = "moveUpdateError";
-                JsonNode tmp = mapper.createObjectNode();
-                ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("message", "move failed validation");
-                sendMessage(msgType, respPayload, session);
-                return;
-            }
-                */
+    
+                if(!this.gmRepo.getGM(gameId).isGameReady()) {
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "player 2 has not joined the game");
+                    sendMessage(msgType, respPayload, session);
+                    return;
+                }
+               // Map<String, Integer> sessionList = this.gmRepo.getGameUserMap(gameId);
+               List<String> sessionList = this.gmRepo.getGameSessions(gameId);//getGameUserMap(gameId);
+        
+                //gm = this.gmRepo.getGM(gameId);
+    
+                //this is game engine responsibility!!! not supposed to be here!
+                //int currTurn = gm.getTurn();
+                //int userTurnNum = sessionList.get(session.getId());
+    
+                /*
+                if(currTurn != userTurnNum) {
+                    mapper = new ObjectMapper();
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "this user cannot make a move yet");
+                    sendMessage(msgType, respPayload, session);
+                    return;
+                }
+                    */
+                   boolean success = gm.sendMove(move, session.getId());
+       
+                   //if(success) {
+       
+                       JsonNode game = gm.getGameStateJson();
+                       String msgType = "stateUpdateResponse";
+                       JsonNode tmp = mapper.createObjectNode();
+                       ObjectNode respPayload = tmp.deepCopy();
+                       respPayload.put("gameId", gameId);
+                       respPayload.set("gameState", game);
+                       sendMessage(msgType, respPayload, session);
+                       ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
+           
+                      
+                           
+                        String str = mapper.writeValueAsString(outer);
+                        TextMessage msg = new TextMessage(str);
+                
+                        for(String user : sessionList)
+                            this.webSocketSessions.get(user).sendMessage(msg);
+        
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                        e.printStackTrace();
+                         mapper = new ObjectMapper();
+                        String msgType = "moveUpdateError";
+                        JsonNode tmp = mapper.createObjectNode();
+                        ObjectNode respPayload = tmp.deepCopy();
+                        respPayload.put("message", "problem processing player move");
+                        sendMessage(msgType, respPayload, session);
+                    }
+                    /* 
+                } else {
+                     mapper = new ObjectMapper();
+                    String msgType = "moveUpdateError";
+                    JsonNode tmp = mapper.createObjectNode();
+                    ObjectNode respPayload = tmp.deepCopy();
+                    respPayload.put("message", "move failed validation");
+                    sendMessage(msgType, respPayload, session);
+                    return;
+                }
+                    */
         }
     }
 

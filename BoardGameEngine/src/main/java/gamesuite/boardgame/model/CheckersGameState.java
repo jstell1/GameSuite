@@ -147,8 +147,8 @@ public class CheckersGameState implements GameState {
     public boolean isGameOver() { return this.gameOver; }
 
     public void setGameOver(boolean gameOver) { 
-        if(this.gameOver)
-            throw new IllegalStateException("gameOver is already set to true");
+        //if(this.gameOver)
+        //    throw new IllegalStateException("gameOver is already set to true");
             this.gameOver = gameOver; 
     }
 

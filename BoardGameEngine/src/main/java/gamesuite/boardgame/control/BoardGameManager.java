@@ -173,7 +173,7 @@ public class BoardGameManager implements GameManager {
     } 
 
     @Override
-    public boolean sendMove(ObjectNode move, String playerId) {
+    public boolean sendMove(ObjectNode move, String playerId) throws Exception {
 
         this.game.resetChangedPos();
         this.game.setLastJumped(false);
@@ -298,10 +298,13 @@ public class BoardGameManager implements GameManager {
 
     public CheckersGameState quitGame(String playerId) {
 
-        int playerNum = this.sessionPlayerMap.indexOf(playerId) + 1;
-        if(this.stateManager.getWinner() == null) {
-            this.stateManager.setWinner(playerNum % 2 + 1);
+        int playerNum = this.game.getPlayerById(playerId).getTurn();//this.sessionPlayerMap.indexOf(playerId) + 1;
+        if(this.game.getWinner() == null) {
+            this.game.setWinnerNum(playerNum % 2 + 1);
         }
+        playerNum = this.sessionPlayerMap.indexOf(playerId);
+        this.sessionPlayerMap.remove(playerNum);
+        this.game.setGameOver(true);
         return this.game;
     }
 
@@ -310,6 +313,11 @@ public class BoardGameManager implements GameManager {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode json = mapper.valueToTree(this.game);
         return json;
+    }
+
+    @Override
+    public int getNumMappedPlayers() {
+        return this.sessionPlayerMap.size();
     }
 
     @Override
