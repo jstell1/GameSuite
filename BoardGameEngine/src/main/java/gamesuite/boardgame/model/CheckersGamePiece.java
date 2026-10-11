@@ -3,7 +3,6 @@ package gamesuite.boardgame.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -89,9 +88,7 @@ public class CheckersGamePiece implements GamePiece {
         int[][] m = new int[arr.length][];
         for(int i = 0; i < arr.length; i++) {
             m[i] = Arrays.copyOf(arr[i], arr[i].length);
-            //for(int j = 0; i < arr[i].length; j++) {
-            //    m[i][j] = arr[i][j];
-            //}
+           
         }
         return m;
     }
@@ -127,17 +124,11 @@ public class CheckersGamePiece implements GamePiece {
     }
 
     public int[][] getValidMoves() { 
-      //  if(this.type.equals("C"))
             return copyArray(this.validMoves);
-        //else 
-          //  return Arrays.copyOf(this.validKingMoves, this.validKingMoves.length);
     }
 
     public int[][] getValidJumps() {
-        //if(this.type.equals("C")) 
             return copyArray(this.validJumps);
-       // else 
-           // return Arrays.copyOf(this.validKingJumps, this.validKingJumps.length);
     }
 
     public boolean isKing() { return this.type.equals("K"); }
@@ -156,12 +147,9 @@ public class CheckersGamePiece implements GamePiece {
         private String name = "";
         private String type = "";
         private int val;
-        //private boolean king;
         private int[][] validMoves = {{-1, -1}, {-1, 1}};
         private int[][] validJumps = {{-2, -2}, {-2, 2}};
         private int[][] attackVectors = {{-1, -1}, {-1, 1}};
-        //private final int[][] validKingMoves = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-        //private final int[][] validKingJumps = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
         private List<Action> moveRules = new ArrayList<>();
         private List<Action> attackRules = new ArrayList<>();
         private String team = "B";

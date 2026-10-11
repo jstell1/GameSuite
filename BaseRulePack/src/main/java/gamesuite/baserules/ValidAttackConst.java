@@ -1,7 +1,5 @@
 package gamesuite.baserules;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -9,10 +7,8 @@ import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
 import gamesuite.boardgame.model.CheckersGamePiece;
 import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.rules.Action;
 import gamesuite.core.model.rules.Constraint;
 
 public class ValidAttackConst extends Constraint {
@@ -45,13 +41,9 @@ public class ValidAttackConst extends Constraint {
         int turn = this.gameState.getTurn();
         CheckersCoordPair start = this.board.getBoardPos(sX, sY);
         CheckersCoordPair end = this.board.getBoardPos(eX, eY);
-        //if(start == null || end == null)
-        //    return false;
-
 
         CheckersGamePiece piece = start.getPiece();
          String team = piece.getTeam();
-        //List<Action> actions = piece.getAttackRules();
 
         if(!teamNames[turn - 1].equals(team)) {
             return false;

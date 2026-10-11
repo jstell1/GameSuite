@@ -2,7 +2,6 @@ package gamesuite.baserules;
 
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
 import gamesuite.core.model.rules.Constraint;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,7 +10,6 @@ import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
 import gamesuite.boardgame.model.CheckersGamePiece;
 import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
 
 public class ValidMoveConst extends Constraint {
 
@@ -41,7 +39,6 @@ public class ValidMoveConst extends Constraint {
         }
         
         CheckersCoordPair pos = this.board.getBoardPos(startX, startY);
-        //CheckersCoordPair end = this.board.getBoardPos(endX, endY);
         CheckersGamePiece p = pos.getPiece();
 
         if(p == null) {

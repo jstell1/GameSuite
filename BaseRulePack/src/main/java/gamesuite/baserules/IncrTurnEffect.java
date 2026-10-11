@@ -1,6 +1,5 @@
 package gamesuite.baserules;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -94,10 +93,8 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
     @Override
     public void updateState(JsonNode move) {
-       //ObjectMapper mapper = new ObjectMapper();
         updateAttacksList();
-      
-        //this.gameState.setChangedPos(new ArrayList<CheckersCoordPair>());
+
         if(this.gameState.getFurtherJumps() != null) {
             return;
         }
@@ -110,8 +107,6 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
     protected void updateAttacksList() {
         String[] teams = this.gameState.getTeamNames();
-       
-        //CheckersMove m = new CheckersMove();//mapper.treeToValue(move, CheckersMove.class);
         List<CheckersCoordPair> changed = this.gameState.getChangedPos();        
         
         for(CheckersCoordPair pos : changed) {
@@ -183,7 +178,6 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
     }
 
     protected void checkToEnd(int[] vect, CheckersCoordPair pos) {
-       // CheckersGamePiece piece = pos.getPiece();
 
         int sX = pos.getX();
         int sY = pos.getY();
@@ -195,9 +189,6 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         int run = finalX - sX;
 
         if(rise == 0) {
-            //if(!inBounds(finalY)) {
-            //    return;
-            //}
 
             int dir = getDirection(run);
             
@@ -211,9 +202,6 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
             
             
         } else if(run == 0) {
-            //if(!inBounds(finalX)) {
-             //   return;
-            //}
 
             int dir = getDirection(rise);
 
@@ -259,17 +247,6 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
     private void checkUntilFirst(int[] vect, CheckersCoordPair pos) {
 
-    }
-
-    private int getTurnFactor(CheckersGamePiece piece) {
-        String teams[] = this.gameState.getTeamNames();
-        String team = piece.getTeam();
-
-        if(team.equals(teams[0])) {
-            return -1;
-        } else {
-            return 1;
-        }
     }
 
     @Override

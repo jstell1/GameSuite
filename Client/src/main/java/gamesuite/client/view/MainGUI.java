@@ -1,26 +1,17 @@
 package gamesuite.client.view;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gamesuite.client.control.ClientManager;
-import gamesuite.client.control.ClientManagerImpl;
 import gamesuite.core.ui.UIListener;
-
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -69,12 +60,7 @@ public class MainGUI {
         
         this.selectBtn.addActionListener(a -> {
             String val = this.gamesList.getSelectedValue();
-            //if(val != null && this.gamesMap.get(val) == null) {
-                this.listener.initActiveList(val);//, null);
-                //this.cmg.getActiveGames(val);
-            //} else if (val != null) {
-               // this.listener.initActiveList(val, this.gamesMap.get(val));
-           // }
+                this.listener.initActiveList(val);
         });
 
         JPanel btnPanel = new JPanel(new GridLayout(2, 1));
@@ -87,10 +73,7 @@ public class MainGUI {
         });
         btnPanel.add(this.refreshBtn);
         this.centerPanel.add(btnPanel);
-        //this.btnPanel = new JPanel();
         this.window.add(this.centerPanel, BorderLayout.CENTER);
-        //this.btnPanel.add(this.selectBtn);
-        //this.window.add(this.btnPanel, BorderLayout.SOUTH);
         this.window.setMinimumSize(new Dimension(800, 500));
         this.window.setResizable(true);
     }

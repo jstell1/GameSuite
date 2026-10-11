@@ -13,9 +13,7 @@ public abstract class Effect {
     protected GameManager topGm;
 
      public Effect(String name) {
-        //this.turnFactor = -1;
         this.gameStateOther = null;
-        //this.board = null;
         this.name = name;
     }
 

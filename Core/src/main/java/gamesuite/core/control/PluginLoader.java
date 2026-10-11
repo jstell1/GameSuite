@@ -1,9 +1,5 @@
 package gamesuite.core.control;
 
-//import gamesuite.boardgame.model.Rules.Constraint;
-//import gamesuite.boardgame.model.Rules.Rules.Effect;
-
-import gamesuite.core.control.GameManager;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
 import gamesuite.core.network.JsonSchemaValidator;
@@ -18,8 +14,6 @@ import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +31,6 @@ public class PluginLoader {
 
     //this is for multi-game game engine jars that can have multiple game defs and rulePacks
     private final Map<String, ArrayList<String>> games = new HashMap<>();
-    //private final ArrayList<String> games = new ArrayList<>(); 
     private final String gameDefsPath = "gameDefinitions";
     private final String rulesPath = "rules";
     private final Map<String, JsonNode> gameDefs = new HashMap<>();
@@ -61,15 +54,9 @@ public class PluginLoader {
 
         this.gameBoards = new ConcurrentHashMap<>();
         this.gameBoardClassLoaders = new ConcurrentHashMap<>();
-        //String p = this.path + "/ui";
         this.uiJars = uiPluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
         for(File jar : this.uiJars) {
-            //try {
                 loadGameUIs(jar);
-            //} catch (MalformedURLException e) { 
-             //   check = false; 
-             //   e.printStackTrace();
-            //}
         }
         return check;
     }
@@ -151,10 +138,9 @@ public class PluginLoader {
                     System.out.println("Schema failed validation: " + game);
                 }
             }
-        } //else {
-           // this.games.add(gameName);
+        } 
            this.games.put(gameName, tmp);
-        //}
+       
 
         System.out.println("Registered game plugin: " + gameName);
     }
@@ -166,7 +152,7 @@ public class PluginLoader {
         String pack = jarFile.getName().replaceFirst("\\.jar$", "");
 
         URLClassLoader classLoader = 
-            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));//this.getClass().getClassLoader());
+            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));
 
         ServiceLoader<Constraint> serviceLoader = 
             ServiceLoader.load( Constraint.class, classLoader);
@@ -176,7 +162,6 @@ public class PluginLoader {
 
         while (iterator.hasNext()) {
             Constraint temp = iterator.next();
-            //Class<? extends Constraint> clazz = (Class<? extends Constraint>) temp.getClass();
             String name = temp.getName();
             ruleMap.put(name, temp);
         }
@@ -191,7 +176,7 @@ public class PluginLoader {
         String pack = jarFile.getName().replaceFirst("\\.jar$", "");
 
         URLClassLoader classLoader = 
-            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));//this.getClass().getClassLoader());
+            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));
 
         ServiceLoader<Effect> serviceLoader = 
             ServiceLoader.load( Effect.class, classLoader);
@@ -201,7 +186,6 @@ public class PluginLoader {
 
         while (iterator.hasNext()) {
             Effect temp = iterator.next();
-            //Class<? extends Constraint> clazz = (Class<? extends Constraint>) temp.getClass();
             String name = temp.getName();
             ruleMap.put(name, temp);
         }
@@ -213,11 +197,6 @@ public class PluginLoader {
         File path = new File(this.pluginDir + "/rules"); 
         this.rulePacks = path.listFiles((dir, name) -> name.endsWith(".jar"));
 
-        //if(this.rulePacks == null) return;
-
-        // for(File pack : this.rulePacks) {
-
-        // }
     }
 
 
@@ -254,7 +233,6 @@ public class PluginLoader {
 
     public Map<String, ArrayList<String>> listAvailableGames() {
         return this.games;
-        //return Collections.unmodifiableSet(gameClasses.keySet());
     }
 
     public GameBoardFactory createBoardFactory(String gameName) throws InstantiationException, IllegalAccessException,
@@ -263,11 +241,9 @@ public class PluginLoader {
     {
         Class<? extends GameBoardFactory> clazz = this.gameBoards.get(gameName);
         if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);
-        //try {
+  
             return clazz.getDeclaredConstructor().newInstance();
-        //} catch (Exception e) {
-        //    throw new RuntimeException("Failed to instantiate " + gameName, e);
-        //}
+ 
     }
 
     public GameManagerFactory createGameManager(String gameName) throws NoSuchMethodException, SecurityException,
@@ -276,11 +252,9 @@ public class PluginLoader {
 {
         Class<? extends GameManagerFactory> clazz = gameClasses.get(gameName);
         if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);
-        //try {
+   
             return clazz.getDeclaredConstructor().newInstance();
-        //} catch (Exception e) {
-        //    throw new RuntimeException("Failed to instantiate " + gameName, e);
-       // }
+     
     }
 
     public boolean isMultiGame(String game) {
@@ -289,13 +263,10 @@ public class PluginLoader {
 
     public JsonNode getGameDef(String game) {
         JsonNode g = this.gameDefs.get(game);
-        //if(g == null)
-         //   throw new IllegalArgumentException("this game does not exist in this gameDef"); 
         return g;
     }
 
     public Constraint getGameConstraint(String name) {
-        //Map<String, Constraint> constraints = new HashMap<>();
         JsonNode gameDef = this.gameDefs.get(name);
         
         return null;

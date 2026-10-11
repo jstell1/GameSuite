@@ -13,7 +13,6 @@ import gamesuite.core.model.Player;
 public interface GameManager {
 
     
-    //public abstract void initGame();
     public JsonNode joinGame(String player, String playerId);
     public void sendMove(Move move);
     public boolean sendMove(ObjectNode move, String playerId) throws Exception;

@@ -2,12 +2,7 @@ package gamesuite.server.model;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManagerFactory;
@@ -31,53 +25,29 @@ public class ServerGameRepo {
     private final Object gamesLock = new Object();
     //<userSessions, gameId> maps given userSession to the associated game GameManager instance
     private final Map<String, String> userSessions = new ConcurrentHashMap<>();
-    //private final Map<String, Map<String, Integer>> gameUserMap = new ConcurrentHashMap<>();
 
-    //may be a redundant field. stores map of gameId to a list of userId's associated with it
-    //private final Map<String, List<String>> gameUserMap = new ConcurrentHashMap<>();
     private PluginLoader loader;
-
-    //not really sure what this is
-    //private final Map<String, Map<String, Integer>> activeList = new ConcurrentHashMap<>();
 
     // <gameId, name> tells which game corresponds to the gameId, mostly for multi-game plugins
     private final Map<String, String> gamePluginMap = new ConcurrentHashMap<>();
 
     //<gameName, List<gameId>>
     private final Map<String, List<String>> joinable = new ConcurrentHashMap<>();
+    
     public ServerGameRepo() {
-        //try {
-       
-            this.loader = new PluginLoader("../plugins/");
-        
-            try {
-                this.loader.loadAll();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                throw new RuntimeException("issue loading plugins");
-            }
-            this.loader.loadAllRules();
-            //this.loader.watchForChanges();
+      
+    
+        this.loader = new PluginLoader("../plugins/");
+    
+        try {
+            this.loader.loadAll();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            throw new RuntimeException("issue loading plugins");
+        }
+        this.loader.loadAllRules();
+        //this.loader.watchForChanges();
 
-            /* 
-            Map<String, ArrayList<String>> list = this.loader.listAvailableGames();
-            
-            for(String name : list.keySet()) {
-                Map<String, Integer> games = new ConcurrentHashMap<>();
-                ArrayList<String> tmp = list.get(name);
-                if(tmp.size() > 0) {
-                    for(String n : tmp) {
-                        games = new ConcurrentHashMap<>();
-                        this.activeList.put(n, games);
-                    }
-                } else {
-                    this.activeList.put(name, games);   
-                }
-            }
-                */
-        //} catch (Exception e) {
-         //   e.printStackTrace();
-        //}
     }
 
     public void closeGame(String gameId) {
@@ -96,8 +66,6 @@ public class ServerGameRepo {
                                                                                         IOException
     {
         
-        //try {
-
         GameManagerFactory gmFact = this.loader.createGameManager(group);
         gmFact.setRulesLoader(this.loader);
         GameManager gm;
@@ -116,12 +84,6 @@ public class ServerGameRepo {
 
         
         synchronized(gm) {
-            // Map<String, Integer> users = new HashMap<>();
-            //users.put(sessionId, 1);
-            //this.gameUserMap.put(gameId, users);
-            //List<String> l = new ArrayList<>();
-            //l.add(sessionId);
-            //this.gameUserMap.put(gameId, l);
             this.userSessions.put(sessionId, gameId);
 
             String joinName;
@@ -140,26 +102,10 @@ public class ServerGameRepo {
             }
             this.joinable.get(joinName).add(gameId);
         
-            
-            
-            // synchronized(this.activeList) {
-
-            //    if(multi) {
-            //         this.activeList.get(game).put(gameId, 1);
-            //    } else {
-            //        this.activeList.get(gm.getName()).put(gameId, 1);
-
-            //    }
-            //  }
             System.out.println("numGames: " + this.games.size());
             System.out.println("numSessions: " + this.userSessions.size());
-            //System.out.println("PlayerNumMap: " + this.gameUserMap.get(gameId).size());
             }
             return gameId;
-        //} catch(Throwable e) {
-        //    e.printStackTrace();
-       // }
-        //return null;
     }
 
     public boolean hasUserSession(String id) {
@@ -169,10 +115,6 @@ public class ServerGameRepo {
     public String getUserSessionGame(String id) {
         return this.userSessions.get(id);
     }
-
-    //public List<String> getGameUserMap(String gameId) {
-   //     return this.gameUserMap.get(gameId);
-   // }
 
     public List<String> getGameSessions(String gameId) {
 
@@ -185,20 +127,6 @@ public class ServerGameRepo {
         GameManager gm = this.games.get(gameId);
 
         synchronized(gm) {
-            //if(!this.gameUserMap.containsKey(gameId)) {
-               // Map<String, Integer> sessionList = new HashMap<>();
-                //sessionList.put(sessionId, 1);
-                //this.gameUserMap.put(gameId, sessionList);
-                //this.userSessions.put(sessionId, gameId);
-
-             //   List<String> sessionList = new ArrayList<>();
-            //    sessionList.add(sessionId);
-          //      this.gameUserMap.put(gameId, sessionList);
-          //  } else {
-                //this.gameUserMap.get(gameId).put(sessionId, 2);
-          //      this.gameUserMap.get(gameId).add(sessionId);
-                 ///this.userSessions.put(sessionId, gameId);
-        //    }
             this.userSessions.put(sessionId, gameId);
         }
 
@@ -211,14 +139,10 @@ public class ServerGameRepo {
        
         GameManager gm = this.games.get(gameId);
         List<String> users = gm.getUserIdList(); 
-       return new HashSet<>(users);//this.gameUserMap.get(gameId));
+       return new HashSet<>(users);
     }
 
     public int getNumGames() { return this.games.size(); }
-
-    //public void setUserNum(String sessionId, int num) {
-        //this.userPlayerNumMap.put(sessionId, num);
-    //}
 
     public JsonNode joinGame(String player, String playerId, String gameId) throws Exception {
         
@@ -230,29 +154,7 @@ public class ServerGameRepo {
             String gameName = this.gamePluginMap.get(gameId);
             
             this.joinable.get(gameName).remove(gameId);
-            /* 
-            synchronized(this.activeList) {
-
-                if(!this.loader.isMultiGame(gm.getName())) {
-                    this.activeList.get(gm.getName()).put(gameId, 2);
-                } else {
-
-                    this.activeList.get("Checkers").put(gameId, 2);
-                   // String name = this.loader.get
-                }
-            }
-                */
-
-            //GameState game = gm.getGameState();
-            // Player p = game.getPlayer(2);
-            // if(p == null) {
-
-            //     boolean added = gm.addPlayer(player);
-            //     if(added) {
-            //         gm.initBoard();
-            //         return gm.getBoard();
-            //     }
-            // }
+         
         }
         return node;
     }
@@ -283,23 +185,13 @@ public class ServerGameRepo {
     }
 
     public boolean rightPlayer(String gameId, String sessionId) throws Exception {
-        if(!containsGame(gameId)) //|| !this.gameUserMap.get(gameId).containsKey(sessionId))
+        if(!containsGame(gameId)) 
             return false;
         GameManager gm = this.games.get(gameId);
         synchronized(gm) {
             if(!gm.checkPlayerSession(sessionId)) {
                 return false;
             }
-            //Map<String, Integer> sessionList = this.gameUserMap.get(gameId);
-    
-            //if(sessionList == null || !sessionList.containsKey(sessionId))
-            //    return false;
-    
-
-            //this is a game responsibility!!!!! Shouldn't be here!!
-           // int turn = this.games.get(gameId).getTurn();
-            //if(this.gameUserMap.get(gameId).get(sessionId).intValue() != turn)
-            //    return false;
             return true;
         }
     }
@@ -309,16 +201,9 @@ public class ServerGameRepo {
     public GameManager removePlayer(String sessionId) throws Exception {
          String gameId = null;
          GameManager gm = null;
-    //     //GameState game = null;
-
-    //    // try {
              gameId = this.userSessions.get(sessionId);
              gm = this.games.get(gameId);
              synchronized(gm) {
-    //             if(gm.getWinner() == null && gm.getNumPlayers() > 1) {
-                    
-                    //Map<String, Integer> playerNums = this.gameUserMap.get(gameId);
-                   // int playerNum = playerNums.get(sessionId).intValue();
                    if(gm.getNumMappedPlayers() > 1) {
                     String name = this.gamePluginMap.get(gameId);
                     this.joinable.get(name).remove(gameId);
@@ -326,22 +211,10 @@ public class ServerGameRepo {
                     gm.quitGame(sessionId);
                     this.userSessions.remove(sessionId);
 
-                    //this.gameUserMap.get(gameId).remove(sessionId);
-                   // this.gameUserMap.get(gameId).remove(sessionId);
-                    
-            //     } else {
-            //        // this.gameUserMap.remove(gameId);
-            //         this.games.remove(gameId);
-            //         this.userSessions.remove(sessionId);
-            //     }
-            //    // synchronized(this.activeList) {
-            //    //     this.activeList.get(gm.getName()).remove(gameId);
-            //    // }
                  System.out.println("numGames: " + this.games.size());
                  System.out.println("numSessions: " + this.userSessions.size());
                 System.out.println("gamePluginMap: " + this.gamePluginMap.size());
             }
-       // } catch (Exception e) {}
         
         return gm;
     }
@@ -357,28 +230,10 @@ public class ServerGameRepo {
             }
         }
         
-
-
-
-        // synchronized(this.activeList) {
-        //     Map<String, Integer> l = this.activeList.get(game);
-        //     List<String> list = new ArrayList<>();
-        //     if(l != null) {
-        //         for(String gameId : l.keySet()) {
-        //             if(l.get(gameId) < 2) {
-        //                 list.add(gameId);
-        //             }
-        //         }
-        //     }
-
-        //     //String[] list = l.keySet().toArray(new String[0]);
-        //     return list.toArray(new String[list.size()]);
-        //}
     }
 
     public Map<String, ArrayList<String>> getGamesList() {
         Map<String, ArrayList<String>> gamesList = this.loader.listAvailableGames();
-        //List<String> list = Arrays.asList(gamesList);
         return gamesList;
     }
 }

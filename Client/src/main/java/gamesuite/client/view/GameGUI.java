@@ -11,7 +11,6 @@ import javax.swing.JTextPane;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-//import gamesuite.core.model.GameState;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 
@@ -24,12 +23,10 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.Map;
 
 public class GameGUI {
     private JFrame window;
-    //private JLabel turnLabel;
     private JTextPane turnLabel;
     private JPanel centerPanel;
     private UIListener listener;
@@ -120,7 +117,7 @@ public class GameGUI {
     //main page
     public GameGUI(UIListener listener) {
 
-        //this.cmg = cmg;
+        
         this.listener = listener;
         this.window = new JFrame("GameSuite");
         this.window.setSize(800, 800);
@@ -156,8 +153,6 @@ public class GameGUI {
             if(val != null && !this.name.getText().equals("")) {
                 System.out.println("joining");
                  this.listener.joinGame(game, this.name.getText(), val);
-                //this.listener.initActiveList(val);
-                //this.cmg.getActiveGames(val);
             }
         });
         this.createGameBtn = new JButton("Create Game");
@@ -183,10 +178,7 @@ public class GameGUI {
         this.centerPanel.add(btnPanel);
         this.turnLabel.setEditable(false);
         this.centerPanel.add(this.turnLabel);
-        //this.btnPanel = new JPanel();
         this.window.add(this.centerPanel, BorderLayout.CENTER);
-        //this.btnPanel.add(this.selectBtn);
-        //this.window.add(this.btnPanel, BorderLayout.SOUTH);
         this.window.setMinimumSize(new Dimension(800, 500));
         this.window.setResizable(true);
 
@@ -207,12 +199,10 @@ public class GameGUI {
 
     public void disableGUI() { 
         this.centerPanel.setEnabled(false);
-        //this.gameBoard.setEnabled(false);
     }
 
     public void enableGUI() {
         this.centerPanel.setEnabled(true);
-        //this.gameBoard.setEnabled(true);
     }
 
     public void activate() {
@@ -233,14 +223,7 @@ public class GameGUI {
     }
 
     public void update(JsonNode gameState) {
-       // if(this.gameView != null) {
-                //List<CoordPair> changed = this.gameView.getChangedPos();
                 this.gameBoard.update(gameState);
-                //this.gameBoard.update();
-         //   }
-           // this.tmpX = -1;
-            //this.tmpY = -1;
- 
             if(!this.gameBoard.isGameOver()) {
                 if(this.playerTurn == this.gameBoard.getTurn())
                     enableGUI();
@@ -249,8 +232,6 @@ public class GameGUI {
                 String winner = this.gameBoard.getWinner();
                 setGameOverLabel(winner + " is the winner");
             }
-           // return null;
-        //this.gameBoard.updateBoard(gameState);
     }
 
     public void setGameState(JsonNode game) {

@@ -1,6 +1,5 @@
 package gamesuite.core.model;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface CoordPair{
     
@@ -16,7 +15,4 @@ public interface CoordPair{
 
     public CoordPair toCoordPair(int[] arr);
 
-    //public int[] toArray(CoordPair pos);
-
-   //public ObjectNode getCoordPairJson();
 }

@@ -1,9 +1,6 @@
 package gamesuite.boardgame.model;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GamePiece;
 
 public class CheckersCoordPair implements CoordPair {
     private int x;
@@ -65,9 +62,9 @@ public class CheckersCoordPair implements CoordPair {
 
     public CheckersCoordPair copy() { 
         CheckersCoordPair pos = new CheckersCoordPair(x, y); 
-        //if(this.piece != null) {
+        
             pos.setPiece(this.piece);
-        //}
+        
         return pos;
     }
 
@@ -85,19 +82,5 @@ public class CheckersCoordPair implements CoordPair {
         }
         return null;
     }
-
-  
-
-    // @Override
-    // public int[] toArray(CoordPair pos) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'toArray'");
-    // }
-
-    // @Override
-    // public ObjectNode getCoordPairJson() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getCoordPairJson'");
-    // }
 
 }

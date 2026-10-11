@@ -17,5 +17,4 @@ public interface GameBoard {
     public boolean isValidPos(int x, int y);
 
     public String toString();
-    //public JsonNode getJsonNode();
 }

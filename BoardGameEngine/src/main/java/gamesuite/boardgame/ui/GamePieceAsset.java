@@ -15,7 +15,6 @@ public class GamePieceAsset extends JComponent {
         this.name = name;
         this.team = team;
         this.type = type;
-        //this.isKing = isKing;
     }
 
     public String getName() { return this.name; }
@@ -24,8 +23,4 @@ public class GamePieceAsset extends JComponent {
     public boolean isKing() { return this.isKing; }
     public String getType() { return this.type; }
 
-    //public Object getType() {
-    //    // TODO Auto-generated method stub
-    //    throw new UnsupportedOperationException("Unimplemented method 'getType'");
-    //}
 }

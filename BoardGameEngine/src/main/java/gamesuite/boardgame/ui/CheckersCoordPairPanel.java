@@ -10,9 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
-//import checkers.ui.GamePieceAsset;
-import gamesuite.core.model.CoordPair;
-import gamesuite.core.model.GamePiece;
 import gamesuite.core.ui.UIListener;
 import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
@@ -79,10 +76,10 @@ public class CheckersCoordPairPanel extends JPanel {
             this.piece = null;
         else if(this.pos.getPiece().getTeam().equals("B")) {
             this.piece = new GamePieceAsset(Color.BLACK,piece.getName(), piece.getTeam(), piece.getType());
-            //add(this.piece);
+        
         } else {
             this.piece = new GamePieceAsset(Color.RED,piece.getName(), piece.getTeam(), piece.getType());
-            //add(this.piece);
+           
         }
         repaint();
     }
@@ -91,13 +88,13 @@ public class CheckersCoordPairPanel extends JPanel {
         if(piece == null) {
             this.piece = null;
         } else if(piece.getTeam().equals("B")) {
-            //remove(this.piece);
+         
             this.piece = new GamePieceAsset(Color.BLACK, piece.getName(), piece.getTeam(), piece.getType());
-            //add(this.piece);
+          
         } else {
-            //remove(this.piece);
+          
             this.piece = new GamePieceAsset(Color.RED,piece.getName(), piece.getTeam(), piece.getType());
-            //add(this.piece);
+         
         }
         repaint();
     }

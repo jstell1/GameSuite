@@ -1,8 +1,5 @@
 package gamesuite.boardgame.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gamesuite.core.model.Move;
 
 public class CheckersMove implements Move {
@@ -59,16 +56,5 @@ public class CheckersMove implements Move {
 
     public int getEndY() { return this.endY; }
 
-    // @Override
-    // public void setJsonNode(JsonNode node) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setJsonNode'");
-    // }
-
-    // @Override
-    // public JsonNode getJsonNode() {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     JsonNode node = mapper.valueToTree(this);
-    //     return node;
-    // } 
+   
 }

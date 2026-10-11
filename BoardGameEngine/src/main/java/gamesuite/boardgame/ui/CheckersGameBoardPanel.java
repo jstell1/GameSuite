@@ -6,15 +6,10 @@ import java.awt.GridLayout;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import gamesuite.core.model.Player;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.boardgame.model.CheckersCoordPair;
@@ -73,11 +68,6 @@ public class CheckersGameBoardPanel extends GameBoardUI {
 
     public void updateBoard(List<CheckersCoordPair> changes) {
         
-        //ObjectMapper mapper = new ObjectMapper();
-        //List<CheckersCoordPair> changes = mapper.convertValue(
-        //    changesNode,
-        //    new TypeReference<List<CheckersCoordPair>>() {}
-       // );
         
         this.changed = changes;
         if(this.changed != null) {
@@ -88,8 +78,6 @@ public class CheckersGameBoardPanel extends GameBoardUI {
                 CheckersCoordPairPanel p = this.boardPanel[pos.getX()][pos.getY()];
                 p.setPiece(piece);
                 
-                //updateList[i] = this.boardPanel[this.changed.get(i).getX()][this.changed.get(i).getY()];
-                //updateList[i].setPiece(this.changed.get(i).getPiece());
             }
             this.changed = null;        
         }
@@ -117,33 +105,15 @@ public class CheckersGameBoardPanel extends GameBoardUI {
             List<CheckersCoordPair> changed = this.gameView.getChangedPos();
             
             updateBoard(changed);
-            //this.gameBoard.update();
         }
         this.tmpX = -1;
         this.tmpY = -1;
 
-        /*if(!this.gameView.isGameOver()) {
-            if(this.playerTurn == this.gameView.getTurn())
-                this.listener.enableBoard();
-            this.gui.setTurnLabel(this.gameView.getTurn());
-        } else {
-            Player winner = this.gameView.getWinner();
-            this.gui.setGameOverLabel(winner.getName() + " is the winner");
-        }
-        return null;
-            */  
     }
 
     public void setGameState(CheckersGameState gameView) {
-        //ObjectMapper mapper = new ObjectMapper();
-        //CheckersGameState gameView;
-        //try {
-            //gameView = mapper.treeToValue(gameState, CheckersGameState.class);
             this.gameView = gameView;
-        //} catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
-        //    e.printStackTrace();
-       // }
     }
     
     public int getTurn() {
@@ -155,15 +125,8 @@ public class CheckersGameBoardPanel extends GameBoardUI {
     }
 
     public void addYellowedPanel(CheckersCoordPairPanel pos) {
-        //ObjectMapper mapper = new ObjectMapper();
-        //CheckersCoordPairPanel p;
-        //try {
-            //p = mapper.treeToValue(pos, CheckersCoordPairPanel.class);
             this.yellowed.add(pos);
-        //} catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
-        //    e.printStackTrace();
-        //}
     }
 
     public CheckersCoordPairPanel getBoardPos(int x, int y) {
@@ -181,13 +144,8 @@ public class CheckersGameBoardPanel extends GameBoardUI {
             this.tmpX = -1;
             this.tmpY = -1;
             removeYellowed(x, y);
-            //SwingUtilities.invokeLater(() -> {
-                //this.gui.removeYellowed(x, y);
-            //});
-            //this.gameBoard.removeYellowed(x, y);
         } else {
             this.listener.disabledBoard();
-            //this.gameBoard.setEnabled(false);
             CheckersMove move = new CheckersMove(this.tmpX, this.tmpY, x, y);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode moveNode = mapper.valueToTree(move);

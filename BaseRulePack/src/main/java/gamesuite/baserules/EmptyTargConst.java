@@ -5,11 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
 import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
-import gamesuite.core.model.rules.Result;
 
 public class EmptyTargConst extends Constraint {
 

@@ -92,38 +92,4 @@ public class App {
         main.activate();
 
     }
-
-
-    /* 
-    public static void runLocal(String uiType, String ip, int port, String player1, String player2, Scanner in) {
-         
-        
-
-        if(ip == "localhost" && port == 0) {
-            
-            Player p1 = new Player(player1, 0);
-            Player p2 = new Player(player2, 0);
-            GameBoard board = new GameBoard(8);
-            
-            CheckersGameManager checkers = new CheckersGameManager(board, p1, p2);
-            checkers.initBoard();
-            GameState game = checkers.getGameState();
-    
-            GameUI ui = null;
-            if(uiType.equals("cli")) 
-                ui = new TextGameCLI(game, board, in, checkers);   
-            else {
-                //GUIManager mang = new GUIManager(checkers, game);
-                //GameBoardPanel gameBoard = new GameBoardPanel(board, 600, mang);
-                //mang.setBoard(gameBoard);
-                //GameGUI gui = new GameGUI(game.getTurn(), gameBoard);
-                //mang.setGameGUI(gui);
-                //ui = mang;
-            }
-            ui.runGame();
-        } else {
-
-        }
-    }
-        */
 }

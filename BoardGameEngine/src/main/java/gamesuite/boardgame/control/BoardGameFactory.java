@@ -1,15 +1,12 @@
 package gamesuite.boardgame.control;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -43,25 +40,11 @@ public class BoardGameFactory extends GameManagerFactory {
 
         CheckersGameBoard board = new CheckersGameBoard(sideLength);
         JsonNode pieces = gameDef.get("pieces");
-        //Map<String, CheckersGamePiece.Builder> pieceList = 
-        //setupPieceVectors(pieces);
         String pack = gameDef.get("rulePack").asText();
-        //Map<String, Constraint> constraints = null;
 
         
-        //loading constraints
-        //try {
-            this.constraints = this.rulesLoader.loadConstraints(pack);
-        //} catch (Exception e) {
-            // TODO Auto-generated catch block
-        //    e.printStackTrace();
-        //}
-        
-       // try {
-            this.effects = this.rulesLoader.loadEffects(pack);
-       // } catch (Exception e) {
-        //    e.printStackTrace();
-        //}
+        this.constraints = this.rulesLoader.loadConstraints(pack);
+        this.effects = this.rulesLoader.loadEffects(pack);
 
         //building actions map
         JsonNode actionsNode = gameDef.get("actions");
@@ -94,6 +77,7 @@ public class BoardGameFactory extends GameManagerFactory {
         CheckersPlayer player = new CheckersPlayer(playerName, 0);
         player.setUserId(playerId);
         player.setTurn(1);
+
         //setting up players
         ArrayList<String> pieceNames = new ArrayList<>();
         for(JsonNode p : playerNodes) {
@@ -173,7 +157,6 @@ public class BoardGameFactory extends GameManagerFactory {
             }
 
             CheckersGamePiece piece = b.build();
-            //piece.setName(playerNodes.get(pNum - 1).get("turnName").asText());
             board.setBoardPos(x, y, piece);
         }
 
@@ -191,14 +174,12 @@ public class BoardGameFactory extends GameManagerFactory {
         JsonNode drawConditions = gameDef.get("drawConditions");
         JsonNode postChecks = gameDef.get("postChecks");
 
-        //for(JsonNode rule : gameRules) {
-            //JsonNode constNode = rule.get("constraints");
-            for(JsonNode constraint : gameRules) {
-                String type = constraint.get("type").asText();
-                Constraint temp = this.constraints.get(type);
-                controller.addGameConstraint(temp);
-            }
-       // }
+        for(JsonNode constraint : gameRules) {
+            String type = constraint.get("type").asText();
+            Constraint temp = this.constraints.get(type);
+            controller.addGameConstraint(temp);
+        }
+       
 
         for(JsonNode action : winConditions) {
             Action act = this.actions.get(action.get("name").asText());
@@ -232,7 +213,7 @@ public class BoardGameFactory extends GameManagerFactory {
             controller.addPostCheck(act);
         }
         
-        BoardGameManager gm = new BoardGameManager(board, game, controller);//new BoardGameManager(board, validator, game, controller, mang);
+        BoardGameManager gm = new BoardGameManager(board, game, controller);
         gm.mapSessionPlayer(playerId);
         gm.setPieceList(this.pieceList);
 

@@ -7,7 +7,6 @@ import gamesuite.boardgame.model.CheckersGameBoard;
 import gamesuite.boardgame.model.CheckersGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
 
 public class MustAttackEffect extends Effect {

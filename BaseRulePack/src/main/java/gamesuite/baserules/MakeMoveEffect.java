@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
@@ -58,10 +57,6 @@ public class MakeMoveEffect extends Effect implements ConstDependent {
     @Override
     public void updateState(JsonNode move) {
 
-       // if(this.validAttack.checkMove(move)) {
-        //    this.gameState.setLastJumped(true);
-       // }
-
         int sX = move.get("startX").asInt();
         int sY = move.get("startY").asInt();
         int eX = move.get("endX").asInt();
@@ -81,8 +76,6 @@ public class MakeMoveEffect extends Effect implements ConstDependent {
         this.gameState.addChangedPos(pos);
         this.gameState.addChangedPos(end);
         this.gameState.setFurtherJumps(null);
-        //((ObjectNode) move).put("startX", eX);
-        //((ObjectNode) move).put("startY", eY);
     }
 
     @Override

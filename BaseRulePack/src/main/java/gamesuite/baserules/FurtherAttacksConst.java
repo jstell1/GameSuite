@@ -6,12 +6,9 @@ import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
 import gamesuite.boardgame.model.CheckersGamePiece;
 import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
-import gamesuite.core.model.Move;
 import gamesuite.core.model.rules.Constraint;
-import gamesuite.core.model.rules.Result;
 
 public class FurtherAttacksConst extends Constraint {
 
@@ -29,8 +26,6 @@ public class FurtherAttacksConst extends Constraint {
 
     @Override
     public boolean checkMove(JsonNode move) {
-
-       // this.gameState.setFurtherJumps(null);
         
         int tmpx = move.get("endX").asInt();
         int tmpy = move.get("endY").asInt();
@@ -61,7 +56,7 @@ public class FurtherAttacksConst extends Constraint {
                 y = startY + validJumps[i][1];
             }
             
-            if(this.board.isValidPos(x, y)) {//inBounds(this.board.getBoardPos(x, y))) {
+            if(this.board.isValidPos(x, y)) {
                 jumpX = (startX + x) >> 1;
                 jumpY = (startY + y) >> 1;
 
@@ -78,10 +73,6 @@ public class FurtherAttacksConst extends Constraint {
             }
         }
         return false;
-        // if(this.gameState.getFurtherJumps() != null) {
-        //     return new Result(true);
-        // }
-        // return new Result(false);
     }
 
     @Override

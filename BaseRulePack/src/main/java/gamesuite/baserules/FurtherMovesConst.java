@@ -82,18 +82,14 @@ public class FurtherMovesConst extends Constraint {
                 y = startY + validMoves[i][1];
             }
             
-            if(this.board.isValidPos(x, y)) {//inBounds(this.board.getBoardPos(x, y))) {
-                //jumpX = (startX + x) >> 1;
-               // jumpY = (startY + y) >> 1;
+            if(this.board.isValidPos(x, y)) {
 
-               // CheckersCoordPair jumpPos = this.board.getBoardPos(jumpX, jumpY);
                 CheckersCoordPair end = this.board.getBoardPos(x, y);
                 CheckersGamePiece endPiece = null;
                 if(end != null)
                     endPiece = end.getPiece();
-                //CheckersGamePiece jumpPiece = jumpPos.getPiece();
 
-                if(/*jumpPiece != null && !team.equals(jumpPiece.getTeam()) && */endPiece == null) {
+                if(endPiece == null) {
                     return true;
                 }
             }

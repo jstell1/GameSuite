@@ -8,15 +8,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gamesuite.boardgame.model.CheckersCoordPair;
 import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
 import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.ConstDependent;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
-import gamesuite.core.model.rules.Result;
 
 public class CaptureEffect extends Effect implements ConstDependent {
 

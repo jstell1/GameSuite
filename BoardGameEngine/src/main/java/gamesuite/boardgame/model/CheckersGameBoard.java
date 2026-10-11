@@ -2,8 +2,6 @@ package gamesuite.boardgame.model;
 
 import java.util.Arrays;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gamesuite.core.model.GameBoard;
 
@@ -100,10 +98,4 @@ public class CheckersGameBoard implements GameBoard {
         return str;
     }
 
-    // @Override
-    // public JsonNode getJsonNode() {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     JsonNode node = mapper.valueToTree(this);
-    //     return node; 
-    // }
 }
