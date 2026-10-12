@@ -63,7 +63,7 @@ public class ServerGameRepo {
     public String createGame(String game, String group, String p1, String sessionId) throws 
                                                                                         InstantiationException, IllegalAccessException, 
                                                                                         InvocationTargetException, NoSuchMethodException, 
-                                                                                        IOException
+                                                                                        IOException, IllegalArgumentException
     {
         
         GameManagerFactory gmFact = this.loader.createGameManager(group);

@@ -99,6 +99,7 @@
   "properties": {
     "game": {"type": "string"},
     "rulePack": {"type": "string"},
+    "ui": {"type": "string"},
     "validMove": {"type": "string"},
     "validAttack": {"type": "string"},
     "turnControl": {

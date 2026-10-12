@@ -209,9 +209,10 @@
               }
             },
             "gameId": {"type": "string"},
+            "ui": {"type": "string"},
             "gameState": {"$ref": "#/definitions/GameState"}
           },
-          "required": ["board", "gameId", "gameState"],
+          "required": ["board", "gameId", "gameState", "ui"],
           "additionalProperties": false
         }
       },

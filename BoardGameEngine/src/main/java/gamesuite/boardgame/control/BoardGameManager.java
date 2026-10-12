@@ -29,6 +29,7 @@ public class BoardGameManager implements GameManager {
     private Map<String, CheckersGamePiece.Builder> pieceList;
     private int[][] attackVectors;
     private Effect turnControl;
+    private String ui;
 
     
 
@@ -74,6 +75,11 @@ public class BoardGameManager implements GameManager {
         this.moveController = new MoveController(validator, stateManager, this.board);
         this.sessionPlayerMap = new ArrayList<>();
     }
+
+    public void setUI(String ui) { this.ui = ui; }
+  
+    @Override
+    public String getUI() { return this.ui; };
 
     public void setAttackVectors(JsonNode vects) {
         int[][] vectArr = new int[vects.size()][2];

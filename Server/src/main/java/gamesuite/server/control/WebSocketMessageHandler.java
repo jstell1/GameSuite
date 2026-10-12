@@ -287,11 +287,13 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             mapper = new ObjectMapper();
             String gameId = this.gmRepo.createGame(gameNm, group, name, session.getId());
                 JsonNode game = this.gmRepo.getGameView(gameId);
-            this.gmRepo.getGM(gameId);
+            //String ui = this.gmRepo.getGM(gameId).getUI();
             String msgType = "gameCreatedResponse";
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.put("gameId", gameId);
+            //respPayload.put("ui", ui);
             respPayload.set("gameState", game);
+            
             sendMessage(msgType, respPayload, session);
             System.out.println("sent");
         } catch (Exception e) {
@@ -332,6 +334,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
         
         GameManager gm = this.gmRepo.getGM(gameId); 
+        String ui = gm.getUI();
         
         synchronized(gm) {
         
@@ -369,6 +372,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.set("board", boardJson);
             respPayload.put("gameId", gameId);
+            respPayload.put("ui", ui);
             respPayload.set("gameState", game);
             ObjectNode outer = mapper.createObjectNode().set(msgType, respPayload);
             String str;

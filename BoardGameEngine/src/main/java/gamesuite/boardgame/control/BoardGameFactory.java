@@ -41,7 +41,7 @@ public class BoardGameFactory extends GameManagerFactory {
         CheckersGameBoard board = new CheckersGameBoard(sideLength);
         JsonNode pieces = gameDef.get("pieces");
         String pack = gameDef.get("rulePack").asText();
-
+        String ui = gameDef.get("ui").asText();
         
         this.constraints = this.rulesLoader.loadConstraints(pack);
         this.effects = this.rulesLoader.loadEffects(pack);
@@ -222,6 +222,7 @@ public class BoardGameFactory extends GameManagerFactory {
         }
 
         gm.setTurnControl(turnControl);
+        gm.setUI(ui);
         return gm;
     }
 

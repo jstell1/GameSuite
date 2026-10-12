@@ -56,7 +56,7 @@ task CheckersJar(type: Jar) {
 }
 
 task UIJar(type: Jar) {
-    archiveBaseName = 'BoardGameUI'
+    archiveBaseName = 'CheckersGameBoardPanel'
     
     // grab compiled classes
     from(sourceSets.main.output) {

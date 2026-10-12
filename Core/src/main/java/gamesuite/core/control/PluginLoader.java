@@ -237,10 +237,16 @@ public class PluginLoader {
 
     public GameBoardFactory createBoardFactory(String gameName) throws InstantiationException, IllegalAccessException,
                                                                          InvocationTargetException, NoSuchMethodException, 
-                                                                         SecurityException 
+                                                                         SecurityException, IllegalArgumentException
     {
+        System.out.println("IT IS HAPPENING HERE MAYBE?!?!");
+
+        
         Class<? extends GameBoardFactory> clazz = this.gameBoards.get(gameName);
-        if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);
+        if (clazz == null) {
+            System.out.println("NOT HERE!! SHOULD THROW!!!");
+          throw new IllegalArgumentException("Game not found: " + gameName);  
+        } 
   
             return clazz.getDeclaredConstructor().newInstance();
  
@@ -248,7 +254,7 @@ public class PluginLoader {
 
     public GameManagerFactory createGameManager(String gameName) throws NoSuchMethodException, SecurityException,
                                                                         InstantiationException, InvocationTargetException,
-                                                                        IllegalAccessException
+                                                                        IllegalAccessException, IllegalArgumentException
 {
         Class<? extends GameManagerFactory> clazz = gameClasses.get(gameName);
         if (clazz == null) throw new IllegalArgumentException("Game not found: " + gameName);

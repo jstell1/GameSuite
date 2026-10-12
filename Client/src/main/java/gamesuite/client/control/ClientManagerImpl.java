@@ -1,5 +1,6 @@
 package gamesuite.client.control;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -79,6 +80,10 @@ public class ClientManagerImpl implements ClientManager {
         ObjectMapper mapper = new ObjectMapper();
      
             this.schemaRoot = mapper.readTree(schemaStream);
+
+        System.out.println("cwd: " + System.getProperty("user.dir"));
+System.out.println("ui dir: " + new File("../plugins/ui").getCanonicalPath());
+System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSource().getLocation());
    
     }
 
@@ -181,6 +186,7 @@ public class ClientManagerImpl implements ClientManager {
                             e3.printStackTrace();
                             sendMainGuiError("problem writing message to socket");
                         }
+                        e.printStackTrace();
                         return;
                     }
                     
@@ -201,6 +207,7 @@ public class ClientManagerImpl implements ClientManager {
                         case "gameReadyResponse":
                             JsonNode boardJson = mapper.valueToTree(payload.get("board"));
                             gameJson = mapper.valueToTree(payload.get("gameState"));
+                            String ui = mapper.valueToTree(payload.get("ui")).asText();
                             if(ClientManagerImpl.this.gameId == null) {
                                 ClientManagerImpl.this.gameId = payload.get("gameId").asText();
                                 ClientManagerImpl.this.guiGM.setGameId(payload.get("gameId").asText());
@@ -212,9 +219,8 @@ public class ClientManagerImpl implements ClientManager {
 
                             GameBoardFactory fact;
                             try {
-                                fact = ClientManagerImpl.this.loader.createBoardFactory("BoardGameUI");
-                            } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                                    | NoSuchMethodException | SecurityException e) {
+                                fact = ClientManagerImpl.this.loader.createBoardFactory(ui);
+                            } catch (Exception e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                                 sendMainGuiError("issue creating board UI from plugin");

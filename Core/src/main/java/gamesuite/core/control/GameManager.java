@@ -32,4 +32,5 @@ public interface GameManager {
     public boolean checkPlayerSession(String playerId);
     public List<String> getUserIdList();
     public int getNumMappedPlayers();
+    public String getUI();
 }

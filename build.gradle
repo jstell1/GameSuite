@@ -64,7 +64,7 @@ tasks.register('buildPlugins') {
         def pluginsDir = file("$rootDir/plugins")
         def jarFiles = [
             file("$rootDir/BoardGameEngine/build/libs/BoardGameEngine.jar"),
-            file("$rootDir/BoardGameEngine/build/libs/BoardGameUI.jar"),
+            file("$rootDir/BoardGameEngine/build/libs/CheckersGameBoardPanel.jar"),
             file("$rootDir/BaseRulePack/build/libs/BaseRulePack.jar")
         ]
 
