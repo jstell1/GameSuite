@@ -62,6 +62,7 @@ task UIJar(type: Jar) {
     from(sourceSets.main.output) {
         include 'gamesuite/boardgame/model/**'
         include 'gamesuite/boardgame/ui/**'
+        
     }
     from(sourceSets.main.resources)
 }
@@ -69,3 +70,4 @@ task UIJar(type: Jar) {
 tasks.matching { it.name.startsWith("bootDist") || it.name.startsWith("bootStart") }.configureEach {
     enabled = false
 }
+

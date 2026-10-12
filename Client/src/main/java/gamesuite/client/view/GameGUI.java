@@ -139,7 +139,7 @@ public class GameGUI {
         this.centerPanel = new JPanel();
         this.centerPanel.add(this.listpane);
 
-        this.centerPanel.setPreferredSize(new Dimension(600, 600));
+        this.centerPanel.setPreferredSize(new Dimension(800, 800));
 
         this.name = new JTextField();
         this.name.setPreferredSize(new Dimension(120, 30));
@@ -179,7 +179,7 @@ public class GameGUI {
         this.turnLabel.setEditable(false);
         this.centerPanel.add(this.turnLabel);
         this.window.add(this.centerPanel, BorderLayout.CENTER);
-        this.window.setMinimumSize(new Dimension(800, 500));
+        this.window.setMinimumSize(new Dimension(1000, 800));
         this.window.setResizable(true);
 
     }

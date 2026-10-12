@@ -4,4 +4,4 @@ plugins {
 }
 
 rootProject.name = 'GameSuite'
-include 'Core', 'Server', 'Client', 'BoardGameEngine', 'BaseRulePack'
+include 'Core', 'Server', 'Client', 'BoardGameEngine', 'BaseRulePack', 'StaticGameBoard'

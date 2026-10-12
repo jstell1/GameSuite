@@ -57,7 +57,7 @@ tasks.register('preparePluginsDir') {
 tasks.register('buildPlugins') {
     group = 'build'
     description = 'Builds Core, Server, Client jars and puts them in plugins folder'
-    dependsOn ':Client:fatJar', ':BoardGameEngine:CheckersJar', ':BoardGameEngine:UIJar', ':BaseRulePack:jar' // adjust task names if needed
+    dependsOn ':Client:fatJar', ':BoardGameEngine:CheckersJar', ':BoardGameEngine:UIJar', ':StaticGameBoard:StaticUIJar', ':BaseRulePack:jar' // adjust task names if needed
     dependsOn 'preparePluginsDir'
 
     doLast {
@@ -65,7 +65,9 @@ tasks.register('buildPlugins') {
         def jarFiles = [
             file("$rootDir/BoardGameEngine/build/libs/BoardGameEngine.jar"),
             file("$rootDir/BoardGameEngine/build/libs/CheckersGameBoardPanel.jar"),
+            file("$rootDir/StaticGameBoard/build/libs/StaticGameBoard.jar"),
             file("$rootDir/BaseRulePack/build/libs/BaseRulePack.jar")
+            
         ]
 
         copy {
@@ -78,6 +80,10 @@ tasks.register('buildPlugins') {
         }
         copy {
             from jarFiles[2]
+            into "$pluginsDir/ui"
+        }
+        copy {
+            from jarFiles[3]
             into "$pluginsDir/rules"
         }
    
@@ -90,6 +96,20 @@ tasks.register('buildPlugins') {
 
             copy {
                 from defsDir
+                into targetDir
+            }
+
+            println "Copied game definitions"
+        }
+          def defsDir2 = file("$rootDir/StaticGameBoard/src/main/resources/gameDefinitions")
+
+        if (defsDir2.exists()) {
+
+            def targetDir = file("$pluginsDir/gameDefinitions/BoardGameEngine")
+            targetDir.mkdirs()
+
+            copy {
+                from defsDir2
                 into targetDir
             }
 
