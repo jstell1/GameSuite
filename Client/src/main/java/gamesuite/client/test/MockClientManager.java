@@ -46,6 +46,7 @@ public class MockClientManager implements ClientManager {
             JsonNode root;
             InputStream in = getClass().getClassLoader().getResourceAsStream("test.json");
             this.loader = new PluginLoader(path);
+            this.loader.loadAll();
             this.loader.setUIPluginLoader(path + "/ui");
             this.loader.loadGameBoards();
             root = mapper.readTree(in);
@@ -102,7 +103,7 @@ public class MockClientManager implements ClientManager {
     {
         try {
             System.out.println("readying game");
-            GameBoardFactory fact = loader.createBoardFactory("BoardGameUI");
+            GameBoardFactory fact = loader.createBoardFactory("StaticGameBoard");
             ObjectMapper mapper = new ObjectMapper();
             
           

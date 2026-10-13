@@ -94,7 +94,7 @@ public class StaticGameBoard extends GameBoardUI {
                 
                 System.out.println("Mouse coords: (" + x + "," + y + ")");
 
-                if(x > leftX && x < rightXBound && y > topY && y < bottomYBound) {
+                if(x > leftX && x < rightXBound && y > topY && y < bottomYBound && StaticGameBoard.this.listener.getIsBoardEnabled()) {
                     int xCoord = (x - leftX) / xDist;
                     int yCoord = (y - topY) / yDist;
 
@@ -107,21 +107,21 @@ public class StaticGameBoard extends GameBoardUI {
                     }
 
                     if(StaticGameBoard.this.tmpX == -1 && StaticGameBoard.this.tmpY == -1) {
-                        StaticGameBoard.this.tmpX = xCoord; 
-                        StaticGameBoard.this.tmpY = yCoord;
-                    } else if(x == StaticGameBoard.this.tmpX && y == StaticGameBoard.this.tmpY) {
+                        StaticGameBoard.this.tmpX = yCoord; 
+                        StaticGameBoard.this.tmpY = xCoord;
+                    } else if(yCoord == StaticGameBoard.this.tmpX && xCoord == StaticGameBoard.this.tmpY) {
                         StaticGameBoard.this.tmpX = -1;
                         StaticGameBoard.this.tmpY = -1;
                     } else {
-                        StaticGameBoard.this.tmpX2 = xCoord;
-                        StaticGameBoard.this.tmpY2 = yCoord;
+                        StaticGameBoard.this.tmpX2 = yCoord;
+                        StaticGameBoard.this.tmpY2 = xCoord;
 
                         StaticGameBoard.this.listener.disabledBoard();
                           CheckersMove move = new CheckersMove(
                                 StaticGameBoard.this.tmpX, 
                                 StaticGameBoard.this.tmpY, 
-                                x, 
-                                y
+                                StaticGameBoard.this.tmpX2,
+                                StaticGameBoard.this.tmpY2
                             );
                         ObjectMapper mapper = new ObjectMapper();
                         JsonNode moveNode = mapper.valueToTree(move);
@@ -240,12 +240,17 @@ public class StaticGameBoard extends GameBoardUI {
                 }
             }
 
-            this.yellows[this.tmpX][this.tmpY] = false;
-            this.yellows[this.tmpX2][this.tmpY2] = false;
-            this.tmpX = -1;
-            this.tmpY = -1;
-            this.tmpX2 = -1;
-            this.tmpY2 = -1;
+            if(this.tmpX > -1 && this.tmpY > -1) {
+                this.yellows[this.tmpX][this.tmpY] = false;
+                this.tmpX = -1;
+                this.tmpY = -1;
+            }
+
+            if(this.tmpX2 > -1 && this.tmpY2 > -1) {
+                this.yellows[this.tmpX2][this.tmpY2] = false;
+                this.tmpX2 = -1;
+                this.tmpY2 = -1;
+            }
             repaint();
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
