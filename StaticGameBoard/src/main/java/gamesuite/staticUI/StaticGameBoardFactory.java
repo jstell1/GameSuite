@@ -2,16 +2,50 @@ package gamesuite.staticUI;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gamesuite.boardgame.model.CheckersCoordPair;
+import gamesuite.boardgame.model.CheckersGamePiece;
+import gamesuite.boardgame.model.CheckersGameState;
 import gamesuite.core.ui.GameBoardFactory;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
+import gamesuite.staticUI.model.Piece;
 
 public class StaticGameBoardFactory implements GameBoardFactory {
 
     @Override
-    public GameBoardUI createGameBoard(JsonNode arg0, JsonNode arg1, UIListener arg2) throws JsonProcessingException {
-        return new StaticGameBoard();
+    public GameBoardUI createGameBoard(JsonNode boardJson, JsonNode gameJson, UIListener listener) throws JsonProcessingException {
+        
+        ObjectMapper mapper = new ObjectMapper();
+        CheckersCoordPair[][] board = mapper.treeToValue(boardJson, CheckersCoordPair[][].class);
+
+        Piece[][] pBoard = new Piece[board.length][board[0].length];
+
+        for(int i = 0; i < pBoard.length; i++) {
+            for(int j = 0; j < pBoard[0].length; j++) {
+                CheckersCoordPair pos = board[i][j];
+                CheckersGamePiece piece = pos.getPiece();
+
+                if(piece == null) {
+                    pBoard[i][j] = null;
+                } else {
+                    Piece newPiece = new Piece(
+                                piece.getName(),
+                                piece.getTeam(),
+                                piece.getType(),
+                                piece.getVal()
+                            );
+                    pBoard[i][j] = newPiece;
+                }
+            }
+        }
+        CheckersGameState game = mapper.treeToValue(gameJson, CheckersGameState.class);
+        String teamNames[] = mapper.treeToValue(gameJson.get("teamNames"), String[].class);
+        StaticGameBoard b = new StaticGameBoard(listener, pBoard, teamNames, game);
+        //b.setTeamNames(teamNames);
+        //b.setBoard();
+        return b;
     }
 
 }

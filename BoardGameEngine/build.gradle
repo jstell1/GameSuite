@@ -39,32 +39,38 @@ tasks.named('bootJar') {
 }
 tasks.named('jar') {
     enabled = true
-    archiveBaseName.set("BoardGameEngine")
+    archiveBaseName.set("BoardGameEngine-full")
     archiveClassifier.set("")
     archiveVersion.set("")
 }
 
 task CheckersJar(type: Jar) {
     archiveBaseName = 'BoardGameEngine'
-    
+   
     // grab compiled classes
     from(sourceSets.main.output) {
         include 'gamesuite/boardgame/model/**'
         include 'gamesuite/boardgame/control/**'
+    
     }
-    from(sourceSets.main.resources) 
+     from(sourceSets.main.resources) {
+        exclude 'META-INF/services/gamesuite.core.ui.GameBoardFactory'
+    }
 }
 
 task UIJar(type: Jar) {
     archiveBaseName = 'CheckersGameBoardPanel'
     
+  
     // grab compiled classes
     from(sourceSets.main.output) {
         include 'gamesuite/boardgame/model/**'
         include 'gamesuite/boardgame/ui/**'
         
     }
-    from(sourceSets.main.resources)
+      from(sourceSets.main.resources) {
+        exclude 'META-INF/services/gamesuite.core.control.GameManagerFactory'
+    }
 }
 
 tasks.matching { it.name.startsWith("bootDist") || it.name.startsWith("bootStart") }.configureEach {

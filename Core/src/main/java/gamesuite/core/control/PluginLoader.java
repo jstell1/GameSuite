@@ -14,6 +14,8 @@ import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,13 +64,13 @@ public class PluginLoader {
     }
     
 
-    private void loadGameUIs(File jarFile) throws MalformedURLException {
+    private void loadGameUIs(File jarFile) throws IOException {
         URL jarUrl = jarFile.toURI().toURL();
         String gameName = jarFile.getName();
 
         gameName = jarFile.getName().replaceFirst("\\.jar$", "");
 
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, resolveParent(jarFile));//this.getClass().getClassLoader());
 
         ServiceLoader<GameBoardFactory> serviceLoader = ServiceLoader.load(GameBoardFactory.class, classLoader);
         Iterator<GameBoardFactory> iterator = serviceLoader.iterator();
@@ -145,14 +147,14 @@ public class PluginLoader {
         System.out.println("Registered game plugin: " + gameName);
     }
 
-    public Map<String, Constraint> loadConstraints(String packName) throws MalformedURLException {
+    public Map<String, Constraint> loadConstraints(String packName) throws IOException {
 
         File jarFile = new File(this.pluginDir + "/rules/" + packName);
         URL jarUrl = jarFile.toURI().toURL();
         String pack = jarFile.getName().replaceFirst("\\.jar$", "");
 
         URLClassLoader classLoader = 
-            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));
+            new URLClassLoader(new URL[]{jarUrl}, resolveParent(jarFile));
 
         ServiceLoader<Constraint> serviceLoader = 
             ServiceLoader.load( Constraint.class, classLoader);
@@ -169,14 +171,14 @@ public class PluginLoader {
         return ruleMap;
     }
 
-    public Map<String, Effect> loadEffects(String packName) throws MalformedURLException {
+    public Map<String, Effect> loadEffects(String packName) throws IOException {
 
         File jarFile = new File(this.pluginDir + "/rules/" + packName);
         URL jarUrl = jarFile.toURI().toURL();
         String pack = jarFile.getName().replaceFirst("\\.jar$", "");
 
         URLClassLoader classLoader = 
-            new URLClassLoader(new URL[]{jarUrl}, this.classLoaders.get("BoardGameEngine"));
+            new URLClassLoader(new URL[]{jarUrl}, resolveParent(jarFile));//this.classLoaders.get("BoardGameEngine"));
 
         ServiceLoader<Effect> serviceLoader = 
             ServiceLoader.load( Effect.class, classLoader);
@@ -283,6 +285,22 @@ public class PluginLoader {
         
 
         return null;
+    }
+
+    private ClassLoader resolveParent(File jarFile) throws IOException {
+        try (JarFile jf = new java.util.jar.JarFile(jarFile)) {
+            Manifest mf = jf.getManifest();
+            String dep = (mf == null) ? null : mf.getMainAttributes().getValue("Plugin-Dependency");
+            if (dep != null && !dep.isBlank()) {
+                URLClassLoader parent = this.classLoaders.get(dep.trim());
+                if (parent == null) {
+                    throw new IllegalStateException(jarFile.getName() + " requires plugin '" + dep
+                            + "' but it isn't loaded");
+                }
+                return parent;
+            }
+        }
+        return this.getClass().getClassLoader();
     }
 }
 

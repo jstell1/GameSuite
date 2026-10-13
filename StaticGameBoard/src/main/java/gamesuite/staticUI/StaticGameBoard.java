@@ -7,13 +7,22 @@ import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.List;
+
+import gamesuite.boardgame.model.CheckersCoordPair;
+import gamesuite.boardgame.model.CheckersGamePiece;
+import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
+import gamesuite.staticUI.model.Piece;
 
 public class StaticGameBoard extends GameBoardUI {
 
@@ -50,8 +59,17 @@ public class StaticGameBoard extends GameBoardUI {
     private boolean[][] pieces;
     private int tmpX;
     private int tmpY;
+    private int tmpX2;
+    private int tmpY2;
+    private String[] teamNames;
 
-    public StaticGameBoard() {
+    private Piece[][] board;
+    private UIListener listener;
+    private CheckersGameState game;
+
+    public StaticGameBoard(UIListener listener, Piece[][] board, String[] teamNames, CheckersGameState game) {
+        this.teamNames = teamNames;
+        this.game = game;
         URL redPieceURL = getClass().getClassLoader().getResource("images/red.png");
         URL blackPieceURL = getClass().getClassLoader().getResource("images/black.png");
         URL boardURL = getClass().getClassLoader().getResource("images/board.png");
@@ -63,12 +81,12 @@ public class StaticGameBoard extends GameBoardUI {
         this.setMinimumSize(new Dimension(800,800));
         yellows = new boolean[boardSize][boardSize];
         pieces = new boolean[boardSize][boardSize];
+        this.board = board;
+        this.listener = listener;
         tmpX = -1;
         tmpY = -1;
-        for(int i = 0; i < boardSize; i++) {
-            pieces[0][i] = true;
-        }
-
+        this.tmpX2 = -1;
+        this.tmpY2 = -1;
         this.addMouseListener(new MouseAdapter() {
             @Override 
             public void mousePressed(MouseEvent e) {
@@ -82,34 +100,46 @@ public class StaticGameBoard extends GameBoardUI {
 
                     System.out.println("(" + xCoord + "," + yCoord + ")");
 
-                    if(yellows[yCoord][xCoord]) {
-                        yellows[yCoord][xCoord] = false;
+                    if(StaticGameBoard.this.yellows[yCoord][xCoord]) {
+                        StaticGameBoard.this.yellows[yCoord][xCoord] = false;
                     } else {
-                        yellows[yCoord][xCoord] = true;
+                        StaticGameBoard.this.yellows[yCoord][xCoord] = true;
                     }
 
-                    if(tmpX == -1 && tmpY == -1) {
-                        tmpX = xCoord; 
-                        tmpY = yCoord;
-                    } else if(x == tmpX && y == tmpY) {
-                        tmpX = -1;
-                        tmpY = -1;
+                    if(StaticGameBoard.this.tmpX == -1 && StaticGameBoard.this.tmpY == -1) {
+                        StaticGameBoard.this.tmpX = xCoord; 
+                        StaticGameBoard.this.tmpY = yCoord;
+                    } else if(x == StaticGameBoard.this.tmpX && y == StaticGameBoard.this.tmpY) {
+                        StaticGameBoard.this.tmpX = -1;
+                        StaticGameBoard.this.tmpY = -1;
                     } else {
+                        StaticGameBoard.this.tmpX2 = xCoord;
+                        StaticGameBoard.this.tmpY2 = yCoord;
 
-                        if(pieces[tmpY][tmpX] && !pieces[yCoord][xCoord]) {
-                            pieces[tmpY][tmpX] = false;
-                            pieces[yCoord][xCoord] = true;
-                        }
-                        yellows[yCoord][xCoord] = false;
-                        yellows[tmpY][tmpX] = false;
-                        tmpX = -1;
-                        tmpY = -1;
+                        StaticGameBoard.this.listener.disabledBoard();
+                          CheckersMove move = new CheckersMove(
+                                StaticGameBoard.this.tmpX, 
+                                StaticGameBoard.this.tmpY, 
+                                x, 
+                                y
+                            );
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode moveNode = mapper.valueToTree(move);
+                        StaticGameBoard.this.listener.sendMove(moveNode);
                     }
 
                 }
                 repaint();
             }
         });
+    }
+
+    public void setTeamNames(String[] teamNames) {
+        this.teamNames = teamNames;
+    }
+
+    public void setBoard(Piece[][] board) {
+        this.board = board;
     }
 
     @Override 
@@ -125,31 +155,22 @@ public class StaticGameBoard extends GameBoardUI {
                     g.fillRect(yellowX+xDist*j, yellowY+yDist*i, yellowXDist, yellowYDist);
                     g.drawRect(yellowX+xDist*j, yellowY+yDist*i, yellowXDist, yellowYDist);
                 }
-                if(pieces[i][j]) {
-                    setPiece(g, pieceLeftX + xDist*j, pieceTopY+yDist*i, pieceSize);
+                
+                if(board[i][j] != null) {
+                    String team = board[i][j].getTeam();
+                    setPiece(g, pieceLeftX + xDist*j, pieceTopY+yDist*i, pieceSize, team);
                 }
+                
             }
         }
-        
-      
-     
-      
-        g.drawImage(redPieceIcon.getImage(), pieceLeftX, pieceTopY, pieceSize, pieceSize, this);
-
-        setDot(g, leftX, topY, dotSize);
-        setDot(g, rightX, topY, dotSize);
-        setDot(g, rightX, bottomY, dotSize);
-        setDot(g, leftX, bottomY, dotSize);
-        setDot(g, midX, midY, dotSize);
-        setDot(g, rightXBound, topY, dotSize);
-        setDot(g, rightXBound, bottomYBound, dotSize);
-
-
-
     }
 
-    public void setPiece(Graphics g, int pieceX, int pieceY, int pieceSize) {
+    public void setPiece(Graphics g, int pieceX, int pieceY, int pieceSize, String team) {
+
+        if(team.equals(teamNames[1]))
            g.drawImage(redPieceIcon.getImage(), pieceX, pieceY, pieceSize, pieceSize, this);
+        else
+            g.drawImage(blackPieceIcon.getImage(), pieceX, pieceY, pieceSize, pieceSize, this);
 
     }
 
@@ -167,17 +188,17 @@ public class StaticGameBoard extends GameBoardUI {
 
     @Override
     public int getTurn() {
-        return 1;
+        return this.game.getTurn();
     }
 
     @Override
     public String getWinner() {
-       return null;
+       return this.game.getWinner().getName();
     }
 
     @Override
     public boolean isGameOver() {
-    return false;
+    return this.game.isGameOver();
     }
 
     @Override
@@ -196,7 +217,42 @@ public class StaticGameBoard extends GameBoardUI {
     }
 
     @Override
-    public void update(JsonNode arg0) {
-        
+    public void update(JsonNode gameState) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            CheckersGameState gameView = mapper.treeToValue(gameState, CheckersGameState.class);
+            this.game = gameView;
+            List<CheckersCoordPair> changed = gameView.getChangedPos();
+            for(CheckersCoordPair pos : changed) {
+                CheckersGamePiece piece = pos.getPiece();
+                int x = pos.getX();
+                int y = pos.getY();
+
+                if(piece == null) {
+                    board[x][y] = null;
+                } else {
+                    board[x][y] = new Piece(
+                        piece.getName(),
+                        piece.getTeam(),
+                        piece.getType(),
+                        piece.getVal()
+                    );
+                }
+            }
+
+            this.yellows[this.tmpX][this.tmpY] = false;
+            this.yellows[this.tmpX2][this.tmpY2] = false;
+            this.tmpX = -1;
+            this.tmpY = -1;
+            this.tmpX2 = -1;
+            this.tmpY2 = -1;
+            repaint();
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

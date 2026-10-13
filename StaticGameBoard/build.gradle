@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     implementation project(':Core')
+	implementation project(':BoardGameEngine')
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.google.guava:guava:33.0.0-jre'
     implementation 'com.networknt:json-schema-validator:1.5.8'
@@ -41,6 +42,9 @@ tasks.named('bootJar') {
 
 task StaticUIJar(type: Jar) {
     archiveBaseName = 'StaticGameBoard'
+	 manifest {
+        attributes('Plugin-Dependency': 'BoardGameEngine')
+    }
     from(sourceSets.main.output) {
         include 'gamesuite/staticUI/**'
     }

@@ -234,7 +234,8 @@ System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSo
                                 GameBoardUI gbu = fact.createGameBoard(boardJson, gameJson, ClientManagerImpl.this.guiGM);
                                 System.out.println("created board");
                                 ClientManagerImpl.this.guiGM.initGame(gbu);
-                            } catch (JsonProcessingException e) {
+                            } catch (Throwable e) {
+                                e.printStackTrace();
                                 // TODO: handle exception
                                 throw new IllegalArgumentException("something is wrong with the incoming boardJson and uiJar can't be created");
                             }
