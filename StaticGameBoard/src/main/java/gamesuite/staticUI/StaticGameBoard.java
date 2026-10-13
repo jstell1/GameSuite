@@ -3,6 +3,7 @@ package gamesuite.staticUI;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -54,6 +55,8 @@ public class StaticGameBoard extends GameBoardUI {
     
     private ImageIcon redPieceIcon;
     private ImageIcon blackPieceIcon;
+    private ImageIcon redKingIcon;
+    private ImageIcon blackKingIcon;
     private ImageIcon boardIcon;
     private boolean[][] yellows;
     private boolean[][] pieces;
@@ -73,8 +76,12 @@ public class StaticGameBoard extends GameBoardUI {
         URL redPieceURL = getClass().getClassLoader().getResource("images/red.png");
         URL blackPieceURL = getClass().getClassLoader().getResource("images/black.png");
         URL boardURL = getClass().getClassLoader().getResource("images/board.png");
+        URL redKingURL = getClass().getClassLoader().getResource("images/red_king.png");
+        URL blackKingURL = getClass().getClassLoader().getResource("images/black_king.png");
         this.redPieceIcon = new ImageIcon(redPieceURL);
         this.blackPieceIcon = new ImageIcon(blackPieceURL);
+        this.redKingIcon = new ImageIcon(redKingURL);
+        this.blackKingIcon = new ImageIcon(blackKingURL);
         this.boardIcon = new ImageIcon(boardURL);
         this.setPreferredSize(new Dimension(800,800));
         this.setMaximumSize(new Dimension(800,800));
@@ -158,19 +165,27 @@ public class StaticGameBoard extends GameBoardUI {
                 
                 if(board[i][j] != null) {
                     String team = board[i][j].getTeam();
-                    setPiece(g, pieceLeftX + xDist*j, pieceTopY+yDist*i, pieceSize, team);
+                    String type = board[i][j].getType();
+                    setPiece(g, pieceLeftX + xDist*j, pieceTopY+yDist*i, pieceSize, team, type);
                 }
                 
             }
         }
     }
 
-    public void setPiece(Graphics g, int pieceX, int pieceY, int pieceSize, String team) {
+    public void setPiece(Graphics g, int pieceX, int pieceY, int pieceSize, String team, String type) {
 
-        if(team.equals(teamNames[1]))
-           g.drawImage(redPieceIcon.getImage(), pieceX, pieceY, pieceSize, pieceSize, this);
-        else
-            g.drawImage(blackPieceIcon.getImage(), pieceX, pieceY, pieceSize, pieceSize, this);
+
+
+        if(team.equals(teamNames[1])) {
+            Image ico = type.equals("K") ? redKingIcon.getImage() : redPieceIcon.getImage();
+            
+            g.drawImage(ico, pieceX, pieceY, pieceSize, pieceSize, this);
+
+        } else {
+            Image ico = type.equals("K") ? blackKingIcon.getImage() : blackPieceIcon.getImage();
+            g.drawImage(ico, pieceX, pieceY, pieceSize, pieceSize, this);
+        }
 
     }
 
