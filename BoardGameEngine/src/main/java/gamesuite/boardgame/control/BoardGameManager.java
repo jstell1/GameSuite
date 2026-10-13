@@ -19,8 +19,6 @@ import gamesuite.boardgame.model.CheckersMove;
 import gamesuite.boardgame.model.CheckersPlayer;
 
 public class BoardGameManager implements GameManager {
-    private RulesValidator validator;
-    private GameStateManager stateManager;
     private MoveController moveController;
     private CheckersGameState game;
     private CheckersGameBoard board;
@@ -32,47 +30,10 @@ public class BoardGameManager implements GameManager {
     private String ui;
 
     
-
-    public BoardGameManager(CheckersGameBoard board, CheckersPlayer player1) {
-        this.board = board;
-        CheckersGameState game = new CheckersGameState(player1);
-        this.game = game;
-        this.validator = new RulesValidator(game, board);
-        this.stateManager = new GameStateManager(game, board);
-        this.moveController = new MoveController(validator, stateManager, this.board);
-        this.sessionPlayerMap = new ArrayList<>();
-    }
-
     public BoardGameManager(CheckersGameBoard board, CheckersGameState game, MoveController moveController) {
         this.board = board;
         this.game = game;
         this.moveController = moveController;
-        this.sessionPlayerMap = new ArrayList<>();
-    }
-
-    public BoardGameManager(CheckersGameBoard board, RulesValidator validator, CheckersGameState game, MoveController moveController, GameStateManager mang) {
-        this.board = board;
-        this.game = game;
-        this.stateManager = mang;
-        this.validator = validator;
-        this.moveController = moveController;
-        this.sessionPlayerMap = new ArrayList<>();
-    }
-
-    public BoardGameManager(CheckersGameBoard board, RulesValidator validator) {
-        this.board = board;
-        this.validator = validator;
-        this.sessionPlayerMap = new ArrayList<>();
-        
-    }
-
-    public BoardGameManager(CheckersGameBoard board, CheckersPlayer player1, CheckersPlayer player2) {
-        this.board = board;
-        CheckersGameState game = new CheckersGameState(player1, player2);
-        this.game = game;
-        this.validator = new RulesValidator(game, board);
-        this.stateManager = new GameStateManager(game, board);
-        this.moveController = new MoveController(validator, stateManager, this.board);
         this.sessionPlayerMap = new ArrayList<>();
     }
 

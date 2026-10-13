@@ -14,8 +14,6 @@ import gamesuite.core.model.rules.Effect;
 
 public class MoveController {
 
-    private RulesValidator validator;
-    private GameStateManager stateManager;
     private List<Constraint> gameConstraints;
     private List<Action> postChecks;
     private List<Action> endChecks;
@@ -28,17 +26,6 @@ public class MoveController {
     public MoveController(CheckersGameBoard board) {
         if(board == null)
             throw new IllegalArgumentException("board cannot be null");
-        this.gameConstraints = new ArrayList<>();
-        this.endChecks = new ArrayList<>();
-        this.appliedEffects = new ArrayList<>();
-        this.negateList = new ArrayList<>();
-        this.postChecks = new ArrayList<>();
-        this.board = board;
-    }
-
-    public MoveController(RulesValidator validator, GameStateManager stateManager, CheckersGameBoard board) {
-        this.validator = validator;
-        this.stateManager = stateManager;
         this.gameConstraints = new ArrayList<>();
         this.endChecks = new ArrayList<>();
         this.appliedEffects = new ArrayList<>();

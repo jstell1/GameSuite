@@ -1,0 +1,293 @@
+{
+
+    "game" : "CheckersStatic",
+    "rulePack" : "BaseRulePack.jar",
+    "ui": "StaticGameBoard",
+    "validMove" : "validMove",
+    "validAttack" : "validAttack",
+    "turnControl" : {
+        "type" : "incrTurn",
+        "attackVectors" : [
+            { "x" : 2, "y" : 2 },
+            { "x" : 2, "y" : -2 },
+            { "x" : -2, "y" : 2 },
+            { "x" : -2, "y" : -2 }
+        ],
+        "jumpsAllowed" : [
+            "C", "K"
+        ],
+        "exactVector" : [
+            "C", "K"
+        ],
+        "fullVector" : true
+    },
+    "constraints" : [
+        "hasNoAttacks",
+        "turnCheck",
+        "emptyTarg",
+        "notFurtherAttacks",
+        "endRow",
+        "furtherAttacks",
+        "hasNoMoves",
+        "continueAttack"
+    ],
+    "effects" : [
+        "makeMove",
+        "capture",
+        "promote",
+        "mustAttack",
+        "win"
+    ],
+    "actions" : [
+        {
+            "name" : "step",
+            "type" : "move",
+            "constraints" : [
+            {  "type" : "hasNoAttacks" }
+
+            ],
+            "effects" : [
+                {"type" : "makeMove"}
+            ]
+        },
+        {
+            "name" : "jump" ,
+            "type" : "attack",
+            "constraints" : [],
+            "effects" : [
+                { "type" : "capture"},
+                {"type" : "makeMove"}
+            ]
+        },
+        {
+            "name" : "promote",
+            "type" : "promotion",
+            "constraints" : [
+                { "type" : "endRow" }
+            ],
+            "effects" : [
+                { 
+                    "type" : "promote",
+                    "piece" : {
+                        "name" : "K"
+                    }
+                }
+            ]
+        },
+        {
+            "name" : "mustAttack",
+            "type" : "postEffect",
+            "constraints" : [
+                { "type" : "continueAttack" }
+            ],
+            "effects" : [
+                { "type" : "mustAttack" }
+            ]
+        },
+        {
+            "name" : "winCheck",
+            "type" : "endCheck",
+            "constraints" : [
+                {  "type" : "hasNoMoves" }
+            ],
+            "effects" : [
+                {"type" : "win"}
+            ]
+        }
+    ],
+    "pieces" : [
+        {
+            "name" : "C",
+            "value" : 1,
+             "moveVector" : [
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 1 },
+                {"x" : -1, "y" : 0 }
+            ],
+             "targVector" : [
+                { "x" : -2, "y" : -2},
+                { "x" : -2, "y" : 2}
+            ],
+            "attackVector" : [
+                {"x" : -1, "y" : -1},
+                {"x" : -1, "y" : 1}
+            ],
+            "actions" : [
+                { "name" : "step" },
+                { "name" : "jump" }
+            ]
+        },
+
+
+        {
+            "name" : "K",
+            "value" : 1,
+             "moveVector" : [
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 1 },
+                { "x" : 1, "y" : -1 },
+                { "x" : 1, "y" : 1 },
+                { "x" : -1, "y" : 0},
+                { "x" : 1, "y" : 0},
+                { "x" : 0, "y" : -1},
+                { "x" : 0, "y" : 1}
+            ],
+            "targVector" : [
+                { "x" : -2, "y" : -2},
+                { "x" : -2, "y" : 2},
+                { "x" : 2, "y" : -2},
+                { "x" : 2, "y" : 2}
+            ],
+            "attackVector" : [
+                {"x" : -1, "y" : -1},
+                {"x" : -1, "y" : 1},
+                {"x" : 1, "y" : -1},
+                {"x" : 1, "y" : 1}
+            ],
+            "actions" : [
+                { "name" : "step" },
+                { "name" : "jump" }
+            ]
+        }
+    ],   
+    "gameRules" : [
+        { "type" : "turnCheck" },
+        { "type" : "emptyTarg" },
+        { "type" : "notFurtherAttack" }
+    ],
+
+    "postChecks" : [
+        {
+            "name" : "promote"
+        },
+        {
+            "name" : "mustAttack"
+        }
+    ],
+    
+    "winConditions" : [
+         {
+            "name" : "winCheck"
+        }
+    ],
+    "players" : [
+        {
+            "points" : 0,
+            "turnName" : "B",
+            "turn" : 1
+        },
+        {
+            "points" : 0,
+            "turnName" : "R",
+            "turn" : 2
+        }
+    ],
+    "board" : {
+        "type" : "rectangle",
+        "dimensions" : {
+            "height" : 8,
+            "width" : 8
+        },
+         "initState" :  
+            [
+                {
+                    "x" : 0, "y" : 1, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                    "x" : 0, "y" : 3, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                     "x" : 0, "y" : 5, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                  {
+                     "x" : 0, "y" : 7, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                     "x" : 1, "y" : 0, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 2, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 4, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 1, "y" : 6, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                 {
+                      "x" : 2, "y" : 1, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 2, "y" : 3, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 2, "y" : 5, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 2, "y" : 7, 
+                    "piece" : { "name" : "C","player" : 1}
+                },
+                {
+                      "x" : 5, "y" : 0, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 2, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 4, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 5, "y" : 6, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 1, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 3, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 5, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 6, "y" : 7, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 0, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 2, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 4, 
+                    "piece" : { "name" : "C","player" : 2}
+                },
+                 {
+                      "x" : 7, "y" : 6, 
+                    "piece" : { "name" : "C","player" : 2}
+                }
+            ]
+
+    }
+    
+}
