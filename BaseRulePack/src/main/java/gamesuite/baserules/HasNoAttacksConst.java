@@ -32,7 +32,7 @@ public class HasNoAttacksConst extends Constraint {
         BoardGamePlayer p = this.gameState.getPlayerById(id);
         int playerNum = p.getTurn();
         Set<CoordPairImpl> tmp;
-        tmp = this.gameState.getJumps(playerNum);
+        tmp = this.gameState.getTrackedAttacks(playerNum);
         
         if(tmp.size() == 0) {
             return true;

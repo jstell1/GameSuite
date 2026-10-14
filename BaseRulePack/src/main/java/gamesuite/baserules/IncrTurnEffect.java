@@ -146,8 +146,8 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
     }
 
     private void removeFromAttacks(CoordPairImpl pos) {
-        this.gameState.removePlayerJumps(pos, 1);
-        this.gameState.removePlayerJumps(pos, 2);
+        this.gameState.removePlayerTrackedAttacks(pos, 1);
+        this.gameState.removePlayerTrackedAttacks(pos, 2);
     }
 
     private void addToAttacksList(CoordPairImpl pos) {
@@ -155,11 +155,11 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         BoardGamePiece piece = pos.getPiece();
         String team = piece.getTeam();
         if(team.equals(teams[0])) {
-            this.gameState.addPlayerJumps(pos, 1);
-            this.gameState.removePlayerJumps(pos, 2);
+            this.gameState.addPlayerTrackedAttacks(pos, 1);
+            this.gameState.removePlayerTrackedAttacks(pos, 2);
         } else {
-            this.gameState.addPlayerJumps(pos, 2);
-            this.gameState.removePlayerJumps(pos, 1);
+            this.gameState.addPlayerTrackedAttacks(pos, 2);
+            this.gameState.removePlayerTrackedAttacks(pos, 1);
         }
     }
 

@@ -22,8 +22,8 @@ public class BoardGameState implements GameState {
     private int turn;
     private BoardGamePlayer winner;
     private boolean isDraw;
-    private Set<CoordPairImpl> p1Jumps;
-    private Set<CoordPairImpl> p2Jumps;
+    private Set<CoordPairImpl> p1TrackedAttacks;
+    private Set<CoordPairImpl> p2TrackedAttacks;
     private Set<CoordPairImpl> p1Moves;
     private Set<CoordPairImpl> p2Moves;
     private CoordPairImpl furtherJumps;
@@ -45,8 +45,8 @@ public class BoardGameState implements GameState {
         this.turn = 1;
         this.winner = null;
         this.isDraw = false;
-        this.p1Jumps = new HashSet<>();
-        this.p2Jumps = new HashSet<>();
+        this.p1TrackedAttacks = new HashSet<>();
+        this.p2TrackedAttacks = new HashSet<>();
         this.furtherJumps = null;
         this.turnFactor = -1;
         this.boardInit = false;
@@ -62,8 +62,8 @@ public class BoardGameState implements GameState {
         this.turn = 1;
         this.winner = null;
         this.isDraw = false;
-        this.p1Jumps = new HashSet<>();
-        this.p2Jumps = new HashSet<>();
+        this.p1TrackedAttacks = new HashSet<>();
+        this.p2TrackedAttacks = new HashSet<>();
         this.furtherJumps = null;
         this.turnFactor = -1;
         this.boardInit = false;
@@ -90,7 +90,7 @@ public class BoardGameState implements GameState {
         this.player1 = player1; this.player2 = player2;
         this.numPlayers = numPlayers; this.turn = turn;
         this.winner = winner; this.isDraw = isDraw; 
-        this.p1Jumps = p1Attacks; this.p2Jumps = p2Attacks; 
+        this.p1TrackedAttacks = p1Attacks; this.p2TrackedAttacks = p2Attacks; 
         this.p1Moves = p1Moves; this.p2Moves = p2Moves; 
         this.furtherJumps = furtherAttacks;
         this.boardSize = boardSize; this.turnFactor = turnFactor;
@@ -163,34 +163,34 @@ public class BoardGameState implements GameState {
         }
     }
 
-    public void addPlayerJumps(CoordPairImpl pos, int playerNum) {
+    public void addPlayerTrackedAttacks(CoordPairImpl pos, int playerNum) {
         checkPlayerTurnRange(playerNum);
         Objects.requireNonNull(pos, "pos");
 
         if(playerNum == 1)
-            p1Jumps.add(pos);
+            p1TrackedAttacks.add(pos);
         else if(playerNum == 2)
-            p2Jumps.add(pos);
+            p2TrackedAttacks.add(pos);
     }
 
-    public Set<CoordPairImpl> getJumps(int playerNum) {
+    public Set<CoordPairImpl> getTrackedAttacks(int playerNum) {
         checkPlayerTurnRange(playerNum);
         if(playerNum == 1) {
-            return Set.copyOf(p1Jumps);
+            return Set.copyOf(p1TrackedAttacks);
         } else if(playerNum == 2) {
-            return Set.copyOf(p2Jumps);
+            return Set.copyOf(p2TrackedAttacks);
         }
         return null;
     }
 
-    public void removePlayerJumps(CoordPairImpl pos, int playerNum) {
+    public void removePlayerTrackedAttacks(CoordPairImpl pos, int playerNum) {
         checkPlayerTurnRange(playerNum);
         Objects.requireNonNull(pos, "pos");
 
         if(playerNum == 1) 
-            this.p1Jumps.remove(pos);
+            this.p1TrackedAttacks.remove(pos);
         else if(playerNum == 2)
-            this.p2Jumps.remove(pos);
+            this.p2TrackedAttacks.remove(pos);
     }
 
     public int getTurn() { return this.turn; }
@@ -323,8 +323,8 @@ public class BoardGameState implements GameState {
         private int turn = 1;
         private BoardGamePlayer winner;
         private boolean isDraw;
-        private Set<CoordPairImpl> p1Attacks = new HashSet<>();
-        private Set<CoordPairImpl> p2Attacks = new HashSet<>();
+        private Set<CoordPairImpl> p1TrackedAttacks = new HashSet<>();
+        private Set<CoordPairImpl> p2TrackedAttacks = new HashSet<>();
         private Set<CoordPairImpl> p1Moves = new HashSet<>();
         private Set<CoordPairImpl> p2Moves = new HashSet<>();
         private CoordPairImpl furtherAttacks;
@@ -390,13 +390,13 @@ public class BoardGameState implements GameState {
             return s;
         }
 
-        public Builder setP1Attacks(Set<CoordPairImpl> p1Attacks) {
-            this.p1Attacks = copySet(p1Attacks);
+        public Builder setP1TrackedAttacks(Set<CoordPairImpl> p1Attacks) {
+            this.p1TrackedAttacks = copySet(p1Attacks);
             return this;
         }
 
-        public Builder setP2Attacks(Set<CoordPairImpl> p2Attacks) {
-            this.p2Attacks = copySet(p2Attacks);
+        public Builder setP2TrackedAttacks(Set<CoordPairImpl> p2Attacks) {
+            this.p2TrackedAttacks = copySet(p2Attacks);
             return this;
         }
 
@@ -487,7 +487,7 @@ public class BoardGameState implements GameState {
                 this.player1, this.player2,
                 this.numPlayers, this.turn,
                 this.winner, this.isDraw,
-                this.p1Attacks, this.p2Attacks,
+                this.p1TrackedAttacks, this.p2TrackedAttacks,
                 this.p1Moves, this.p2Moves,
                 this.furtherAttacks, this.boardSize,
                 this.turnFactor, this.boardInit,

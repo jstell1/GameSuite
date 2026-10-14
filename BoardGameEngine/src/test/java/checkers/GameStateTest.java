@@ -81,18 +81,18 @@ public class GameStateTest {
         CoordPairImpl[][] board = getBoardArr(3, arr);
         this.board = new GameBoardImpl(board);
         this.game = new BoardGameState(this.p1, this.p2);
-        assertTrue(this.game.getJumps(1).isEmpty());
-        this.game.addPlayerJumps(this.board.getBoardPos(0, 0), 1);
-        Set<CoordPairImpl> jumps = this.game.getJumps(1);
+        assertTrue(this.game.getTrackedAttacks(1).isEmpty());
+        this.game.addPlayerTrackedAttacks(this.board.getBoardPos(0, 0), 1);
+        Set<CoordPairImpl> jumps = this.game.getTrackedAttacks(1);
         assertTrue(jumps.contains(board[0][0]));
-        this.game.addPlayerJumps(this.board.getBoardPos(1, 0), 1);
-        this.game.addPlayerJumps(this.board.getBoardPos(1, 0), 1);
-        assertEquals(this.game.getJumps(1).size(), 1);
-        assertFalse(this.game.getJumps(1).contains(board[1][0]));
-        this.game.addPlayerJumps(this.board.getBoardPos(1, 1), 2);
-        assertTrue(this.game.getJumps(2).contains(board[1][1]));
-        this.game.addPlayerJumps(this.board.getBoardPos(-1, -5), 1);
-        assertEquals(this.game.getJumps(1).size(), 1);
+        this.game.addPlayerTrackedAttacks(this.board.getBoardPos(1, 0), 1);
+        this.game.addPlayerTrackedAttacks(this.board.getBoardPos(1, 0), 1);
+        assertEquals(this.game.getTrackedAttacks(1).size(), 1);
+        assertFalse(this.game.getTrackedAttacks(1).contains(board[1][0]));
+        this.game.addPlayerTrackedAttacks(this.board.getBoardPos(1, 1), 2);
+        assertTrue(this.game.getTrackedAttacks(2).contains(board[1][1]));
+        this.game.addPlayerTrackedAttacks(this.board.getBoardPos(-1, -5), 1);
+        assertEquals(this.game.getTrackedAttacks(1).size(), 1);
         assertTrue(jumps.contains(board[0][0]));
     }
 
@@ -109,15 +109,15 @@ public class GameStateTest {
         CoordPairImpl[][] board = getBoardArr(3, arr);
         this.board = new GameBoardImpl(board);
         this.game = new BoardGameState(this.p1, this.p2);
-        this.game.addPlayerJumps(this.board.getBoardPos(0, 0), 1);
-        assertTrue(this.game.getJumps(1).contains(board[0][0]));
-        this.game.removePlayerJumps(this.board.getBoardPos(1, 0), 1);
-        assertTrue(this.game.getJumps(1).contains(board[0][0]));
-        this.game.removePlayerJumps(this.board.getBoardPos(-3, 9), 1);
-        assertTrue(this.game.getJumps(1).contains(board[0][0]));
-        assertEquals(this.game.getJumps(1).size(), 1);
-        this.game.removePlayerJumps(this.board.getBoardPos(0, 0), 1);
-        assertTrue(this.game.getJumps(1).isEmpty());
+        this.game.addPlayerTrackedAttacks(this.board.getBoardPos(0, 0), 1);
+        assertTrue(this.game.getTrackedAttacks(1).contains(board[0][0]));
+        this.game.removePlayerTrackedAttacks(this.board.getBoardPos(1, 0), 1);
+        assertTrue(this.game.getTrackedAttacks(1).contains(board[0][0]));
+        this.game.removePlayerTrackedAttacks(this.board.getBoardPos(-3, 9), 1);
+        assertTrue(this.game.getTrackedAttacks(1).contains(board[0][0]));
+        assertEquals(this.game.getTrackedAttacks(1).size(), 1);
+        this.game.removePlayerTrackedAttacks(this.board.getBoardPos(0, 0), 1);
+        assertTrue(this.game.getTrackedAttacks(1).isEmpty());
     }
     
 }

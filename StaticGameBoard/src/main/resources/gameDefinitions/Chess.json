@@ -1,0 +1,207 @@
+{
+
+    "game" : "Chess",
+    "rulePacks" : ["BaseRulePack.jar", "ChessRulePack.jar"],
+    "ui": "StaticGameBoard",
+    "validMove" : "validChessMove",
+    "validAttack" : "validChessAttack",
+    "turnControl" : {
+        "type" : "ChessIncrTurn",
+        "attackVectors" : [
+            { "x" : 0, "y" : -1 },
+            { "x" : -1, "y" : -1 },
+            { "x" : -1, "y" : 0 },
+            { "x" : -1, "y" : 1 },
+            { "x" : 0, "y" : 1 },
+            { "x" : 1, "y" : 1 },
+            { "x" : 1, "y" : 0 },
+            { "x" : 1, "y" : -1 },
+
+            { "x" : -1, "y" : -2 },
+            { "x" : -2, "y" : -1 },
+            { "x" : -2, "y" : 1 },
+            { "x" : -1, "y" : 2 },
+            { "x" : 1, "y" : 2 },
+            { "x" : 2, "y" : 1 },
+            { "x" : 2, "y" : -1 },
+            { "x" : 1, "y" : -2 }
+        ],
+        "fullVector" : true
+    },
+    "constraints" : [
+        
+    ],
+    "effects" : [
+    ],
+    "actions" : [
+        {
+            "name": "pawnStep",
+            "type": "move",
+            "constraints": [
+                {"type": "emptyTarg"},
+                {"type": "firstMove"}
+            ],
+            "effects": [
+                {"type": "makeMove"}
+            ]
+        },
+        {
+            "name" : "enPassant",
+            "type" : "move",
+            "constraints" : [
+                {"type": "checkEnPassant"}
+            ],
+            "effects" : [
+                {"type": "enPassant"}
+            ]
+        },
+        {
+            "name" : "castle",
+            "type" : "move",
+            "constraints" : [
+                {"type": "checkCastle"}
+            ],
+            "effects" : [
+                {"type" : "castle"},
+                {"type": "makeMove"}
+            ]
+        },
+        {
+            "name": "attack",
+            "type": "attack",
+            "constraints" : [],
+            "effects" : [
+                {"type": "makeMove"}
+            ]
+        }
+    ],
+    "pieces" : [
+        {
+            "name" : "P",
+            "value" : 1,
+             "moveVector" : [
+                { "x" : -1, "y" : 0 },
+                { "x" : -2, "y" : 0 }
+            ],
+             "targVector" : [
+                { "x" : -1, "y" : -1},
+                { "x" : -1, "y" : 1}
+            ],
+            "vectType": "exact",
+            "actions" : [
+                "attack",
+                "pawnStep",
+                "enPassant"
+            ]
+        },
+        {
+            "name": "K",
+            "value": 100,
+            "moveVector": [
+                {"x" : 0, "y": -2},
+                {"x" : 0, "y" : 2}
+            ],
+            "targVector": [
+                 { "x" : 0, "y" : -1 },
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 0 },
+                { "x" : -1, "y" : 1 },
+                { "x" : 0, "y" : 1 },
+                { "x" : 1, "y" : 1 },
+                { "x" : 1, "y" : 0 },
+                { "x" : 1, "y" : -1 }
+            ],
+            "vectType": "exact",
+            "actions": [
+                "castle",
+                "attack"
+            ]
+        },
+        {
+            "name": "Q",
+            "value": 9,
+            "targVector":[
+                  { "x" : 0, "y" : -1 },
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 0 },
+                { "x" : -1, "y" : 1 },
+                { "x" : 0, "y" : 1 },
+                { "x" : 1, "y" : 1 },
+                { "x" : 1, "y" : 0 },
+                { "x" : 1, "y" : -1 }
+            ],
+            "vectType": "directional",
+            "actions": [
+                "attack"
+            ]
+        },
+        {
+            "name": "B",
+            "value": 3,
+            "targVector": [
+                { "x" : -1, "y" : -1 },
+                { "x" : -1, "y" : 1 },
+                { "x" : 1, "y" : 1 },
+                { "x" : 1, "y" : -1 }
+            ],
+            "vectType": "directional",
+            "actions": [
+                "attack"
+            ]
+        },
+        {
+            "name": "N",
+            "value": 3,
+            "targVector": [
+                 { "x" : -1, "y" : -2 },
+                { "x" : -2, "y" : -1 },
+                { "x" : -2, "y" : 1 },
+                { "x" : -1, "y" : 2 },
+                { "x" : 1, "y" : 2 },
+                { "x" : 2, "y" : 1 },
+                { "x" : 2, "y" : -1 },
+                { "x" : 1, "y" : -2 }
+            ],
+            "vectType": "exact",
+            "actions": [
+                "attack"
+            ]
+        },
+        {
+            "name": "R",
+            "value": 5,
+            "targVector": [
+                { "x" : 0, "y" : -1 },
+                { "x" : -1, "y" : 0 },
+                { "x" : 0, "y" : 1 },
+                { "x" : 1, "y" : 0 }
+            ],
+            "vectType": "directional",
+            "actions": [
+                "attack"
+            ]
+        }
+    ],   
+    "gameRules" : [
+    ],
+
+    "postChecks" : [
+    ],
+    "drawConditions": [
+
+    ],
+    "winConditions" : [
+    ],
+    "players" : [
+        {
+            "points" : 0,
+            "turnName" : "W",
+            "turn" : 1
+        },
+        {
+            "points" : 0,
+            "turnName" : "B",
+            "turn" : 2
+        }
+    ]
+}
