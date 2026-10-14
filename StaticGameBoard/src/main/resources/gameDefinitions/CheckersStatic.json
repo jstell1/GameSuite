@@ -1,7 +1,7 @@
 {
 
     "game" : "CheckersStatic",
-    "rulePack" : "BaseRulePack.jar",
+    "rulePacks" : ["BaseRulePack.jar"],
     "ui": "StaticGameBoard",
     "validMove" : "validMove",
     "validAttack" : "validAttack",

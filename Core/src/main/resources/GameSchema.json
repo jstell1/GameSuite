@@ -81,7 +81,7 @@
 
   "required": [
     "game",
-    "rulePack",
+    "rulePacks",
     "validMove",
     "validAttack",
     "turnControl",
@@ -98,7 +98,10 @@
   "additionalProperties": false,
   "properties": {
     "game": {"type": "string"},
-    "rulePack": {"type": "string"},
+    "rulePacks": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
     "ui": {"type": "string"},
     "validMove": {"type": "string"},
     "validAttack": {"type": "string"},

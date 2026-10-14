@@ -1,7 +1,7 @@
 {
 
     "game" : "Checkers",
-    "rulePack" : "BaseRulePack.jar",
+    "rulePacks" : ["BaseRulePack.jar"],
     "ui": "CheckersGameBoardPanel",
     "validMove" : "validMove",
     "validAttack" : "validAttack",

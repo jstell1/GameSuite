@@ -40,11 +40,22 @@ public class BoardGameFactory extends GameManagerFactory {
 
         CheckersGameBoard board = new CheckersGameBoard(sideLength);
         JsonNode pieces = gameDef.get("pieces");
-        String pack = gameDef.get("rulePack").asText();
+        String[] packs = mapper.treeToValue(gameDef.get("rulePacks"), String[].class);
         String ui = gameDef.get("ui").asText();
         
-        this.constraints = this.rulesLoader.loadConstraints(pack);
-        this.effects = this.rulesLoader.loadEffects(pack);
+        for(String pack : packs) {
+            if(this.constraints == null) {
+                this.constraints = this.rulesLoader.loadConstraints(pack);
+            } else {
+                this.constraints.putAll(this.rulesLoader.loadConstraints(pack));
+            }
+
+            if(this.effects == null) {
+                this.effects = this.rulesLoader.loadEffects(pack);
+            } else {
+                this.effects.putAll(this.rulesLoader.loadEffects(pack));
+            }
+        }
 
         //building actions map
         JsonNode actionsNode = gameDef.get("actions");
