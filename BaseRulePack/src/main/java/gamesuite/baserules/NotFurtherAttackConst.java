@@ -2,17 +2,17 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class NotFurtherAttackConst extends Constraint {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
 
     public NotFurtherAttackConst() {
         super("notFurtherAttack");
@@ -38,17 +38,17 @@ public class NotFurtherAttackConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
     public boolean checkMove(JsonNode move) {
-        CheckersCoordPair currAttacks = this.gameState.getFurtherJumps();
+        CoordPairImpl currAttacks = this.gameState.getFurtherJumps();
 
         if(currAttacks == null) {
             return true;
@@ -57,7 +57,7 @@ public class NotFurtherAttackConst extends Constraint {
         int x = move.get("startX").asInt();
         int y = move.get("startY").asInt();
 
-        CheckersCoordPair pos = this.board.getBoardPos(x, y);
+        CoordPairImpl pos = this.board.getBoardPos(x, y);
 
         if(pos == currAttacks) {
             return true;

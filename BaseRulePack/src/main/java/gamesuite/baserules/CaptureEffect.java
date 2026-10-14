@@ -6,9 +6,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.ConstDependent;
@@ -17,8 +17,8 @@ import gamesuite.core.model.rules.Effect;
 
 public class CaptureEffect extends Effect implements ConstDependent {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
     private Constraint validAttack;
     static final String[] dependencies = {"validAttack"};
 
@@ -45,12 +45,12 @@ public class CaptureEffect extends Effect implements ConstDependent {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
@@ -66,9 +66,9 @@ public class CaptureEffect extends Effect implements ConstDependent {
         int mX = (sX + eX) >> 1;
         int mY = (sY + eY) >> 1;
 
-        CheckersCoordPair pos = this.board.getBoardPos(sX, sY);
+        CoordPairImpl pos = this.board.getBoardPos(sX, sY);
         //CheckersCoordPair end = this.board.getBoardPos(eX, eY);
-        CheckersCoordPair mid = this.board.getBoardPos(mX, mY);
+        CoordPairImpl mid = this.board.getBoardPos(mX, mY);
         mid.setPiece(null);
 
         

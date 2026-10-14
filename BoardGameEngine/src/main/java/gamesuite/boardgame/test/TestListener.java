@@ -11,12 +11,12 @@ import javax.swing.JPanel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.ui.CheckersGameBoardPanel;
+import gamesuite.boardgame.ui.GameBoardPanel;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 
 public class TestListener extends JFrame implements UIListener{
-    CheckersGameBoardPanel panel;
+    GameBoardPanel panel;
     JPanel centerPanel;
       public TestListener() {
         
@@ -46,7 +46,7 @@ public class TestListener extends JFrame implements UIListener{
         this.setResizable(true);
     }
 
-    public void setPanel(CheckersGameBoardPanel p) {
+    public void setPanel(GameBoardPanel p) {
         this.panel = p;
         this.add(p);
         

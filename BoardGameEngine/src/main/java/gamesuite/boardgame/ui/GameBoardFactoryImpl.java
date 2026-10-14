@@ -9,16 +9,16 @@ import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.boardgame.model.*;
 
-public class CheckersGameBoardFactory implements GameBoardFactory {
+public class GameBoardFactoryImpl implements GameBoardFactory {
 
     @Override
     public GameBoardUI createGameBoard(JsonNode boardJson, JsonNode gameJson, UIListener listener) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
-        CheckersCoordPair[][] board = mapper.treeToValue(boardJson, CheckersCoordPair[][].class);
-        CheckersGameBoard cBoard = new CheckersGameBoard(board);
-        CheckersGameState game = mapper.treeToValue(gameJson, CheckersGameState.class);
-        CheckersGameBoardPanel gameBoard = new CheckersGameBoardPanel(cBoard, 600, listener);
+        CoordPairImpl[][] board = mapper.treeToValue(boardJson, CoordPairImpl[][].class);
+        GameBoardImpl cBoard = new GameBoardImpl(board);
+        BoardGameState game = mapper.treeToValue(gameJson, BoardGameState.class);
+        GameBoardPanel gameBoard = new GameBoardPanel(cBoard, 600, listener);
         gameBoard.setGameState(game);
         return gameBoard;
     

@@ -12,31 +12,31 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGameMove;
 
-public class CheckersGameBoardPanel extends GameBoardUI {
+public class GameBoardPanel extends GameBoardUI {
 
-    private CheckersGameState gameView; 
-    private CheckersGameBoard board;
+    private BoardGameState gameView; 
+    private GameBoardImpl board;
     private int size;
-    private List<CheckersCoordPair> changed;
-    private CheckersCoordPairPanel[][] boardPanel;
+    private List<CoordPairImpl> changed;
+    private CoordPairPanel[][] boardPanel;
     private UIListener listener;
-    private Set<CheckersCoordPairPanel> yellowed;
+    private Set<CoordPairPanel> yellowed;
     private int tmpX;
     private int tmpY;
     private int playerTurn;
 
-    public CheckersGameBoardPanel(CheckersGameBoard board, int size, UIListener listener) {
+    public GameBoardPanel(GameBoardImpl board, int size, UIListener listener) {
         super();
         this.tmpX = -1;
         this.tmpY = -1;
         this.listener = listener;
-        this.boardPanel = new CheckersCoordPairPanel[size][size];
+        this.boardPanel = new CoordPairPanel[size][size];
         this.yellowed = new HashSet<>();
         this.changed = null;
         this.board = board;
@@ -47,11 +47,11 @@ public class CheckersGameBoardPanel extends GameBoardUI {
         this.setMinimumSize(new Dimension(size, size));
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
-                CheckersCoordPairPanel pos = null;
+                CoordPairPanel pos = null;
                 if ((i + j) % 2 == 0) {
-                    pos = new CheckersCoordPairPanel(board.getBoardPos(i, j), this.listener, Color.LIGHT_GRAY, this);
+                    pos = new CoordPairPanel(board.getBoardPos(i, j), this.listener, Color.LIGHT_GRAY, this);
                 } else {
-                    pos = new CheckersCoordPairPanel(board.getBoardPos(i, j), this.listener, Color.DARK_GRAY, this);
+                    pos = new CoordPairPanel(board.getBoardPos(i, j), this.listener, Color.DARK_GRAY, this);
                 }
 
                 pos.setPreferredSize(new Dimension(size / 8, size / 8));
@@ -66,23 +66,23 @@ public class CheckersGameBoardPanel extends GameBoardUI {
             this.listener = listener;
     }
 
-    public void updateBoard(List<CheckersCoordPair> changes) {
+    public void updateBoard(List<CoordPairImpl> changes) {
         
         
         this.changed = changes;
         if(this.changed != null) {
-            CheckersCoordPairPanel[] updateList = new CheckersCoordPairPanel[this.changed.size()];
+            CoordPairPanel[] updateList = new CoordPairPanel[this.changed.size()];
             for(int i = 0; i < this.changed.size(); i++) {
-                CheckersCoordPair pos = this.changed.get(i);
-                CheckersGamePiece piece = pos.getPiece();
-                CheckersCoordPairPanel p = this.boardPanel[pos.getX()][pos.getY()];
+                CoordPairImpl pos = this.changed.get(i);
+                BoardGamePiece piece = pos.getPiece();
+                CoordPairPanel p = this.boardPanel[pos.getX()][pos.getY()];
                 p.setPiece(piece);
                 
             }
             this.changed = null;        
         }
         
-        for(CheckersCoordPairPanel pos : this.yellowed) {
+        for(CoordPairPanel pos : this.yellowed) {
             pos.resetBackground();
         }
         
@@ -93,7 +93,7 @@ public class CheckersGameBoardPanel extends GameBoardUI {
     public void update(JsonNode gameState) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.gameView = mapper.treeToValue(gameState, CheckersGameState.class);
+            this.gameView = mapper.treeToValue(gameState, BoardGameState.class);
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -102,7 +102,7 @@ public class CheckersGameBoardPanel extends GameBoardUI {
             e.printStackTrace();
         }
         if(this.gameView != null) {
-            List<CheckersCoordPair> changed = this.gameView.getChangedPos();
+            List<CoordPairImpl> changed = this.gameView.getChangedPos();
             
             updateBoard(changed);
         }
@@ -111,7 +111,7 @@ public class CheckersGameBoardPanel extends GameBoardUI {
 
     }
 
-    public void setGameState(CheckersGameState gameView) {
+    public void setGameState(BoardGameState gameView) {
             this.gameView = gameView;
             // TODO Auto-generated catch block
     }
@@ -124,12 +124,12 @@ public class CheckersGameBoardPanel extends GameBoardUI {
             this.yellowed.remove(this.boardPanel[x][y]);
     }
 
-    public void addYellowedPanel(CheckersCoordPairPanel pos) {
+    public void addYellowedPanel(CoordPairPanel pos) {
             this.yellowed.add(pos);
             // TODO Auto-generated catch block
     }
 
-    public CheckersCoordPairPanel getBoardPos(int x, int y) {
+    public CoordPairPanel getBoardPos(int x, int y) {
         return this.boardPanel[x][y];
     }
 
@@ -146,7 +146,7 @@ public class CheckersGameBoardPanel extends GameBoardUI {
             removeYellowed(x, y);
         } else {
             this.listener.disabledBoard();
-            CheckersMove move = new CheckersMove(this.tmpX, this.tmpY, x, y);
+            BoardGameMove move = new BoardGameMove(this.tmpX, this.tmpY, x, y);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode moveNode = mapper.valueToTree(move);
             this.listener.sendMove(moveNode);

@@ -6,8 +6,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.ConstDependent;
@@ -15,8 +15,8 @@ import gamesuite.core.model.rules.Constraint;
 
 public class ContinueAttackConst extends Constraint implements ConstDependent {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
     private Constraint validAttack;
     private Constraint furtherAttacks;
     static final String[] dependencies = {"furtherAttacks", "validAttack"};   
@@ -49,7 +49,7 @@ public class ContinueAttackConst extends Constraint implements ConstDependent {
     @Override
     public void setBoard(GameBoard arg0) {
         // TODO Auto-generated method stub
-        this.board = (CheckersGameBoard) arg0;
+        this.board = (GameBoardImpl) arg0;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ContinueAttackConst extends Constraint implements ConstDependent {
     @Override
     public void setGameState(GameState arg0) {
         // TODO Auto-generated method stub
-        this.gameState = (CheckersGameState) arg0;
+        this.gameState = (BoardGameState) arg0;
     }
 
     @Override

@@ -2,18 +2,18 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class FurtherMovesConst extends Constraint {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
 
     public FurtherMovesConst() {
         super("furtherMoves");
@@ -39,12 +39,12 @@ public class FurtherMovesConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
@@ -52,12 +52,12 @@ public class FurtherMovesConst extends Constraint {
         
           int tmpx = move.get("endX").asInt();
         int tmpy = move.get("endY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(tmpx, tmpy);
+        CoordPairImpl pos = this.board.getBoardPos(tmpx, tmpy);
         if(pos == null || pos.getPiece() == null) {
             return false;
         }
 
-        CheckersGamePiece piece = pos.getPiece();
+        BoardGamePiece piece = pos.getPiece();
         String team = piece.getTeam();
         int startX = pos.getX();
         int startY = pos.getY();
@@ -84,8 +84,8 @@ public class FurtherMovesConst extends Constraint {
             
             if(this.board.isValidPos(x, y)) {
 
-                CheckersCoordPair end = this.board.getBoardPos(x, y);
-                CheckersGamePiece endPiece = null;
+                CoordPairImpl end = this.board.getBoardPos(x, y);
+                BoardGamePiece endPiece = null;
                 if(end != null)
                     endPiece = end.getPiece();
 

@@ -17,10 +17,10 @@ import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGameMove;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.staticUI.model.Piece;
@@ -68,9 +68,9 @@ public class StaticGameBoard extends GameBoardUI {
 
     private Piece[][] board;
     private UIListener listener;
-    private CheckersGameState game;
+    private BoardGameState game;
 
-    public StaticGameBoard(UIListener listener, Piece[][] board, String[] teamNames, CheckersGameState game) {
+    public StaticGameBoard(UIListener listener, Piece[][] board, String[] teamNames, BoardGameState game) {
         this.teamNames = teamNames;
         this.game = game;
         URL redPieceURL = getClass().getClassLoader().getResource("images/red.png");
@@ -124,7 +124,7 @@ public class StaticGameBoard extends GameBoardUI {
                         StaticGameBoard.this.tmpY2 = xCoord;
 
                         StaticGameBoard.this.listener.disabledBoard();
-                          CheckersMove move = new CheckersMove(
+                          BoardGameMove move = new BoardGameMove(
                                 StaticGameBoard.this.tmpX, 
                                 StaticGameBoard.this.tmpY, 
                                 StaticGameBoard.this.tmpX2,
@@ -235,11 +235,11 @@ public class StaticGameBoard extends GameBoardUI {
     public void update(JsonNode gameState) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            CheckersGameState gameView = mapper.treeToValue(gameState, CheckersGameState.class);
+            BoardGameState gameView = mapper.treeToValue(gameState, BoardGameState.class);
             this.game = gameView;
-            List<CheckersCoordPair> changed = gameView.getChangedPos();
-            for(CheckersCoordPair pos : changed) {
-                CheckersGamePiece piece = pos.getPiece();
+            List<CoordPairImpl> changed = gameView.getChangedPos();
+            for(CoordPairImpl pos : changed) {
+                BoardGamePiece piece = pos.getPiece();
                 int x = pos.getX();
                 int y = pos.getY();
 

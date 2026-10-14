@@ -14,17 +14,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManagerFactory;
 import gamesuite.core.model.rules.*;
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersPlayer;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGamePlayer;
 
 public class BoardGameFactory extends GameManagerFactory {
 
     public static final boolean multiGame = true;
-    protected Map<String, CheckersGamePiece.Builder> pieceList;
-    protected final Map<String, CheckersGamePiece> retPieces = new HashMap<>();
+    protected Map<String, BoardGamePiece.Builder> pieceList;
+    protected final Map<String, BoardGamePiece> retPieces = new HashMap<>();
     private Map<String, Constraint> constraints;
     private Map<String, Effect> effects;
     private Map<String, Action> actions;
@@ -38,7 +38,7 @@ public class BoardGameFactory extends GameManagerFactory {
                                 .get("dimensions") 
                                 .get("height").asInt();
 
-        CheckersGameBoard board = new CheckersGameBoard(sideLength);
+        GameBoardImpl board = new GameBoardImpl(sideLength);
         JsonNode pieces = gameDef.get("pieces");
         String[] packs = mapper.treeToValue(gameDef.get("rulePacks"), String[].class);
         String ui = gameDef.get("ui").asText();
@@ -85,7 +85,7 @@ public class BoardGameFactory extends GameManagerFactory {
             .get("initState");
 
         JsonNode playerNodes = gameDef.get("players");
-        CheckersPlayer player = new CheckersPlayer(playerName, 0);
+        BoardGamePlayer player = new BoardGamePlayer(playerName, 0);
         player.setUserId(playerId);
         player.setTurn(1);
 
@@ -96,25 +96,25 @@ public class BoardGameFactory extends GameManagerFactory {
         }
 
         //insantiating game state
-        CheckersGameState game = 
-            new CheckersGameState.Builder()
+        BoardGameState game = 
+            new BoardGameState.Builder()
                 .setPlayer1(player)
                 .setNumPlayers(1)
                 .setTurn(1)
                 .setWinner(null)
                 .setIsDraw(false)
-                .setP1Attacks(new HashSet<CheckersCoordPair>())
-                .setP2Attacks(new HashSet<CheckersCoordPair>())
-                .setP1Moves(new HashSet<CheckersCoordPair>())
-                .setP2Moves(new HashSet<CheckersCoordPair>())
+                .setP1Attacks(new HashSet<CoordPairImpl>())
+                .setP2Attacks(new HashSet<CoordPairImpl>())
+                .setP1Moves(new HashSet<CoordPairImpl>())
+                .setP2Moves(new HashSet<CoordPairImpl>())
                 .setFurtherAttacks(null)
                 .setBoardSize(sideLength)
                 .setTurnFactor(-1)
                 .setBoardInit(false)
                 .setTeamNames(pieceNames.toArray(new String[0]))
-                .setChangedPos(new ArrayList<CheckersCoordPair>())
+                .setChangedPos(new ArrayList<CoordPairImpl>())
                 .setGameOver(false)
-                .setJustPromoted(new HashSet<CheckersCoordPair>())
+                .setJustPromoted(new HashSet<CoordPairImpl>())
                 .build();
 
         //adding game board and game state to constraints and effects
@@ -157,7 +157,7 @@ public class BoardGameFactory extends GameManagerFactory {
             JsonNode pieceNode = node.get("piece");
             int pNum = pieceNode.get("player").asInt();
             String type = pieceNode.get("name").asText();
-            CheckersGamePiece.Builder b = this.pieceList.get(type);
+            BoardGamePiece.Builder b = this.pieceList.get(type);
             
             if(pNum == 1) {
                 String team = pieceNames.get(0);
@@ -167,7 +167,7 @@ public class BoardGameFactory extends GameManagerFactory {
                 b.setTeam(team).setName(team + type);
             }
 
-            CheckersGamePiece piece = b.build();
+            BoardGamePiece piece = b.build();
             board.setBoardPos(x, y, piece);
         }
 
@@ -242,10 +242,10 @@ public class BoardGameFactory extends GameManagerFactory {
         return multiGame;
     }
 
-    protected Map<String, CheckersGamePiece.Builder> buildPieceBuilders(JsonNode pieces) {
-        Map<String, CheckersGamePiece.Builder> pieceList = new HashMap<>();
+    protected Map<String, BoardGamePiece.Builder> buildPieceBuilders(JsonNode pieces) {
+        Map<String, BoardGamePiece.Builder> pieceList = new HashMap<>();
         for(JsonNode piece : pieces) {
-            CheckersGamePiece.Builder builder = new CheckersGamePiece.Builder();
+            BoardGamePiece.Builder builder = new BoardGamePiece.Builder();
             String name = piece.get("name").asText();
             int value = piece.get("value").asInt();
             JsonNode pieceActions = piece.get("actions");
@@ -307,6 +307,16 @@ public class BoardGameFactory extends GameManagerFactory {
                 
             }
 
+            if(piece.has("maxDist")) {
+                int maxDist = piece.get("maxDist").asInt();
+                builder.setMaxDist(maxDist);
+            }
+
+            if(piece.has("vectType")) {
+                String vectType = piece.get("vectType").asText();
+                builder.setVectType(vectType);
+            }
+
             builder.setAttackRules(attackRules);
             builder.setMoveRules(moveRules);
             pieceList.put(name, builder);
@@ -360,7 +370,7 @@ public class BoardGameFactory extends GameManagerFactory {
         return actions;
     }
 
-    protected CheckersGameBoard setupBoard(JsonNode pieces) {
+    protected GameBoardImpl setupBoard(JsonNode pieces) {
 
         return null;
     }

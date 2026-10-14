@@ -2,9 +2,9 @@ package checkers;
 
 import org.junit.jupiter.api.Test;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,11 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class GameBoardTest {
 
-    CheckersGameBoard board;
+    GameBoardImpl board;
 
     @BeforeEach
     void setup() {
-        this.board = new CheckersGameBoard(8);
+        this.board = new GameBoardImpl(8);
     }
 
     @Test
@@ -26,11 +26,11 @@ public class GameBoardTest {
         assertTrue(this.board.isValidPos(4, 6));
         assertFalse(this.board.isValidPos(-1, 9));
         assertFalse(this.board.isValidPos(3, -4));
-        CheckersCoordPair[][] board = {
-            { new CheckersCoordPair(0, 0), null },
+        CoordPairImpl[][] board = {
+            { new CoordPairImpl(0, 0), null },
             { null, null}
         };
-        this.board = new CheckersGameBoard(board);
+        this.board = new GameBoardImpl(board);
         assertTrue(this.board.isValidPos(0, 0));
         assertTrue(this.board.isValidPos(0, 1));
         assertFalse(this.board.isValidPos(0, 5));
@@ -38,14 +38,14 @@ public class GameBoardTest {
 
     @Test
     void testGetBoardPos() {
-        CheckersCoordPair[][] board = new CheckersCoordPair[8][8];
+        CoordPairImpl[][] board = new CoordPairImpl[8][8];
         
-        board[0][0] = new CheckersCoordPair(0, 0);
-        board[0][7] = new CheckersCoordPair(0, 7);
-        board[7][0] = new CheckersCoordPair(7, 0);
-        board[7][7] = new CheckersCoordPair(7, 7);
+        board[0][0] = new CoordPairImpl(0, 0);
+        board[0][7] = new CoordPairImpl(0, 7);
+        board[7][0] = new CoordPairImpl(7, 0);
+        board[7][7] = new CoordPairImpl(7, 7);
         
-        this.board = new CheckersGameBoard(board);
+        this.board = new GameBoardImpl(board);
 
         assertEquals(board[0][0], this.board.getBoardPos(0, 0));
         assertEquals(board[0][7], this.board.getBoardPos(0, 7));
@@ -67,12 +67,12 @@ public class GameBoardTest {
 
     @Test
     void testSetBoardPos() {
-        CheckersGamePiece piece = new CheckersGamePiece("R", "C", 1);
-        CheckersCoordPair[][] board = {
-            {new CheckersCoordPair(0, 0), new CheckersCoordPair(0, 1) },
-            {new CheckersCoordPair(1, 0), null } 
+        BoardGamePiece piece = new BoardGamePiece("R", "C", 1);
+        CoordPairImpl[][] board = {
+            {new CoordPairImpl(0, 0), new CoordPairImpl(0, 1) },
+            {new CoordPairImpl(1, 0), null } 
         };
-        this.board = new CheckersGameBoard(board);
+        this.board = new GameBoardImpl(board);
 
         this.board.setBoardPos(0, 0, piece);
         assertEquals(piece, this.board.getBoardPos(0, 0).getPiece());
@@ -83,13 +83,13 @@ public class GameBoardTest {
 
     @Test
     void testGetPos() {
-        CheckersCoordPair pos = new CheckersCoordPair(0, 0);
-        CheckersGamePiece piece = new CheckersGamePiece("B", "K", 1);
+        CoordPairImpl pos = new CoordPairImpl(0, 0);
+        BoardGamePiece piece = new BoardGamePiece("B", "K", 1);
         this.board.setBoardPos(0, 0, piece);
-        CheckersCoordPair posView = this.board.getBoardPos(0, 0);
+        CoordPairImpl posView = this.board.getBoardPos(0, 0);
         assertEquals(pos.getX(), posView.getX());
         assertEquals(pos.getY(), posView.getY());
-        CheckersGamePiece pieceView = posView.getPiece();
+        BoardGamePiece pieceView = posView.getPiece();
         assertEquals(pieceView.getName(), piece.getName());
         assertEquals(pieceView.getType(), piece.getType());
         assertEquals(pieceView.getVal(), piece.getVal());

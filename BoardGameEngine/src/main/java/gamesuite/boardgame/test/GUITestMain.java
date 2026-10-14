@@ -6,9 +6,9 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.ui.CheckersGameBoardPanel;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.ui.GameBoardPanel;
 
 public class GUITestMain {
     
@@ -18,18 +18,18 @@ public class GUITestMain {
 
     public static void runTest() {
         SwingUtilities.invokeLater(() -> {
-            CheckersCoordPair[][] grid = new CheckersCoordPair[8][8];
+            CoordPairImpl[][] grid = new CoordPairImpl[8][8];
 
             for(int i = 0; i < grid.length; i++) {
                 for(int j = 0; j < grid[i].length; j++) {
-                    CheckersCoordPair pos = new CheckersCoordPair(i, j);
+                    CoordPairImpl pos = new CoordPairImpl(i, j);
                     grid[i][j] = pos;
                 }
             }
             //TestListener l = null;
-            CheckersGameBoard b = new CheckersGameBoard(grid);
+            GameBoardImpl b = new GameBoardImpl(grid);
             TestListener l = new TestListener();
-            CheckersGameBoardPanel p = new CheckersGameBoardPanel(b, 8, l);
+            GameBoardPanel p = new GameBoardPanel(b, 8, l);
             l.setPanel(p);
             l.pack();
             l.setVisible(true);

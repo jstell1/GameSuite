@@ -4,24 +4,24 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersPlayer;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGamePlayer;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class HasNoAttacksConst extends Constraint {
 
-    CheckersGameBoard board;
-    CheckersGameState gameState;
+    GameBoardImpl board;
+    BoardGameState gameState;
 
     public HasNoAttacksConst() {
         super("hasNoAttacks");
     }
 
-    public HasNoAttacksConst(CheckersGameState gameState, CheckersGameBoard board) {
+    public HasNoAttacksConst(BoardGameState gameState, GameBoardImpl board) {
         super(gameState, board);
         this.name = "hasNoAttacks";
     }
@@ -29,9 +29,9 @@ public class HasNoAttacksConst extends Constraint {
     @Override
     public boolean checkMove(JsonNode move) {
         String id = move.get("playerId").asText();
-        CheckersPlayer p = this.gameState.getPlayerById(id);
+        BoardGamePlayer p = this.gameState.getPlayerById(id);
         int playerNum = p.getTurn();
-        Set<CheckersCoordPair> tmp;
+        Set<CoordPairImpl> tmp;
         tmp = this.gameState.getJumps(playerNum);
         
         if(tmp.size() == 0) {
@@ -54,12 +54,12 @@ public class HasNoAttacksConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-       this.gameState = (CheckersGameState) game;
+       this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
     
 }

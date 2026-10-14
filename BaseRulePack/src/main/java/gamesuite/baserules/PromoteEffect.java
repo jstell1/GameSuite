@@ -3,10 +3,10 @@ package gamesuite.baserules;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gamesuite.boardgame.control.BoardGameManager;
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
@@ -14,8 +14,8 @@ import gamesuite.core.model.rules.Effect;
 
 public class PromoteEffect extends Effect {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
     private BoardGameManager gm;
     private String promoteName;
 
@@ -42,22 +42,22 @@ public class PromoteEffect extends Effect {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
     public void updateState(JsonNode move) {
         int x = move.get("endX").asInt();
         int y = move.get("endY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(x, y);
-        CheckersGamePiece piece = pos.getPiece(); 
+        CoordPairImpl pos = this.board.getBoardPos(x, y);
+        BoardGamePiece piece = pos.getPiece(); 
         String team = piece.getTeam();
-        CheckersGamePiece newPiece = this.gm.buildPiece(this.promoteName, team);
+        BoardGamePiece newPiece = this.gm.buildPiece(this.promoteName, team);
         pos.setPiece(newPiece);
     }
 

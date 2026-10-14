@@ -6,17 +6,17 @@ import gamesuite.core.model.rules.Constraint;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 
 public class ValidMoveConst extends Constraint {
 
-    private CheckersGameState gameState;
-    private CheckersGameBoard board;
+    private BoardGameState gameState;
+    private GameBoardImpl board;
 
-    public ValidMoveConst(CheckersGameState gameState, CheckersGameBoard board) {
+    public ValidMoveConst(BoardGameState gameState, GameBoardImpl board) {
         super(gameState, board);
         this.name = "validMove";
     }
@@ -38,8 +38,8 @@ public class ValidMoveConst extends Constraint {
             return false;
         }
         
-        CheckersCoordPair pos = this.board.getBoardPos(startX, startY);
-        CheckersGamePiece p = pos.getPiece();
+        CoordPairImpl pos = this.board.getBoardPos(startX, startY);
+        BoardGamePiece p = pos.getPiece();
 
         if(p == null) {
             return false;
@@ -79,12 +79,12 @@ public class ValidMoveConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
    

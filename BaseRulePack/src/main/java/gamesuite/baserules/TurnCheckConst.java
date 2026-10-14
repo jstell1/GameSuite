@@ -2,18 +2,18 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class TurnCheckConst extends Constraint {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
 
     public TurnCheckConst() {
         super("turnCheck");
@@ -39,12 +39,12 @@ public class TurnCheckConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
@@ -55,8 +55,8 @@ public class TurnCheckConst extends Constraint {
         String curr = teams[turn - 1];
         int x = move.get("startX").asInt();
         int y = move.get("startY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(x, y);
-        CheckersGamePiece piece = pos.getPiece();
+        CoordPairImpl pos = this.board.getBoardPos(x, y);
+        BoardGamePiece piece = pos.getPiece();
 
         if(piece == null) {
             return false;    

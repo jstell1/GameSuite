@@ -10,8 +10,8 @@ import gamesuite.core.model.GamePiece;
 import gamesuite.core.model.rules.Action;
 
 
-@JsonIgnoreProperties(value = {"moveRules", "attackRules", "validMoves", "validJumps", "attackVectors", "king", "vaidAttacks", "validKingMoves", "validKingJumps"}, ignoreUnknown = true)
-public class CheckersGamePiece implements GamePiece {
+@JsonIgnoreProperties(value = {"moveRules", "attackRules", "validMoves", "validJumps", "attackVectors", "king", "vaidAttacks", "validKingMoves", "validKingJumps", "maxDist"}, ignoreUnknown = true)
+public class BoardGamePiece implements GamePiece {
     private String name;
     private String team;
     private String type;
@@ -19,6 +19,8 @@ public class CheckersGamePiece implements GamePiece {
     private boolean king;
     private int[][] validMoves; //= {{-1, -1}, {-1, 1}};
     private int[][] validJumps; //= {{-2, -2}, {-2, 2}};
+    private int maxDist;
+    private String vectType;
     private int[][] validAttacks; //= {{-1, -1}, -1, 1};
     private int[][] attackVectors;
     private final int[][] validKingMoves = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
@@ -26,29 +28,35 @@ public class CheckersGamePiece implements GamePiece {
     private List<Action> moveRules;
     private List<Action> attackRules;
 
-    public CheckersGamePiece() {}
+    public BoardGamePiece() {}
 
-    public CheckersGamePiece(String name, String type, int val) {
+    public BoardGamePiece(String name, String type, int val) {
         this.name = name;
         this.type = type;
         this.val = val;
     }
 
-    private CheckersGamePiece(
+    private BoardGamePiece(
          String name, String type, int val, 
         int[][] validMoves, int[][] validJumps,
         List<Action> moveRules, List<Action> attackRules,
-        int[][] attackVectors, String team
+        int[][] attackVectors, String team, int maxDist,
+        String vectType
     ) {
         this.name = name; this.type = type;
         this.validMoves = validMoves; this.validJumps = validJumps;
         this.moveRules = moveRules; this.attackRules = attackRules;
         this.attackVectors = attackVectors; this.team = team;
+        this.maxDist = maxDist; this.vectType = vectType;
     }
 
     public int[][] getAttackVectors() { 
         return copyArray(this.attackVectors); 
     }
+
+    public int getMaxDist() { return this.maxDist; }
+
+    public String getVectType() { return this.vectType; }
 
     public void setKing(boolean king) {
         this.king = king;
@@ -71,7 +79,7 @@ public class CheckersGamePiece implements GamePiece {
         this.val = val;
     }
 
-    public CheckersGamePiece copy() { 
+    public BoardGamePiece copy() { 
         return new Builder()
             .setName(this.name)
             .setType(this.type)
@@ -147,12 +155,14 @@ public class CheckersGamePiece implements GamePiece {
         private String name = "";
         private String type = "";
         private int val;
-        private int[][] validMoves = {{-1, -1}, {-1, 1}};
-        private int[][] validJumps = {{-2, -2}, {-2, 2}};
-        private int[][] attackVectors = {{-1, -1}, {-1, 1}};
+        private int[][] validMoves = null;
+        private int[][] validJumps = null;
+        private int[][] attackVectors = null;
         private List<Action> moveRules = new ArrayList<>();
         private List<Action> attackRules = new ArrayList<>();
         private String team = "B";
+        private int maxDist = 0;
+        private String vectType = null;
 
         public Builder setName(String name) { 
             this.name = name; 
@@ -200,12 +210,23 @@ public class CheckersGamePiece implements GamePiece {
             return this;
         }
 
-        public CheckersGamePiece build() {
-            return new CheckersGamePiece(
+        public Builder setMaxDist(int maxDist) {
+            this.maxDist = maxDist;
+            return this;
+        }
+
+        public Builder setVectType(String vectType) {
+            this.vectType = vectType;
+            return this;
+        }
+
+        public BoardGamePiece build() {
+            return new BoardGamePiece(
                 this.name, this.type, this.val, 
                 this.validMoves, this.validJumps, 
                 this.moveRules, this.attackRules,
-                this.attackVectors, this.team
+                this.attackVectors, this.team,
+                this.maxDist, this.vectType
             );
         }
 

@@ -2,24 +2,24 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class FurtherAttacksConst extends Constraint {
 
-    private CheckersGameState gameState;
-    private CheckersGameBoard board;
+    private BoardGameState gameState;
+    private GameBoardImpl board;
     
     public FurtherAttacksConst() {
         super("furtherAttacks");
     }
 
-    public FurtherAttacksConst(CheckersGameState gameState, CheckersGameBoard board) {
+    public FurtherAttacksConst(BoardGameState gameState, GameBoardImpl board) {
         super(gameState, board);
         this.name = "furtherAttacks";
     }
@@ -29,10 +29,10 @@ public class FurtherAttacksConst extends Constraint {
         
         int tmpx = move.get("endX").asInt();
         int tmpy = move.get("endY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(tmpx, tmpy);
+        CoordPairImpl pos = this.board.getBoardPos(tmpx, tmpy);
         if(pos == null || pos.getPiece() == null)
             return false;
-        CheckersGamePiece piece = pos.getPiece();
+        BoardGamePiece piece = pos.getPiece();
         String team = piece.getTeam();
         int startX = pos.getX();
         int startY = pos.getY();
@@ -60,12 +60,12 @@ public class FurtherAttacksConst extends Constraint {
                 jumpX = (startX + x) >> 1;
                 jumpY = (startY + y) >> 1;
 
-                CheckersCoordPair jumpPos = this.board.getBoardPos(jumpX, jumpY);
-                CheckersCoordPair end = this.board.getBoardPos(x, y);
-                CheckersGamePiece endPiece = null;
+                CoordPairImpl jumpPos = this.board.getBoardPos(jumpX, jumpY);
+                CoordPairImpl end = this.board.getBoardPos(x, y);
+                BoardGamePiece endPiece = null;
                 if(end != null)
                     endPiece = end.getPiece();
-                CheckersGamePiece jumpPiece = jumpPos.getPiece();
+                BoardGamePiece jumpPiece = jumpPos.getPiece();
 
                 if(jumpPiece != null && !team.equals(jumpPiece.getTeam()) && endPiece == null) {
                     return true;
@@ -89,12 +89,12 @@ public class FurtherAttacksConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
         
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 }

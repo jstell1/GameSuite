@@ -10,11 +10,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGameMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.ConstDependent;
@@ -23,8 +23,8 @@ import gamesuite.core.model.rules.Effect;
 
 public class IncrTurnEffect extends Effect implements ConstDependent {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
     private int[][] vectors;
     private Set jumpsAllowed;
     private Set exactVectors;
@@ -54,7 +54,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override 
@@ -88,7 +88,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
@@ -107,9 +107,9 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
 
     protected void updateAttacksList() {
         String[] teams = this.gameState.getTeamNames();
-        List<CheckersCoordPair> changed = this.gameState.getChangedPos();        
+        List<CoordPairImpl> changed = this.gameState.getChangedPos();        
         
-        for(CheckersCoordPair pos : changed) {
+        for(CoordPairImpl pos : changed) {
 
             //check the position
             handleFurtherAttacks(pos);
@@ -126,14 +126,14 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         }
     }
 
-    private void handleFurtherAttacks(CheckersCoordPair pos) {
+    private void handleFurtherAttacks(CoordPairImpl pos) {
 
-        CheckersMove m = new CheckersMove();
+        BoardGameMove m = new BoardGameMove();
         int x = pos.getX();
         int y = pos.getY();
         m.setEndX(x);
         m.setEndY(y);
-        CheckersGamePiece piece = pos.getPiece();
+        BoardGamePiece piece = pos.getPiece();
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode n = mapper.valueToTree(m);
@@ -145,14 +145,14 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         }
     }
 
-    private void removeFromAttacks(CheckersCoordPair pos) {
+    private void removeFromAttacks(CoordPairImpl pos) {
         this.gameState.removePlayerJumps(pos, 1);
         this.gameState.removePlayerJumps(pos, 2);
     }
 
-    private void addToAttacksList(CheckersCoordPair pos) {
+    private void addToAttacksList(CoordPairImpl pos) {
         String[] teams = this.gameState.getTeamNames();
-        CheckersGamePiece piece = pos.getPiece();
+        BoardGamePiece piece = pos.getPiece();
         String team = piece.getTeam();
         if(team.equals(teams[0])) {
             this.gameState.addPlayerJumps(pos, 1);
@@ -177,7 +177,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         return num >= 0 && num < this.board.getSideLength();
     }
 
-    protected void checkToEnd(int[] vect, CheckersCoordPair pos) {
+    protected void checkToEnd(int[] vect, CoordPairImpl pos) {
 
         int sX = pos.getX();
         int sY = pos.getY();
@@ -195,7 +195,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
             int tmpX = sX + dir;
             
             while(!pastFinal(dir, finalX, tmpX) && inBounds(tmpX)) {
-                CheckersCoordPair tmp = this.board.getBoardPos(tmpX, finalY);
+                CoordPairImpl tmp = this.board.getBoardPos(tmpX, finalY);
                 handleFurtherAttacks(tmp);
                 tmpX += dir;
             }
@@ -208,7 +208,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
             int tmpY = sY + dir;
 
             while(!pastFinal(dir, finalY, tmpY) && inBounds(tmpY)) {
-                CheckersCoordPair tmp = this.board.getBoardPos(finalX, tmpY);
+                CoordPairImpl tmp = this.board.getBoardPos(finalX, tmpY);
                 handleFurtherAttacks(tmp);
                 tmpY += dir;
             }
@@ -222,7 +222,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
                 int tmpY = sY + dir;
 
                 while(!pastFinal(dir, finalY, tmpY) && inBounds(tmpX) && inBounds(tmpY)) {
-                    CheckersCoordPair tmp = this.board.getBoardPos(tmpX, tmpY);
+                    CoordPairImpl tmp = this.board.getBoardPos(tmpX, tmpY);
                     handleFurtherAttacks(tmp);
                     tmpY += dir;
                     tmpX += dir2;
@@ -231,7 +231,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
                 if(!inBounds(finalX) || !inBounds(finalY)) {
                     return;
                 }
-                CheckersCoordPair tmp = this.board.getBoardPos(finalX, finalY);
+                CoordPairImpl tmp = this.board.getBoardPos(finalX, finalY);
                 handleFurtherAttacks(tmp);
             }
         }
@@ -245,7 +245,7 @@ public class IncrTurnEffect extends Effect implements ConstDependent {
         return 0;
     }
 
-    private void checkUntilFirst(int[] vect, CheckersCoordPair pos) {
+    private void checkUntilFirst(int[] vect, CoordPairImpl pos) {
 
     }
 

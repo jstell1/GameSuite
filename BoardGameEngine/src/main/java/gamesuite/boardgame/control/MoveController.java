@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
 import gamesuite.core.model.rules.Action;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
@@ -21,9 +21,9 @@ public class MoveController {
     private List<String> negateList;
     private Constraint validMove;
     private Constraint validAttack;
-    private CheckersGameBoard board;
+    private GameBoardImpl board;
 
-    public MoveController(CheckersGameBoard board) {
+    public MoveController(GameBoardImpl board) {
         if(board == null)
             throw new IllegalArgumentException("board cannot be null");
         this.gameConstraints = new ArrayList<>();
@@ -98,8 +98,8 @@ public class MoveController {
     public boolean moveCheck(JsonNode move) {
         int x = move.get("startX").asInt();
         int y = move.get("startY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(x, y);
-        CheckersGamePiece piece = pos.getPiece();
+        CoordPairImpl pos = this.board.getBoardPos(x, y);
+        BoardGamePiece piece = pos.getPiece();
         List<Action> attackRules = piece.getAttackRules();
         List<Action> moveRules = piece.getMoveRules();
         boolean success1 = false;

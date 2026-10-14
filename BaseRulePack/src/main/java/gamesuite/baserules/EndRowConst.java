@@ -2,18 +2,18 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class EndRowConst extends Constraint {
 
-    private CheckersGameBoard board;
-    private CheckersGameState gameState;
+    private GameBoardImpl board;
+    private BoardGameState gameState;
 
     public EndRowConst() {
         super("endRow");
@@ -38,12 +38,12 @@ public class EndRowConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override
@@ -51,9 +51,9 @@ public class EndRowConst extends Constraint {
         
         int x = move.get("endX").asInt();
         int y = move.get("endY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(x, y);
+        CoordPairImpl pos = this.board.getBoardPos(x, y);
 
-         CheckersGamePiece piece = pos.getPiece();
+         BoardGamePiece piece = pos.getPiece();
         String[] names = this.gameState.getTeamNames();
         boolean check = piece.getTeam().equals(names[0]) && pos.getX() == this.board.getSideLength() - 1;
         check = check || piece.getTeam().equals(names[1]) && pos.getX() == 0; 

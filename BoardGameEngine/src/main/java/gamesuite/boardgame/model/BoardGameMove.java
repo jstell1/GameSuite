@@ -2,18 +2,18 @@ package gamesuite.boardgame.model;
 
 import gamesuite.core.model.Move;
 
-public class CheckersMove implements Move {
+public class BoardGameMove implements Move {
     int startX, startY;
     int endX, endY;
     String playerId;
     String action;
 
-    public CheckersMove() {
+    public BoardGameMove() {
         this.startX = -1; this.startY = -1;
         this.endX = -1; this.endY = -1;
     }
 
-    public CheckersMove(int startX, int startY, int endX, int endY) {
+    public BoardGameMove(int startX, int startY, int endX, int endY) {
         this.startX = startX; this.startY = startY;
         this.endX = endX; this.endY = endY;
     }

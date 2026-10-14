@@ -61,6 +61,8 @@
           "type": "array",
           "items": { "$ref": "#/definitions/Vector"}
         },
+        "maxDist": {"type": "integer"},
+        "vectType": {"type": "string"},
         "actions": {
           "type": "array",
           "items": { 

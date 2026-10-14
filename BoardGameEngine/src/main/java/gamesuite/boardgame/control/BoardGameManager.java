@@ -12,25 +12,25 @@ import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.rules.Effect;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
-import gamesuite.boardgame.model.CheckersPlayer;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGameMove;
+import gamesuite.boardgame.model.BoardGamePlayer;
 
 public class BoardGameManager implements GameManager {
     private MoveController moveController;
-    private CheckersGameState game;
-    private CheckersGameBoard board;
+    private BoardGameState game;
+    private GameBoardImpl board;
     public static final String name = "BoardGameEngine";
     private List<String> sessionPlayerMap;
-    private Map<String, CheckersGamePiece.Builder> pieceList;
+    private Map<String, BoardGamePiece.Builder> pieceList;
     private int[][] attackVectors;
     private Effect turnControl;
     private String ui;
 
     
-    public BoardGameManager(CheckersGameBoard board, CheckersGameState game, MoveController moveController) {
+    public BoardGameManager(GameBoardImpl board, BoardGameState game, MoveController moveController) {
         this.board = board;
         this.game = game;
         this.moveController = moveController;
@@ -68,12 +68,12 @@ public class BoardGameManager implements GameManager {
         return false;
     }
 
-    public void setPieceList(Map<String, CheckersGamePiece.Builder> list) {
+    public void setPieceList(Map<String, BoardGamePiece.Builder> list) {
         this.pieceList = list;
     }
     
-    public CheckersGamePiece buildPiece(String type, String team) {
-        CheckersGamePiece.Builder tmp = this.pieceList.get(type);
+    public BoardGamePiece buildPiece(String type, String team) {
+        BoardGamePiece.Builder tmp = this.pieceList.get(type);
         tmp.setTeam(team).setName(team + type);
         return tmp.build();
     }
@@ -141,13 +141,13 @@ public class BoardGameManager implements GameManager {
        
     }
 
-    public boolean addPlayer(CheckersPlayer player) {
+    public boolean addPlayer(BoardGamePlayer player) {
         mapSessionPlayer(player.getUserId());
         return this.game.addPlayer(player);
     }
 
     public boolean addPlayer(String name) {
-        CheckersPlayer player = new CheckersPlayer(name, getTurn());
+        BoardGamePlayer player = new BoardGamePlayer(name, getTurn());
         return this.game.addPlayer(player);
     }
 
@@ -157,13 +157,13 @@ public class BoardGameManager implements GameManager {
 
     public String getBoardString() { return this.board.toString(); }
 
-    public CheckersPlayer getWinner() { 
+    public BoardGamePlayer getWinner() { 
         if(this.game.getWinner() != null) 
             return this.game.getWinner();
         return null; 
     }
 
-    public CheckersGameBoard getBoard() { return this.board; }
+    public GameBoardImpl getBoard() { return this.board; }
 
     public boolean gameOver() {
         if(this.game.getWinner() != null)
@@ -188,7 +188,7 @@ public class BoardGameManager implements GameManager {
         return this.sessionPlayerMap;
     }
 
-    public CheckersGameState quitGame(String playerId) {
+    public BoardGameState quitGame(String playerId) {
 
         int playerNum = this.game.getPlayerById(playerId).getTurn();
         if(this.game.getWinner() == null) {
@@ -219,7 +219,7 @@ public class BoardGameManager implements GameManager {
 
     @Override
     public JsonNode joinGame(String player, String playerId) {
-        CheckersPlayer p = new CheckersPlayer(player, 0);
+        BoardGamePlayer p = new BoardGamePlayer(player, 0);
         p.setUserId(playerId);
         p.setTurn(2);
         if(p != null) {

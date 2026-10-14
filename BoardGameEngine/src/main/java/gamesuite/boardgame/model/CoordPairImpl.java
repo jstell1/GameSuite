@@ -2,16 +2,16 @@ package gamesuite.boardgame.model;
 
 import gamesuite.core.model.CoordPair;
 
-public class CheckersCoordPair implements CoordPair {
+public class CoordPairImpl implements CoordPair {
     private int x;
     private int y;
-    private CheckersGamePiece piece;
+    private BoardGamePiece piece;
 
-    public CheckersCoordPair() {
+    public CoordPairImpl() {
         x = -1; y = -1;
     }
 
-    public CheckersCoordPair(int x, int y) {
+    public CoordPairImpl(int x, int y) {
         if(x < 0 || y < 0) {
             throw new IllegalArgumentException("coords are always positive in arrays");
         }
@@ -20,7 +20,7 @@ public class CheckersCoordPair implements CoordPair {
         this.piece = null;
     }
 
-    private CheckersCoordPair(int x, int y, CheckersGamePiece piece) {
+    private CoordPairImpl(int x, int y, BoardGamePiece piece) {
         if(x < 0 || y < 0) {
             throw new IllegalArgumentException("coords are always positive in arrays");
         }
@@ -49,32 +49,32 @@ public class CheckersCoordPair implements CoordPair {
 
     public int getY() { return this.y; }
 
-    public CheckersGamePiece getPiece() { return this.piece; }
+    public BoardGamePiece getPiece() { return this.piece; }
 
-    public void setPiece(CheckersGamePiece piece) { this.piece = piece; } 
+    public void setPiece(BoardGamePiece piece) { this.piece = piece; } 
 
     public boolean equals(Object obj) {
         if(this == obj) return true;
-        if(!(obj instanceof CheckersCoordPair)) return false;
-        CheckersCoordPair other = (CheckersCoordPair) obj;
+        if(!(obj instanceof CoordPairImpl)) return false;
+        CoordPairImpl other = (CoordPairImpl) obj;
         return this.x == other.x && this.y == other.y;
     }
 
-    public CheckersCoordPair copy() { 
-        CheckersCoordPair pos = new CheckersCoordPair(x, y); 
+    public CoordPairImpl copy() { 
+        CoordPairImpl pos = new CoordPairImpl(x, y); 
         
             pos.setPiece(this.piece);
         
         return pos;
     }
 
-    public CheckersCoordPair toCoordPair(int[] arr) {
+    public CoordPairImpl toCoordPair(int[] arr) {
         if(arr.length != 2)
             throw new IllegalArgumentException("must have 2 coord values"); 
-        return new CheckersCoordPair(arr[0], arr[1]);
+        return new CoordPairImpl(arr[0], arr[1]);
     }
 
-    public static int[] toArray(CheckersCoordPair pos) {
+    public static int[] toArray(CoordPairImpl pos) {
         if(pos != null) {
             int[] arr = new int[2];
             arr[0] = pos.getX();

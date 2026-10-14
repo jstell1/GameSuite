@@ -2,23 +2,23 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class EmptyTargConst extends Constraint {
 
-    private CheckersGameState game;
-    private CheckersGameBoard board;
+    private BoardGameState game;
+    private GameBoardImpl board;
 
     public EmptyTargConst() {
         super("emptyTarg");
     }
 
-    public EmptyTargConst(CheckersGameState gameState, CheckersGameBoard board) {
+    public EmptyTargConst(BoardGameState gameState, GameBoardImpl board) {
         super(gameState, board);
         this.name = "emptyTarg";
     }
@@ -27,7 +27,7 @@ public class EmptyTargConst extends Constraint {
     public boolean checkMove(JsonNode move) {
         int x = move.get("endX").asInt();
         int y = move.get("endY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(x, y);
+        CoordPairImpl pos = this.board.getBoardPos(x, y);
         if(pos.getPiece() != null)
             return false;
         return true; 
@@ -48,12 +48,12 @@ public class EmptyTargConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.game = (CheckersGameState) game;
+        this.game = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
     
 }

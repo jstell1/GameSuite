@@ -7,11 +7,11 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
-import gamesuite.boardgame.model.CheckersMove;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
+import gamesuite.boardgame.model.BoardGameMove;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.ConstDependent;
@@ -19,8 +19,8 @@ import gamesuite.core.model.rules.Constraint;
 
 public class HasNoMovesConst extends Constraint implements ConstDependent {
 
-    private CheckersGameState gameState;
-    private CheckersGameBoard board;
+    private BoardGameState gameState;
+    private GameBoardImpl board;
     private Constraint inBounds;
     private Constraint furtherAttacks;
     private Constraint furtherMoves; 
@@ -30,7 +30,7 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
         this.inBounds = new InBoundsConst();
     }
 
-    public HasNoMovesConst(CheckersGameState gameState, CheckersGameBoard board) {
+    public HasNoMovesConst(BoardGameState gameState, GameBoardImpl board) {
         super(gameState, board);
         this.name = "hasNoMoves";
         this.inBounds = new InBoundsConst();
@@ -67,8 +67,8 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
             fact = 1;
         }
         for(int j = start; j < this.board.getSideLength(); j++) {
-            CheckersCoordPair pos = this.board.getBoardPos(row, j);
-            CheckersGamePiece piece = pos.getPiece();
+            CoordPairImpl pos = this.board.getBoardPos(row, j);
+            BoardGamePiece piece = pos.getPiece();
 
             if(piece == null) {
                 continue;
@@ -78,7 +78,7 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
                 continue;
             }
 
-            CheckersMove cMove = new CheckersMove();
+            BoardGameMove cMove = new BoardGameMove();
             cMove.setEndX(pos.getX());
             cMove.setEndY(pos.getY());
             ObjectMapper mapper = new ObjectMapper();
@@ -111,12 +111,12 @@ public class HasNoMovesConst extends Constraint implements ConstDependent {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
     @Override

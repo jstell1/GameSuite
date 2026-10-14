@@ -3,20 +3,20 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class ValidAttackConst extends Constraint {
 
-    private CheckersGameState gameState;
-    private CheckersGameBoard board;
+    private BoardGameState gameState;
+    private GameBoardImpl board;
 
-    public ValidAttackConst(CheckersGameState gameState, CheckersGameBoard board) {
+    public ValidAttackConst(BoardGameState gameState, GameBoardImpl board) {
         super(gameState, board);
         this.name = "validAttack";
     }
@@ -39,10 +39,10 @@ public class ValidAttackConst extends Constraint {
         int turnFactor = this.gameState.getTurnFactor();
         String[] teamNames = this.gameState.getTeamNames();
         int turn = this.gameState.getTurn();
-        CheckersCoordPair start = this.board.getBoardPos(sX, sY);
-        CheckersCoordPair end = this.board.getBoardPos(eX, eY);
+        CoordPairImpl start = this.board.getBoardPos(sX, sY);
+        CoordPairImpl end = this.board.getBoardPos(eX, eY);
 
-        CheckersGamePiece piece = start.getPiece();
+        BoardGamePiece piece = start.getPiece();
          String team = piece.getTeam();
 
         if(!teamNames[turn - 1].equals(team)) {
@@ -70,8 +70,8 @@ public class ValidAttackConst extends Constraint {
         int midX = (eX + sX) >> 1;
         int midY = (eY + sY) >> 1;
 
-        CheckersCoordPair attackCoord = this.board.getBoardPos(midX, midY);
-        CheckersGamePiece p = attackCoord.getPiece();
+        CoordPairImpl attackCoord = this.board.getBoardPos(midX, midY);
+        BoardGamePiece p = attackCoord.getPiece();
         if(p != null && !p.getTeam().equals(team)) {
             return true;
         }
@@ -94,12 +94,12 @@ public class ValidAttackConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-        this.board = (CheckersGameBoard) board;
+        this.board = (GameBoardImpl) board;
     }
 
 }

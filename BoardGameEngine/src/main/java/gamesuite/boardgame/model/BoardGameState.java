@@ -14,31 +14,31 @@ import java.util.List;
 import java.util.Objects;
 
 @JsonIgnoreProperties(value = {"lastJumped"},ignoreUnknown = true)
-public class CheckersGameState implements GameState {
+public class BoardGameState implements GameState {
 
-    private CheckersPlayer player1;
-    private CheckersPlayer player2;
+    private BoardGamePlayer player1;
+    private BoardGamePlayer player2;
     private int numPlayers;
     private int turn;
-    private CheckersPlayer winner;
+    private BoardGamePlayer winner;
     private boolean isDraw;
-    private Set<CheckersCoordPair> p1Jumps;
-    private Set<CheckersCoordPair> p2Jumps;
-    private Set<CheckersCoordPair> p1Moves;
-    private Set<CheckersCoordPair> p2Moves;
-    private CheckersCoordPair furtherJumps;
+    private Set<CoordPairImpl> p1Jumps;
+    private Set<CoordPairImpl> p2Jumps;
+    private Set<CoordPairImpl> p1Moves;
+    private Set<CoordPairImpl> p2Moves;
+    private CoordPairImpl furtherJumps;
     private int boardSize;
     private int turnFactor;
     private boolean boardInit;
     private String[] teamNames;// = {"B", "R"};
-    private List<CheckersCoordPair> changedPos;
+    private List<CoordPairImpl> changedPos;
     private boolean gameOver;
-    private Set<CheckersCoordPair> justKinged;
+    private Set<CoordPairImpl> justKinged;
     private boolean lastJumped;
 
-    public CheckersGameState() {}
+    public BoardGameState() {}
 
-    public CheckersGameState(CheckersPlayer player1, CheckersPlayer player2) {
+    public BoardGameState(BoardGamePlayer player1, BoardGamePlayer player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.numPlayers = 2;
@@ -56,7 +56,7 @@ public class CheckersGameState implements GameState {
     }
 
 
-    public CheckersGameState(CheckersPlayer player1) {
+    public BoardGameState(BoardGamePlayer player1) {
         this.player1 = player1;
         this.numPlayers = 1;
         this.turn = 1;
@@ -72,20 +72,20 @@ public class CheckersGameState implements GameState {
         this.lastJumped = false;
     }
 
-    private CheckersGameState(
-        CheckersPlayer player1, CheckersPlayer player2,
+    private BoardGameState(
+        BoardGamePlayer player1, BoardGamePlayer player2,
         int numPlayers, int turn,
-        CheckersPlayer winner, boolean isDraw,
-        Set<CheckersCoordPair> p1Attacks,
-        Set<CheckersCoordPair> p2Attacks,
-        Set<CheckersCoordPair> p1Moves,
-        Set<CheckersCoordPair> p2Moves,
-        CheckersCoordPair furtherAttacks,
+        BoardGamePlayer winner, boolean isDraw,
+        Set<CoordPairImpl> p1Attacks,
+        Set<CoordPairImpl> p2Attacks,
+        Set<CoordPairImpl> p1Moves,
+        Set<CoordPairImpl> p2Moves,
+        CoordPairImpl furtherAttacks,
         int boardSize, int turnFactor,
         boolean boardInit, String[] teamNames,
-        List<CheckersCoordPair> changedPos,
+        List<CoordPairImpl> changedPos,
         boolean gameOver, boolean lastJumped,
-        Set<CheckersCoordPair> justPromoted
+        Set<CoordPairImpl> justPromoted
     ) {
         this.player1 = player1; this.player2 = player2;
         this.numPlayers = numPlayers; this.turn = turn;
@@ -100,7 +100,7 @@ public class CheckersGameState implements GameState {
         this.lastJumped = lastJumped;
     }
 
-    public void setPlayer2(CheckersPlayer player2) {
+    public void setPlayer2(BoardGamePlayer player2) {
 
         if(this.player2 != null) {
             throw new IllegalStateException("once player2 is set it cannot be changed");
@@ -123,17 +123,17 @@ public class CheckersGameState implements GameState {
 
     
 
-    public void addJustKinged(CheckersCoordPair pos) {
+    public void addJustKinged(CoordPairImpl pos) {
         Objects.requireNonNull(pos, "pos");
         this.justKinged.add(pos);
     }
 
-    public void removeJustKinged(CheckersCoordPair pos) {
+    public void removeJustKinged(CoordPairImpl pos) {
         Objects.requireNonNull(pos, "pos");
         this.justKinged.remove(pos);
     }
 
-    public boolean isJustKinged(CheckersCoordPair pos) {
+    public boolean isJustKinged(CoordPairImpl pos) {
         Objects.requireNonNull(pos, "pos");
         return this.justKinged.contains(pos);
     }
@@ -163,7 +163,7 @@ public class CheckersGameState implements GameState {
         }
     }
 
-    public void addPlayerJumps(CheckersCoordPair pos, int playerNum) {
+    public void addPlayerJumps(CoordPairImpl pos, int playerNum) {
         checkPlayerTurnRange(playerNum);
         Objects.requireNonNull(pos, "pos");
 
@@ -173,7 +173,7 @@ public class CheckersGameState implements GameState {
             p2Jumps.add(pos);
     }
 
-    public Set<CheckersCoordPair> getJumps(int playerNum) {
+    public Set<CoordPairImpl> getJumps(int playerNum) {
         checkPlayerTurnRange(playerNum);
         if(playerNum == 1) {
             return Set.copyOf(p1Jumps);
@@ -183,7 +183,7 @@ public class CheckersGameState implements GameState {
         return null;
     }
 
-    public void removePlayerJumps(CheckersCoordPair pos, int playerNum) {
+    public void removePlayerJumps(CoordPairImpl pos, int playerNum) {
         checkPlayerTurnRange(playerNum);
         Objects.requireNonNull(pos, "pos");
 
@@ -201,7 +201,7 @@ public class CheckersGameState implements GameState {
         return this.turn;
     }
 
-    public CheckersPlayer getPlayer(int playerNum) { 
+    public BoardGamePlayer getPlayer(int playerNum) { 
 
         if(playerNum == 1) 
             return player1;
@@ -210,7 +210,7 @@ public class CheckersGameState implements GameState {
         return null;
     }
 
-    public CheckersPlayer getPlayerById(String id) {
+    public BoardGamePlayer getPlayerById(String id) {
         
         if(this.player1.getUserId().equals(id))
             return this.player1;
@@ -227,24 +227,24 @@ public class CheckersGameState implements GameState {
        return false;    
     }
 
-    public CheckersPlayer[] getPlayers() { 
-        CheckersPlayer[] players = new CheckersPlayer[2];
+    public BoardGamePlayer[] getPlayers() { 
+        BoardGamePlayer[] players = new BoardGamePlayer[2];
         players[0] = this.player1;
         players[1] = this.player2;
         return players;
     }
 
-    public void setFurtherJumps(CheckersCoordPair pos) { 
+    public void setFurtherJumps(CoordPairImpl pos) { 
         this.furtherJumps = pos; 
     }
 
     public void removeFurtherJumps() { this.furtherJumps = null; }
     
-    public CheckersCoordPair getFurtherJumps() {
+    public CoordPairImpl getFurtherJumps() {
         return this.furtherJumps;
     } 
 
-    public void addChangedPos(CheckersCoordPair pos) {
+    public void addChangedPos(CoordPairImpl pos) {
         Objects.requireNonNull(pos, "pos");
         this.changedPos.add(pos);
     }
@@ -255,7 +255,7 @@ public class CheckersGameState implements GameState {
 
     public void setDraw() { this.isDraw = true; }
     
-    public CheckersPlayer getWinner() { return this.winner; }
+    public BoardGamePlayer getWinner() { return this.winner; }
 
 
     public void setWinnerNum(int playerNum) { 
@@ -286,12 +286,12 @@ public class CheckersGameState implements GameState {
 
     public int getNumPlayers() { return this.numPlayers; }
 
-    public List<CheckersCoordPair> getChangedPos() {
+    public List<CoordPairImpl> getChangedPos() {
         return List.copyOf(this.changedPos);
     }    
 
 
-	public void setChangedPos(List<CheckersCoordPair> changed) {
+	public void setChangedPos(List<CoordPairImpl> changed) {
         
         this.changedPos = changed;
 	}
@@ -300,7 +300,7 @@ public class CheckersGameState implements GameState {
         this.justKinged.clear();
     }
 
-    public boolean addPlayer(CheckersPlayer player) {
+    public boolean addPlayer(BoardGamePlayer player) {
         Objects.requireNonNull(player, "player");
         if(this.player1 == null) {
             this.player1 = player;
@@ -317,34 +317,34 @@ public class CheckersGameState implements GameState {
 
 
     public static class Builder {
-        private CheckersPlayer player1;
-        private CheckersPlayer player2;
+        private BoardGamePlayer player1;
+        private BoardGamePlayer player2;
         private int numPlayers;
         private int turn = 1;
-        private CheckersPlayer winner;
+        private BoardGamePlayer winner;
         private boolean isDraw;
-        private Set<CheckersCoordPair> p1Attacks = new HashSet<>();
-        private Set<CheckersCoordPair> p2Attacks = new HashSet<>();
-        private Set<CheckersCoordPair> p1Moves = new HashSet<>();
-        private Set<CheckersCoordPair> p2Moves = new HashSet<>();
-        private CheckersCoordPair furtherAttacks;
+        private Set<CoordPairImpl> p1Attacks = new HashSet<>();
+        private Set<CoordPairImpl> p2Attacks = new HashSet<>();
+        private Set<CoordPairImpl> p1Moves = new HashSet<>();
+        private Set<CoordPairImpl> p2Moves = new HashSet<>();
+        private CoordPairImpl furtherAttacks;
         private int boardSize = 1;
         private int turnFactor = 1;
         private boolean boardInit;
         private String[] teamNames = {"B", "R"};
-        private List<CheckersCoordPair> changedPos = new ArrayList<>();
+        private List<CoordPairImpl> changedPos = new ArrayList<>();
         private boolean gameOver;
-        private Set<CheckersCoordPair> justPromoted = new HashSet<>();
+        private Set<CoordPairImpl> justPromoted = new HashSet<>();
         private boolean lastJumped = false;
         private List<Field> failedFields = new ArrayList<>(); 
         private Field[] allFields = this.getClass().getDeclaredFields();
 
-        public Builder setPlayer1(CheckersPlayer player1) {
+        public Builder setPlayer1(BoardGamePlayer player1) {
             this.player1 = player1;
             return this;
         }
 
-        public Builder setPlayer2(CheckersPlayer player2) {
+        public Builder setPlayer2(BoardGamePlayer player2) {
             this.player2 = player2;
             return this;
         }
@@ -372,7 +372,7 @@ public class CheckersGameState implements GameState {
             return this;
         }
 
-        public Builder setWinner(CheckersPlayer winner) {
+        public Builder setWinner(BoardGamePlayer winner) {
             this.winner = winner;
             return this;
         }
@@ -382,35 +382,35 @@ public class CheckersGameState implements GameState {
             return this;
         }
 
-        private static Set<CheckersCoordPair> copySet(Set<CheckersCoordPair> set) {
-            Set<CheckersCoordPair> s = new HashSet<>();
-            for(CheckersCoordPair pos : set) {
+        private static Set<CoordPairImpl> copySet(Set<CoordPairImpl> set) {
+            Set<CoordPairImpl> s = new HashSet<>();
+            for(CoordPairImpl pos : set) {
                 s.add(pos);
             }
             return s;
         }
 
-        public Builder setP1Attacks(Set<CheckersCoordPair> p1Attacks) {
+        public Builder setP1Attacks(Set<CoordPairImpl> p1Attacks) {
             this.p1Attacks = copySet(p1Attacks);
             return this;
         }
 
-        public Builder setP2Attacks(Set<CheckersCoordPair> p2Attacks) {
+        public Builder setP2Attacks(Set<CoordPairImpl> p2Attacks) {
             this.p2Attacks = copySet(p2Attacks);
             return this;
         }
 
-        public Builder setP1Moves(Set<CheckersCoordPair> p1Moves) {
+        public Builder setP1Moves(Set<CoordPairImpl> p1Moves) {
             this.p1Moves = copySet(p1Moves);
             return this;
         }
 
-        public Builder setP2Moves(Set<CheckersCoordPair> p2Moves) {
+        public Builder setP2Moves(Set<CoordPairImpl> p2Moves) {
             this.p2Moves = copySet(p2Moves);
             return this;
         }
 
-        public Builder setFurtherAttacks(CheckersCoordPair furtherAttacks) {
+        public Builder setFurtherAttacks(CoordPairImpl furtherAttacks) {
           
 
             this.furtherAttacks = furtherAttacks;
@@ -446,15 +446,15 @@ public class CheckersGameState implements GameState {
             return this;
         }
 
-        private static List<CheckersCoordPair> copyList(List<CheckersCoordPair> list) {
-            List<CheckersCoordPair> l = new ArrayList<>();
-            for(CheckersCoordPair pos : list) {
+        private static List<CoordPairImpl> copyList(List<CoordPairImpl> list) {
+            List<CoordPairImpl> l = new ArrayList<>();
+            for(CoordPairImpl pos : list) {
                 l.add(pos);
             }
             return l;
         }
 
-        public Builder setChangedPos(List<CheckersCoordPair> changedPos) {
+        public Builder setChangedPos(List<CoordPairImpl> changedPos) {
             this.changedPos = copyList(changedPos);
             return this;
         }
@@ -464,12 +464,12 @@ public class CheckersGameState implements GameState {
             return this;
         }
 
-        public Builder setJustPromoted(Set<CheckersCoordPair> justPromoted) {
+        public Builder setJustPromoted(Set<CoordPairImpl> justPromoted) {
             this.justPromoted = copySet(justPromoted);
             return this;
         }
 
-        public CheckersGameState build() {
+        public BoardGameState build() {
 
             if(this.failedFields.size() != 0) {
                 int len = this.failedFields.size();
@@ -483,7 +483,7 @@ public class CheckersGameState implements GameState {
                 throw new IllegalArgumentException("Build failed due to invalid inputs set to CheckersGameState.Buidler\nFailed Fields:\n"  + fields);
             }
 
-            return new CheckersGameState(
+            return new BoardGameState(
                 this.player1, this.player2,
                 this.numPlayers, this.turn,
                 this.winner, this.isDraw,

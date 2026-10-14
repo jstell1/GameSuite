@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGamePiece;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.ui.GameBoardFactory;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
@@ -18,14 +18,14 @@ public class StaticGameBoardFactory implements GameBoardFactory {
     public GameBoardUI createGameBoard(JsonNode boardJson, JsonNode gameJson, UIListener listener) throws JsonProcessingException {
         
         ObjectMapper mapper = new ObjectMapper();
-        CheckersCoordPair[][] board = mapper.treeToValue(boardJson, CheckersCoordPair[][].class);
+        CoordPairImpl[][] board = mapper.treeToValue(boardJson, CoordPairImpl[][].class);
 
         Piece[][] pBoard = new Piece[board.length][board[0].length];
 
         for(int i = 0; i < pBoard.length; i++) {
             for(int j = 0; j < pBoard[0].length; j++) {
-                CheckersCoordPair pos = board[i][j];
-                CheckersGamePiece piece = pos.getPiece();
+                CoordPairImpl pos = board[i][j];
+                BoardGamePiece piece = pos.getPiece();
 
                 if(piece == null) {
                     pBoard[i][j] = null;
@@ -40,7 +40,7 @@ public class StaticGameBoardFactory implements GameBoardFactory {
                 }
             }
         }
-        CheckersGameState game = mapper.treeToValue(gameJson, CheckersGameState.class);
+        BoardGameState game = mapper.treeToValue(gameJson, BoardGameState.class);
         String teamNames[] = mapper.treeToValue(gameJson.get("teamNames"), String[].class);
         StaticGameBoard b = new StaticGameBoard(listener, pBoard, teamNames, game);
         //b.setTeamNames(teamNames);

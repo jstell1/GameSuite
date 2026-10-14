@@ -2,17 +2,17 @@ package gamesuite.baserules;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGameState;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
 
 public class InBoundsConst extends Constraint {
 
-    CheckersGameBoard board;
-    CheckersGameState gameState;
+    GameBoardImpl board;
+    BoardGameState gameState;
 
     public InBoundsConst(GameState gameState, GameBoard board) {
         super(gameState, board);
@@ -37,12 +37,12 @@ public class InBoundsConst extends Constraint {
 
     @Override
     public void setGameState(GameState game) {
-        this.gameState = (CheckersGameState) game;
+        this.gameState = (BoardGameState) game;
     }
 
     @Override
     public void setBoard(GameBoard board) {
-       this.board = (CheckersGameBoard) board;
+       this.board = (GameBoardImpl) board;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class InBoundsConst extends Constraint {
         int sY = move.get("startY").asInt();
         int eX = move.get("endX").asInt();
         int eY = move.get("endY").asInt();
-        CheckersCoordPair pos = this.board.getBoardPos(sX, sY);
-        CheckersCoordPair end = this.board.getBoardPos(eX, eY);
+        CoordPairImpl pos = this.board.getBoardPos(sX, sY);
+        CoordPairImpl end = this.board.getBoardPos(eX, eY);
 
         boolean check = isValidPos(pos);
         check = isValidPos(end);
@@ -61,7 +61,7 @@ public class InBoundsConst extends Constraint {
         return check;
     }
 
-      private boolean isValidPos(CheckersCoordPair pos) {
+      private boolean isValidPos(CoordPairImpl pos) {
         if(pos == null)
             return false;
         int length = this.board.getSideLength();

@@ -2,22 +2,22 @@ package gamesuite.boardgame.model;
 
 import gamesuite.core.model.Player;
 
-public class CheckersPlayer implements Player {
+public class BoardGamePlayer implements Player {
     private int points;
     private String name;
     private String userId;
     private int turn;
     private String turnName;
 
-    public CheckersPlayer() {}
+    public BoardGamePlayer() {}
 
-    public CheckersPlayer(String name, int points) { 
+    public BoardGamePlayer(String name, int points) { 
         this.name = name;
         this.points = points; 
         this.userId = null;
     }
 
-    private CheckersPlayer(int points, String name, String userId, int turn, String turnName) {
+    private BoardGamePlayer(int points, String name, String userId, int turn, String turnName) {
         this.points = points;
         this.name = name;
         this.userId = userId;
@@ -63,7 +63,7 @@ public class CheckersPlayer implements Player {
 
     public String getName() { return this.name; }
 
-    public CheckersPlayer copy() { 
-        return new CheckersPlayer(this.points, this.name, this.userId, this.turn, this.turnName);
+    public BoardGamePlayer copy() { 
+        return new BoardGamePlayer(this.points, this.name, this.userId, this.turn, this.turnName);
     }
 }

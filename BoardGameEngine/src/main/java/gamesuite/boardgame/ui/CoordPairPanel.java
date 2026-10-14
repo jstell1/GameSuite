@@ -11,21 +11,21 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
 import gamesuite.core.ui.UIListener;
-import gamesuite.boardgame.model.CheckersCoordPair;
-import gamesuite.boardgame.model.CheckersGameBoard;
-import gamesuite.boardgame.model.CheckersGamePiece;
+import gamesuite.boardgame.model.CoordPairImpl;
+import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.boardgame.model.BoardGamePiece;
 
-public class CheckersCoordPairPanel extends JPanel {
+public class CoordPairPanel extends JPanel {
 
-    private CheckersGameBoard gameBoard;
+    private GameBoardImpl gameBoard;
     private GamePieceAsset piece;
-    private CheckersCoordPair pos;
+    private CoordPairImpl pos;
     private int row;
     private int col;
     private UIListener listener;
     private Color baseColor;
 
-    public CheckersCoordPairPanel(CheckersCoordPair pos, UIListener listener, Color baseColor, CheckersGameBoardPanel gameBoard) {
+    public CoordPairPanel(CoordPairImpl pos, UIListener listener, Color baseColor, GameBoardPanel gameBoard) {
         super();
         this.pos = pos;
         this.row = pos.getX();
@@ -62,16 +62,16 @@ public class CheckersCoordPairPanel extends JPanel {
         setBackground(this.baseColor);
     }
     
-    private CheckersCoordPairPanel getSelf() { return this; }
+    private CoordPairPanel getSelf() { return this; }
 
     public int getRow() { return this.row; }
 
     public int getCol() { return this.col; }
 
-    public CheckersCoordPair getCoordPair() { return this.pos; }
+    public CoordPairImpl getCoordPair() { return this.pos; }
 
     private void setPiece() {
-        CheckersGamePiece piece = this.pos.getPiece();
+        BoardGamePiece piece = this.pos.getPiece();
         if(this.pos.getPiece() == null)
             this.piece = null;
         else if(this.pos.getPiece().getTeam().equals("B")) {
@@ -84,7 +84,7 @@ public class CheckersCoordPairPanel extends JPanel {
         repaint();
     }
 
-    public void setPiece(CheckersGamePiece piece) {
+    public void setPiece(BoardGamePiece piece) {
         if(piece == null) {
             this.piece = null;
         } else if(piece.getTeam().equals("B")) {
