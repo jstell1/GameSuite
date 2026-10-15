@@ -10,6 +10,7 @@ public abstract class Constraint {
     protected GameBoard mainBoard;
     protected int turnFactor;
     protected int[][] vector;
+    protected JsonNode extraParams;
 
     public Constraint(String name) {
         this.turnFactor = -1;
@@ -23,6 +24,8 @@ public abstract class Constraint {
         this.mainGameState = gameState;
         this.mainBoard = board;
     }
+
+     public void setExtraParams(JsonNode extra) { this.extraParams = extra; }
     
    //j;kj;lkj;lkj
     public void setVector(int[][] vector) { this.vector = vector; }

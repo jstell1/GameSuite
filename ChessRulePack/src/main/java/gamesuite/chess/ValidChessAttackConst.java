@@ -59,15 +59,19 @@ public class ValidChessAttackConst extends Constraint {
             return false;
         }
 
-        int turnFactor = this.gameState.getTurnFactor();
+        int turnFactor = -1;//this.gameState.getTurnFactor();
         String[] teamNames = this.gameState.getTeamNames();
-        int turn = this.gameState.getTurn();
+        //int turn = this.gameState.getTurn();
         CoordPairImpl start = this.board.getBoardPos(sX, sY);
         CoordPairImpl end = this.board.getBoardPos(eX, eY);
 
         BoardGamePiece piece = start.getPiece();
         String team = piece.getTeam();
         
+        if(teamNames[1].equals(team)) {
+            turnFactor = 1;
+        }
+
         //int maxDist = piece.getMaxDist();
         String vectType = piece.getVectType();
         int[][] validJumps = piece.getValidJumps();

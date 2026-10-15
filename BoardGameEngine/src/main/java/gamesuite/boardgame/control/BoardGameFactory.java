@@ -203,12 +203,24 @@ public class BoardGameFactory extends GameManagerFactory {
                controller.addEndCheck(currAct);
            }
         }
-        
-        Map<String, Effect> extras = new HashMap<>();
+    
         for(JsonNode action : postChecks) {
             String name = action.get("name").asText();
             JsonNode ref = d.get(name);
             JsonNode effectsNode = ref.get("effects");
+            Action act = this.actions.get(name);
+            controller.addPostCheck(act);
+        }
+
+
+        //setting the extra params variable in all constraints and effects
+        Map<String, Effect> extras = new HashMap<>();
+        Map<String, Constraint> extras2 = new HashMap<>();
+        for(JsonNode action : actionsNode) {
+            String name = action.get("name").asText();
+            JsonNode ref = d.get(name);
+            JsonNode effectsNode = ref.get("effects");
+            JsonNode constraintsNode = ref.get("constraints");
             Action act = this.actions.get(name);
             for(JsonNode effect : effectsNode) {
                 String t = effect.get("type").asText();
@@ -221,7 +233,17 @@ public class BoardGameFactory extends GameManagerFactory {
                     extras.put(t, tmp);
                 }
             }
-            controller.addPostCheck(act);
+            for(JsonNode constraint : constraintsNode) {
+                String t = constraint.get("type").asText();
+
+                if(constraint.size() > 1 && !extras2.containsKey(t)) {
+                    ObjectNode n = constraint.deepCopy();
+                    n.remove("type");
+                    Constraint tmp = this.constraints.get(t);
+                    tmp.setExtraParams(n);
+                    extras2.put(t, tmp);
+                }
+            }
         }
         
         BoardGameManager gm = new BoardGameManager(board, game, controller);
