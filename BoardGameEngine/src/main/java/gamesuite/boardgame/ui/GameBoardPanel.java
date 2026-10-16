@@ -178,6 +178,12 @@ public class GameBoardPanel extends GameBoardUI {
         return this.gameView.getWinner().getName();
     }
 
+    @Override
+    public void setPromotionChoices(String[] list) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPromotionChoices'");
+    }
+
 
 }
 

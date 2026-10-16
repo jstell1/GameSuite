@@ -226,4 +226,19 @@ public class GUIManager implements GameUI, UIListener {
         });
     }
 
+
+    public void setPromotionChoices(String[] list) {
+        SwingUtilities.invokeLater(() -> {
+            this.gui.setPromotionChoices(list);
+        });
+    }
+
+
+    @Override
+    public void sendPromoteChoice(String choice) {
+        new Thread(() -> {
+            this.gm.sendPromoteChoice(choice);
+        }).start();
+    }
+
 }

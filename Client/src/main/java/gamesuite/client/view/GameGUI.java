@@ -258,4 +258,8 @@ public class GameGUI {
     public void setActiveGamesList(String[] list) {
         this.gamesList.setListData(list);
     }
+
+    public void setPromotionChoices(String[] list) {
+        this.gameBoard.setPromotionChoices(list);
+    }
 }

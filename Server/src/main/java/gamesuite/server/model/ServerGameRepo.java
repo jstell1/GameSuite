@@ -16,9 +16,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManagerFactory;
 import gamesuite.core.control.PluginLoader;
+import gamesuite.core.model.PromoteRequester;
 
 @Service
-public class ServerGameRepo {
+public class ServerGameRepo implements PromoteRequester {
 
     //<gameId, gm> actual list of running games stored by gameId
     private final Map<String, GameManager> games = new ConcurrentHashMap<>();
@@ -33,6 +34,8 @@ public class ServerGameRepo {
 
     //<gameName, List<gameId>>
     private final Map<String, List<String>> joinable = new ConcurrentHashMap<>();
+
+    PromoteRequester requester;
     
     public ServerGameRepo() {
       
@@ -48,6 +51,10 @@ public class ServerGameRepo {
         this.loader.loadAllRules();
         //this.loader.watchForChanges();
 
+    }
+
+    public void setPromoteRequester(PromoteRequester requester) {
+        this.requester = requester;
     }
 
     public void closeGame(String gameId) {
@@ -235,5 +242,10 @@ public class ServerGameRepo {
     public Map<String, ArrayList<String>> getGamesList() {
         Map<String, ArrayList<String>> gamesList = this.loader.listAvailableGames();
         return gamesList;
+    }
+
+    @Override
+    public void requestPromoteChoice(JsonNode choices) {
+        this.requester.requestPromoteChoice(choices);
     }
 }

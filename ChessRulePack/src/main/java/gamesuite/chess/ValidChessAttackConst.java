@@ -74,7 +74,7 @@ public class ValidChessAttackConst extends Constraint {
 
         //int maxDist = piece.getMaxDist();
         String vectType = piece.getVectType();
-        int[][] validJumps = piece.getValidJumps();
+        int[][] validJumps = piece.getValidAttacks();
         
         BoardGamePiece piece2 = end.getPiece();
         if(piece2 != null && piece2.getTeam().equals(team)) {

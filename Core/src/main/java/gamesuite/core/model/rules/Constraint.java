@@ -2,27 +2,34 @@ package gamesuite.core.model.rules;
 
 import gamesuite.core.model.GameState;
 import com.fasterxml.jackson.databind.JsonNode;
+
+import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameBoard;
 
 public abstract class Constraint {
     protected String name;
-    protected GameState mainGameState;
-    protected GameBoard mainBoard;
-    protected int turnFactor;
-    protected int[][] vector;
+    private GameState mainGameState;
+    private GameBoard mainBoard;
+    //protected int turnFactor;
+    private int[][] vector;
     protected JsonNode extraParams;
+    protected GameManager topGm;
 
     public Constraint(String name) {
-        this.turnFactor = -1;
+       // this.turnFactor = -1;
         this.mainGameState = null;
         this.mainBoard = null;
         this.name = name;
     }
     
     public Constraint(GameState gameState, GameBoard board) {
-        this.turnFactor = -1;
+      //  this.turnFactor = -1;
         this.mainGameState = gameState;
         this.mainBoard = board;
+    }
+
+      public void setGameManager(GameManager gm) {
+        this.topGm = gm;
     }
 
      public void setExtraParams(JsonNode extra) { this.extraParams = extra; }

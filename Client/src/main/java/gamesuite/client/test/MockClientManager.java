@@ -159,6 +159,12 @@ public class MockClientManager implements ClientManager {
         this.guiGm.setActiveGamesList(joinable);
     }
 
+    @Override
+    public void sendPromoteChoice(String choice) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sendPromoteChoice'");
+    }
+
 
     
 }

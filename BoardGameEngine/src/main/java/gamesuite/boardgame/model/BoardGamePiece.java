@@ -18,10 +18,10 @@ public class BoardGamePiece implements GamePiece {
     private int val;
     private boolean king;
     private int[][] validMoves; //= {{-1, -1}, {-1, 1}};
-    private int[][] validJumps; //= {{-2, -2}, {-2, 2}};
+    private int[][] validAttacks; //= {{-2, -2}, {-2, 2}};
     private int maxDist;
     private String vectType;
-    private int[][] validAttacks; //= {{-1, -1}, -1, 1};
+    //private int[][] validAttacks; //= {{-1, -1}, -1, 1};
     private int[][] attackVectors;
     private final int[][] validKingMoves = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
     private final int[][] validKingJumps = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
@@ -44,7 +44,7 @@ public class BoardGamePiece implements GamePiece {
         String vectType
     ) {
         this.name = name; this.type = type;
-        this.validMoves = validMoves; this.validJumps = validJumps;
+        this.validMoves = validMoves; this.validAttacks = validJumps;
         this.moveRules = moveRules; this.attackRules = attackRules;
         this.attackVectors = attackVectors; this.team = team;
         this.maxDist = maxDist; this.vectType = vectType;
@@ -85,7 +85,7 @@ public class BoardGamePiece implements GamePiece {
             .setType(this.type)
             .setVal(this.val)
             .setValidMoves(copyArray(this.validMoves))
-            .setValidAttacks(copyArray(this.validJumps))
+            .setValidAttacks(copyArray(this.validAttacks))
             .setAttackVectors(copyArray(this.attackVectors))
             .setMoveRules(new ArrayList<Action>(this.moveRules))
             .setAttackRules(new ArrayList<Action>(this.attackRules))
@@ -135,8 +135,8 @@ public class BoardGamePiece implements GamePiece {
             return copyArray(this.validMoves);
     }
 
-    public int[][] getValidJumps() {
-            return copyArray(this.validJumps);
+    public int[][] getValidAttacks() {
+            return copyArray(this.validAttacks);
     }
 
     public boolean isKing() { return this.type.equals("K"); }

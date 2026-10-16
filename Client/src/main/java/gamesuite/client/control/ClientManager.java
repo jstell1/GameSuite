@@ -27,4 +27,5 @@ public interface ClientManager {
 
 
     public void getActiveGames(String gameName);
+    public void sendPromoteChoice(String choice);
 }

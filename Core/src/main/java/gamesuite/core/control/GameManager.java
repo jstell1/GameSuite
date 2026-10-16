@@ -2,6 +2,7 @@ package gamesuite.core.control;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -33,4 +34,6 @@ public interface GameManager {
     public List<String> getUserIdList();
     public int getNumMappedPlayers();
     public String getUI();
+	public void sendPromotionChoice(String type) throws JsonProcessingException, IllegalArgumentException, Exception;
+    void sendPromotionRequest(JsonNode move, JsonNode choices);
 }

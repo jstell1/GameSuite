@@ -107,6 +107,7 @@
     "ui": {"type": "string"},
     "validMove": {"type": "string"},
     "validAttack": {"type": "string"},
+    "gmUpdatee": {"type": "string"},
     "turnControl": {
       "type": "object",
       "properties": {

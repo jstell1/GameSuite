@@ -11,14 +11,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
+import gamesuite.core.model.PromoteRequester;
 import gamesuite.core.model.rules.Effect;
+import gamesuite.core.model.rules.Updatable;
+import gamesuite.core.model.rules.Updater;
 import gamesuite.boardgame.model.GameBoardImpl;
 import gamesuite.boardgame.model.BoardGamePiece;
 import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.boardgame.model.BoardGameMove;
 import gamesuite.boardgame.model.BoardGamePlayer;
 
-public class BoardGameManager implements GameManager {
+public class BoardGameManager implements GameManager, Updater {
     private MoveController moveController;
     private BoardGameState game;
     private GameBoardImpl board;
@@ -28,6 +31,10 @@ public class BoardGameManager implements GameManager {
     private int[][] attackVectors;
     private Effect turnControl;
     private String ui;
+    private boolean override;
+    private PromoteRequester requester;
+    private Map<String,Updatable> updatees;
+    private JsonNode move;
 
     
     public BoardGameManager(GameBoardImpl board, BoardGameState game, MoveController moveController) {
@@ -35,6 +42,7 @@ public class BoardGameManager implements GameManager {
         this.game = game;
         this.moveController = moveController;
         this.sessionPlayerMap = new ArrayList<>();
+        this.override = false;
     }
 
     public void setUI(String ui) { this.ui = ui; }
@@ -56,6 +64,10 @@ public class BoardGameManager implements GameManager {
 
     public void setTurnControl(Effect turnControl) {
         this.turnControl = turnControl;
+    }
+
+    public void setPromoteRequester(PromoteRequester requester) {
+        this.requester = requester;
     }
 
     @Override 
@@ -89,6 +101,9 @@ public class BoardGameManager implements GameManager {
 
     @Override
     public boolean sendMove(ObjectNode move, String playerId) throws Exception {
+        if(override) {
+            return false;
+        }
 
         this.game.resetChangedPos();
         this.game.setLastJumped(false);
@@ -121,10 +136,14 @@ public class BoardGameManager implements GameManager {
         }
         this.moveController.clearEffects();
         
+        if(override) {
+            return false;
+        }
         boolean endCheck = false;
         if(result) {
             endCheck = this.moveController.endCheck(move);
         }
+
 
         if(endCheck) {
             this.moveController.applyEffects(move);
@@ -245,5 +264,38 @@ public class BoardGameManager implements GameManager {
     public GameState getGameState() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getGameState'");
+    }
+
+    @Override
+    public void sendPromotionRequest(JsonNode move, JsonNode choices) {
+        this.move = move;
+        this.override = true;
+        int turn = this.game.getTurn();
+        String sessionId = this.sessionPlayerMap.get(turn);
+        ((ObjectNode)choices).put("id", sessionId);
+
+
+        this.requester.requestPromoteChoice(choices);
+    }
+
+    @Override
+    public void sendPromotionChoice(String type) throws Exception {
+        Updatable u = this.updatees.get("chessPromoteEffect");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.createObjectNode().put("type", type);
+        int turn = this.game.getTurn();
+        String sessionId = this.sessionPlayerMap.get(turn);
+        u.update(node);
+        this.override = false;
+        BoardGameMove move = new BoardGameMove(0, 0, this.move.get("endX").asInt(), this.move.get("endY").asInt());
+        ObjectNode m = mapper.valueToTree(move);
+        m.put("promote", type);
+        this.move = null;
+        sendMove(m, sessionId);
+    }
+
+    @Override
+    public void addUpdatables(Map<String, Updatable> updatees) {
+        this.updatees = updatees;
     }
 }

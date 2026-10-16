@@ -254,8 +254,22 @@ public class BoardGameFactory extends GameManagerFactory {
             e.setGameManager(gm);
         }
 
+        for(Constraint c : extras2.values()) {
+            c.setGameManager(gm);
+        }
+
         gm.setTurnControl(turnControl);
         gm.setUI(ui);
+
+        if(gameDef.has("gmUpdatee")) {
+            String name = gameDef.get("gmUpdatee").asText();
+            Map<String, Updatable> m = new HashMap<>();
+            Constraint c = this.constraints.get(name);
+            c.setGameManager(gm);
+            m.put(name, (Updatable)this.constraints.get(name));
+        }
+
+       
         return gm;
     }
 

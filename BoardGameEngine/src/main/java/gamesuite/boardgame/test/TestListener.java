@@ -125,4 +125,10 @@ public class TestListener extends JFrame implements UIListener{
         //throw new UnsupportedOperationException("Unimplemented method 'sendYellowedPanel'");
     }
 
+    @Override
+    public void sendPromoteChoice(String choice) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sendPromoteChoice'");
+    }
+
 }

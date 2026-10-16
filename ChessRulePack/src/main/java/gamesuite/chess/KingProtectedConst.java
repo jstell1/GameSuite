@@ -41,28 +41,38 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
         this.name = "kingProtected";
     }
 
+    public CoordPairImpl getKingPos(int num) {
+        if(num == 1) {
+            return p1King;
+        } else {
+            return p2King;
+        }
+    }
+
     @Override
     public boolean checkMove(JsonNode move) {
         
         int turn = this.gameState.getTurn();
-
+        CoordPairImpl king = null;
         boolean inCheck = false;
         if(turn == 1) {
-            inCheck = checkKing(p1King);
+            //inCheck = checkKing(p1King);
+            king = p1King;
         } else {
-            inCheck = checkKing(p2King);
+           // inCheck = checkKing(p2King);
+            king = p2King;
         }
 
-        if(!inCheck) {
-            return true;
-        }
+       // if(!inCheck) {
+        //    return true;
+        //}
 
-        boolean safe = verifyMove(move);
+        boolean safe = verifyMove(move, king);
 
         return safe;
     }
 
-    protected boolean checkKing(CoordPairImpl king) {
+    public boolean checkKing(CoordPairImpl king) {
         int kX = king.getX(); int kY = king.getY();
         for(int[] vect : this.attackVectors) {
              int xDirect = vect[0]; int yDirect = vect[1];
@@ -121,11 +131,28 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
         return false;
     }
 
-    protected boolean verifyMove(JsonNode move) {
+    public boolean verifyMove(JsonNode move, CoordPairImpl king) {
 
 
+        int sX = move.get("startX").asInt();
+        int sY = move.get("startY").asInt();
+        int eX = move.get("endX").asInt();
+        int eY = move.get("endY").asInt();
 
-        return false;
+        CoordPairImpl ogStart = this.board.getBoardPos(sX, sY);
+        CoordPairImpl ogEnd = this.board.getBoardPos(eX, eY);
+        BoardGamePiece ogEndPiece = ogEnd.getPiece();
+
+        ogEnd.setPiece(ogStart.getPiece());
+        
+        boolean underAttack = checkKing(king);
+
+        ogStart.setPiece(ogEnd.getPiece());
+        ogEnd.setPiece(ogEndPiece);
+        if(underAttack) {
+            return false;
+        }
+        return true;
     }
 
     @Override 

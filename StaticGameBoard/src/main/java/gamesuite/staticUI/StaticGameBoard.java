@@ -7,6 +7,7 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -274,5 +275,25 @@ public class StaticGameBoard extends GameBoardUI {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void setPromotionChoices(String[] list) {
+        this.listener.disabledBoard();
+        String choice = (String) JOptionPane.showInputDialog(
+                this, 
+                "Pick one: ", 
+                "Promotion", 
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                list,
+                list[0]
+            );
+
+        if(choice == null) {
+            choice = list[0];
+        }
+
+        this.listener.sendPromoteChoice(choice);
     }
 }

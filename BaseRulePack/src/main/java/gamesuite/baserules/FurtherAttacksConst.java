@@ -40,7 +40,7 @@ public class FurtherAttacksConst extends Constraint {
         if(!this.board.isValidPos(startX, startY) || piece == null)
             return false;
 
-        int[][] validJumps = piece.getValidJumps();
+        int[][] validJumps = piece.getValidAttacks();
         int x;
         int y;
         int jumpX;

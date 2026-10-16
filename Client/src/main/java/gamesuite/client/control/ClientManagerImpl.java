@@ -270,6 +270,17 @@ System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSo
                                 sendMainGuiError("server error on getting activeGamesList");
                             } 
                             break;
+                        case "requestPromoteChoice":
+                            JsonNode choices = payload.get("choices");
+                            try {
+                                String[] list = mapper.treeToValue(choices, String[].class);
+                                ClientManagerImpl.this.guiGM.setPromotionChoices(list);
+                            } catch (JsonProcessingException | IllegalArgumentException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                                 sendMainGuiError("server error on getting promotion choices");
+                            }
+                            break;
                         case "moveUpdateError":
                              
                         default: break;
@@ -500,5 +511,37 @@ System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSo
             
         }).join();
 
+    }
+
+    @Override
+    public void sendPromoteChoice(String choice) {
+        if (session != null && session.isOpen()) {
+
+            ObjectMapper mapper = new ObjectMapper();
+            String msgType = "promoteChoice";
+            ObjectNode payload = mapper.createObjectNode();
+
+            payload.put("gameId", this.gameId);
+            payload.put("choice", choice);
+            ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
+            String str = null;
+            try {
+                str = mapper.writeValueAsString(outer);
+                
+                
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("problem writing move message");
+                
+            }
+            TextMessage msg = new TextMessage(str);
+            try {
+                session.sendMessage(msg);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                sendMainGuiError("problem wrting mesage to socket");
+            }
+        }
     }
 }

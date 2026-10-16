@@ -5,6 +5,7 @@
     "ui": "StaticGameBoard",
     "validMove" : "validChessMove",
     "validAttack" : "validChessAttack",
+    "gmUpdatee" : "chessEndRow",
     "turnControl" : {
         "type" : "ChessIncrTurn",
         "attackVectors" : [
@@ -39,16 +40,19 @@
             "type": "move",
             "constraints": [
                 {"type": "emptyTarg"},
-                {"type": "firstMove"}
+                {
+                    "type": "firstMove"  
+                }
             ],
             "effects": [
-                {"type": "makeMove"}
+                {"type": "chessMakeMove"}
             ]
         },
         {
             "name" : "enPassant",
-            "type" : "move",
+            "type" : "attack",
             "constraints" : [
+                {"type": "emptyTarg"},
                 {"type": "checkEnPassant"}
             ],
             "effects" : [
@@ -59,11 +63,33 @@
             "name" : "castle",
             "type" : "move",
             "constraints" : [
-                {"type": "checkCastle"}
+                {
+                    "type": "checkCastle",
+                    "attackVectors":[
+                         { "x" : 0, "y" : -1 },
+                        { "x" : -1, "y" : -1 },
+                        { "x" : -1, "y" : 0 },
+                        { "x" : -1, "y" : 1 },
+                        { "x" : 0, "y" : 1 },
+                        { "x" : 1, "y" : 1 },
+                        { "x" : 1, "y" : 0 },
+                        { "x" : 1, "y" : -1 },
+
+                        { "x" : -1, "y" : -2 },
+                        { "x" : -2, "y" : -1 },
+                        { "x" : -2, "y" : 1 },
+                        { "x" : -1, "y" : 2 },
+                        { "x" : 1, "y" : 2 },
+                        { "x" : 2, "y" : 1 },
+                        { "x" : 2, "y" : -1 },
+                        { "x" : 1, "y" : -2 }
+                    ]
+
+                }
             ],
             "effects" : [
                 {"type" : "castle"},
-                {"type": "makeMove"}
+                {"type": "chessMakeMove"}
             ]
         },
         {
@@ -71,7 +97,30 @@
             "type": "attack",
             "constraints" : [],
             "effects" : [
-                {"type": "makeMove"}
+                {"type": "chessMakeMove"}
+            ]
+        },
+        {
+            "name": "promote",
+            "type": "promotion",
+            "constraints": [
+                {"type": "chessEndRow"}
+            ],
+            "effects": [
+                {
+                    "type": "chessPromote",
+                    "extra": "cheese"
+                }
+            ]
+        },
+        {
+            "name": "checkmate",
+            "type": "endCheck",
+            "constraints": [
+                {"type": "isCheckmate"}
+            ],
+            "effects": [
+                {"type": "checkmate"}
             ]
         }
     ],
@@ -183,6 +232,7 @@
         }
     ],   
     "gameRules" : [
+        {"type": "turnCheck"},
         {
             "type": "kingProtected",
             "king1": { "x" : 0, "y": 3},
@@ -210,11 +260,15 @@
     ],
 
     "postChecks" : [
-    ],
-    "drawConditions": [
-
+        {
+            "name":"promote",
+            "extra": "cheese"
+        }
     ],
     "winConditions" : [
+        {
+            "name": "checkmate"
+        }
     ],
     "players" : [
         {

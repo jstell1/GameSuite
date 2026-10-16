@@ -20,13 +20,15 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gamesuite.core.control.GameManager;
+import gamesuite.core.model.PromoteRequester;
 import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.server.model.ServerGameRepo;
 
 @Component
-public class WebSocketMessageHandler extends TextWebSocketHandler {
+public class WebSocketMessageHandler extends TextWebSocketHandler implements PromoteRequester {
 
     private Map<String, WebSocketSession> webSocketSessions = new ConcurrentHashMap<>();
     private ServerGameRepo gmRepo;
@@ -42,6 +44,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     public void setGmRepo(ServerGameRepo gmRepo) {
         this.gmRepo = gmRepo;
+        this.gmRepo.setPromoteRequester(this);
     }
 
 	public boolean hasSocket(String sessionId) {
@@ -214,6 +217,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 case "activeGamesRequest":
                     sendActiveGamesList(session, payload);
                     break;
+                case "promoteChoice":
+                    sendPromotion(session, payload);
+                    break;
                 default:
                     mapper = new ObjectMapper();
                     String msgType = "badRequestError";
@@ -225,7 +231,38 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
     }
 
-    
+    private void sendPromotion(WebSocketSession session, ObjectNode payload) {
+        String type = payload.get("type").asText();
+        GameManager gm = this.gmRepo.getGM(payload.get("gameId").asText());
+
+        synchronized(gm) {
+            try {
+                gm.sendPromotionChoice(type);
+            } catch (JsonProcessingException | IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                ObjectMapper mapper = new ObjectMapper();
+                  mapper = new ObjectMapper();
+                String msgType = "serverError";
+                JsonNode tmp = mapper.createObjectNode();
+                ObjectNode respPayload = tmp.deepCopy();
+                respPayload.put("message", "Error processing promotion choice");
+                sendMessage(msgType, respPayload, session);
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                ObjectMapper mapper = new ObjectMapper();
+                  mapper = new ObjectMapper();
+                String msgType = "serverError";
+                JsonNode tmp = mapper.createObjectNode();
+                ObjectNode respPayload = tmp.deepCopy();
+                respPayload.put("message", "Error processing promotion choice");
+                sendMessage(msgType, respPayload, session);
+            }
+        }
+    } 
+
     private void sendActiveGamesList(WebSocketSession session, ObjectNode payload) {
         ObjectMapper mapper = new ObjectMapper();
        // try {
@@ -461,6 +498,18 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
     }
 
+    public void requestPromoteChoice(JsonNode choices) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        String msgType = "requestPromoteChoice";
+        String id = choices.get("id").asText();
+        choices = ((ObjectNode)choices).remove("id");
+        ObjectNode respPayload = (ObjectNode)choices;
+
+        sendMessage(msgType, (ObjectNode)respPayload, this.webSocketSessions.get(id));
+
+    }
+
     private void sendMessage(String msgType, ObjectNode payload, WebSocketSession session) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
@@ -469,7 +518,6 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             TextMessage msg = new TextMessage(str);
             session.sendMessage(msg);
         } catch (JsonProcessingException e) {
-            // TODO: handle exception
             try {
                 
                 session.sendMessage(new TextMessage("Server failed to build response message"));

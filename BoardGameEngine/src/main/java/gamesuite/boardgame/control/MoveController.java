@@ -22,6 +22,7 @@ public class MoveController {
     private Constraint validMove;
     private Constraint validAttack;
     private GameBoardImpl board;
+    public boolean override;
 
     public MoveController(GameBoardImpl board) {
         if(board == null)
@@ -32,6 +33,7 @@ public class MoveController {
         this.negateList = new ArrayList<>();
         this.postChecks = new ArrayList<>();
         this.board = board;
+        this.override = false;
     }
 
     public void addGameConstraint(Constraint constraint) {
@@ -86,6 +88,10 @@ public class MoveController {
 
     public boolean gameCheck(JsonNode move) {
 
+        if(move.has("promote")) {
+            return true;
+        }
+
         for(Constraint constraint : gameConstraints) {
             if(!constraint.checkMove(move)) {
                 return false;
@@ -96,6 +102,11 @@ public class MoveController {
     }
 
     public boolean moveCheck(JsonNode move) {
+
+        if(move.has("promote")) {
+            return true;
+        }
+
         int x = move.get("startX").asInt();
         int y = move.get("startY").asInt();
         CoordPairImpl pos = this.board.getBoardPos(x, y);

@@ -22,6 +22,8 @@ public abstract class GameBoardUI extends JPanel {
     public abstract boolean isGameOver();
 
     public abstract String getWinner();
+
+    public abstract void setPromotionChoices(String[] list);
     
 
 }

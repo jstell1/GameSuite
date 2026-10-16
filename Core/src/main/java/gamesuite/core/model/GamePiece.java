@@ -19,7 +19,7 @@ public interface GamePiece {
 
     public int[][] getValidMoves();
 
-    public int[][] getValidJumps();
+    public int[][] getValidAttacks();
 
     public List<Action> getAttackRules();
 

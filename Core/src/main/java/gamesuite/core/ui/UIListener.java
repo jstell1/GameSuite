@@ -15,4 +15,5 @@ public interface UIListener {
     public void initActiveList(String game);
     public void refreshActiveList(String game);
     public void refreshGamesList();
+    public void sendPromoteChoice(String choice);
 }

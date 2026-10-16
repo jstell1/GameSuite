@@ -51,7 +51,7 @@ public class ValidAttackConst extends Constraint {
         
         
         boolean checkJump = false;
-        int[][] validJumps = piece.getValidJumps();
+        int[][] validJumps = piece.getValidAttacks();
         for(int[] pair : validJumps) {
             int x = start.getX() + pair[0] * turnFactor;
             int y = start.getY() + pair[1] * turnFactor;

@@ -87,6 +87,32 @@
     {
       "type": "object",
       "properties": {
+        "requestPromoteChoice": {
+          "type": "object",
+          "properties": {
+            "choices": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "promoteChoice": {
+          "type": "object",
+          "properties": {
+            "gameId": {"type": "string"},
+            "choice": {"type": "string"}
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
         "sessionConnectedResponse": {
           "type": "object",
           "properties": {
