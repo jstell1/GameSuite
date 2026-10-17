@@ -73,6 +73,7 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
         String team = king.getTeam();
         String[] teams = this.gameState.getTeamNames();
 
+        //verify if opponent king is in check, return false if not
         if(!this.kingProtected.checkKing(kingPos)) {
             return false;
         }

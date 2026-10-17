@@ -72,6 +72,7 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
         return safe;
     }
 
+    // is king in check
     public boolean checkKing(CoordPairImpl king) {
         int kX = king.getX(); int kY = king.getY();
         for(int[] vect : this.attackVectors) {
@@ -90,13 +91,11 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
              JsonNode moveNode = mapper.valueToTree(move);
 
              boolean exact = false;
-             if(xDirect != 1 && xDirect != -1 && xDirect != 0) {
+             if(xDirect == 2 || xDirect == -2 || yDirect == 2 || yDirect == -2) {
                 exact = true;
              }
-             if(yDirect != 1 && yDirect != -1 && yDirect != 0) {
-                exact = true;
-             }
-            BoardGamePiece piece = null;
+
+            BoardGamePiece piece = this.board.getBoardPos(sX, sY).getPiece();
              if(exact) {
 
                  if(piece != null) {
@@ -135,6 +134,7 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
         return false;
     }
 
+    //verify if move gets king out of check
     public boolean verifyMove(JsonNode move, CoordPairImpl king) {
 
 
