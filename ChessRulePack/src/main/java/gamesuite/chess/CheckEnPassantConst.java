@@ -25,26 +25,18 @@ public class CheckEnPassantConst extends Constraint implements Updatable, ConstD
 
     private GameBoardImpl board;
     private BoardGameState gameState;
-    private Set<BoardGamePiece> movedPawns;
-    private Map<BoardGamePiece, List<BoardGamePiece>> missedPassant;
     private final String[] dependencies = {"noEmptyTarg"};
     private NoEmptyTargConst noEmpty;
-    private Set<BoardGamePiece> passantDone;
+    private CoordPairImpl tracked;
 
     public CheckEnPassantConst() {
         super("checkEnPassant");
-        this.movedPawns = new HashSet<>();
-        this.missedPassant = new HashMap<>();
-        this.passantDone = new HashSet<>();
     }
 
     public CheckEnPassantConst(GameState gameState, GameBoard board) {
 
         super(gameState, board);
         this.name = "checkEnPassant";
-        this.movedPawns = new HashSet<>();
-        this.missedPassant = new HashMap<>();
-        this.passantDone = new HashSet<>();
     }
 
     @Override
@@ -76,66 +68,63 @@ public class CheckEnPassantConst extends Constraint implements Updatable, ConstD
         int eX = move.get("endX").asInt();
         int eY = move.get("endY").asInt();
 
-        CoordPairImpl pos = this.board.getBoardPos(sX, sY);
-        BoardGamePiece pawn = pos.getPiece();
+        CoordPairImpl pos = this.board.getBoardPos(sX,sY);
+        BoardGamePiece attacker = pos.getPiece();
+        CoordPairImpl targSquare = this.board.getBoardPos(eX,eY);
 
-        if(this.passantDone.contains(pawn)) {
+        if(targSquare != this.tracked) {
             return false;
         }
+        String team = attacker.getTeam();
+        String[] teams = this.gameState.getTeamNames();
 
-        String team = pawn.getTeam();
-        String[] teams = this.gameState.getTeamNames();   
-        
         int turnFactor = -1;
 
         if(team.equals(teams[1])) {
             turnFactor = 1;
         }
 
-        int x = eX + 1 * turnFactor;
-        
+        CoordPairImpl attacked = this.board.getBoardPos(eX + turnFactor, eY);
 
-        BoardGamePiece opp = null;
-        
-        opp = this.board.getBoardPos(x, eY).getPiece();
-        if(opp == null || opp.getTeam().equals(team) || !opp.getType().equals("P")) {
+        if(attacked.getPiece() != null && attacked.getPiece().getTeam().equals(attacker.getTeam())) {
             return false;
         }
 
-        if(!this.missedPassant.containsKey(pawn) && this.movedPawns.contains(opp)) {
-            List<BoardGamePiece> list = new ArrayList<>();
-            list.add(opp);
-            this.missedPassant.put(pawn, list);
+        if(targSquare == this.tracked) {
+            this.tracked = null;
             this.noEmpty.override();
-            this.passantDone.add(pawn);
+            attacked.setPiece(null);
             return true;
         }
-        
-        if(this.missedPassant.get(pawn).contains(opp)) {
-            return false;
-        }
-
-        if(this.movedPawns.contains(opp)) {
-            this.missedPassant.get(pawn).add(opp);
-            this.noEmpty.override();
-            this.passantDone.add(pawn);
-            return true;
-        }
-
-
         return false;
     }
 
     @Override
     public void update(JsonNode update) throws IllegalArgumentException, JsonProcessingException {
+        this.tracked = null;
 
+        int sX = update.get("startX").asInt();
+        int sY = update.get("startY").asInt();
+        int eX = update.get("endX").asInt();
+        int eY = update.get("endY").asInt();
+        CoordPairImpl pos = this.board.getBoardPos(eX, eY);
+        BoardGamePiece piece = pos.getPiece();
 
-        int x = update.get(0).asInt();
-        int y = update.get(1).asInt();
+        if(piece.getType().equals("P")) {
 
-        BoardGamePiece piece = this.board.getBoardPos(x, y).getPiece();
-        this.movedPawns.add(piece);
-        
+            String team = piece.getTeam();
+            String[] teams = this.gameState.getTeamNames();
+            int turnFactor = -1;
+            if(team.equals(teams[1])) {
+                turnFactor = 1;
+            }
+
+            if(sY == eY && eX == (sX - 2*turnFactor)) {
+
+                this.tracked = this.board.getBoardPos(eX + turnFactor, eY);
+            }
+
+        }
     }
 
     @Override

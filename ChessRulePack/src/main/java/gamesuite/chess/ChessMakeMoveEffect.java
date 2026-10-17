@@ -108,13 +108,11 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
 
             }
 
-            if(type.equals("P")) {
-                Updatable updatee = this.updatees.get("checkEnPassant");
+            Updatable updatee = this.updatees.get("checkEnPassant");
+            updatee.update(move);
+                
+                
 
-                    updatee.update(vectNode);
-                
-                
-            }
         } catch (JsonProcessingException | IllegalArgumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
