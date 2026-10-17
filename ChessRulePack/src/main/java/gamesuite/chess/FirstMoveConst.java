@@ -44,7 +44,7 @@ public class FirstMoveConst extends Constraint {
 
         BoardGamePiece start = this.board.getBoardPos(sX, sY).getPiece();
 
-        if(start == null || start.getType() != "P") {
+        if(start == null || !start.getType().equals("P")) {
             return true;
         }
 

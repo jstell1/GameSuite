@@ -47,6 +47,7 @@ public class CheckmateEffect extends Effect {
 
     @Override
     public void updateState(JsonNode move) {
+        int turn = this.gameState.getTurn();
         
     }
     

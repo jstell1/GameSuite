@@ -35,6 +35,7 @@ public class BoardGameState implements GameState {
     private boolean gameOver;
     private Set<CoordPairImpl> justKinged;
     private boolean lastJumped;
+    private String gameName;
 
     public BoardGameState() {}
 
@@ -85,7 +86,8 @@ public class BoardGameState implements GameState {
         boolean boardInit, String[] teamNames,
         List<CoordPairImpl> changedPos,
         boolean gameOver, boolean lastJumped,
-        Set<CoordPairImpl> justPromoted
+        Set<CoordPairImpl> justPromoted,
+        String gameName
     ) {
         this.player1 = player1; this.player2 = player2;
         this.numPlayers = numPlayers; this.turn = turn;
@@ -98,7 +100,14 @@ public class BoardGameState implements GameState {
         this.changedPos = changedPos; this.gameOver = gameOver;
         this.justKinged = justPromoted;
         this.lastJumped = lastJumped;
+        this.gameName = gameName;
     }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public String getGameName() { return this.gameName; }
 
     public void setPlayer2(BoardGamePlayer player2) {
 
@@ -336,8 +345,14 @@ public class BoardGameState implements GameState {
         private boolean gameOver;
         private Set<CoordPairImpl> justPromoted = new HashSet<>();
         private boolean lastJumped = false;
+        private String gameName;
         private List<Field> failedFields = new ArrayList<>(); 
         private Field[] allFields = this.getClass().getDeclaredFields();
+
+        public Builder setGameName(String gameName) {
+            this.gameName = gameName;
+            return this;
+        }
 
         public Builder setPlayer1(BoardGamePlayer player1) {
             this.player1 = player1;
@@ -493,7 +508,7 @@ public class BoardGameState implements GameState {
                 this.turnFactor, this.boardInit,
                 this.teamNames, this.changedPos,
                 this.gameOver, this.lastJumped,
-                this.justPromoted
+                this.justPromoted, this.gameName
             );
         }
     }

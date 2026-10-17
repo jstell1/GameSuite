@@ -1,5 +1,6 @@
 package gamesuite.client.control;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -184,12 +185,19 @@ public class GUIManager implements GameUI, UIListener {
     @Override
     public void joinGame(String game, String name, String gameId) {
         new Thread(() -> {
-            String id = this.gm.joinGame(game, name, gameId);
-            if(id != null) {
-                SwingUtilities.invokeLater(() -> {
-                    this.gui.disableGUI();
-                    this.gui.setGameOverLabel(id);
-                });
+            String id;
+            try {
+                id = this.gm.joinGame(game, name, gameId);
+                if(id != null) {
+                    SwingUtilities.invokeLater(() -> {
+                        this.gui.disableGUI();
+                        this.gui.setGameOverLabel(id);
+                    });
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                System.out.println("issue joining game");
             }
         }).start();
     }

@@ -1,0 +1,7 @@
+gamesuite.chess.CastleEffect
+gamesuite.chess.CheckmateEffect
+gamesuite.chess.ChessIncrTurnEffect
+gamesuite.chess.ChessMakeMoveEffect
+gamesuite.chess.ChessPromoteEffect
+gamesuite.chess.DrawEffect
+gamesuite.chess.EnPassantEffect

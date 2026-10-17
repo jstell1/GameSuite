@@ -28,7 +28,7 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
     private CoordPairImpl p2King;
     private int[][] attackVectors;
     private Constraint validateAttack;
-    private final String[] dependencies = {"validateChessAttack"};
+    private final String[] dependencies = {"validChessAttack"};
     
 
     public KingProtectedConst() {
@@ -90,29 +90,33 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
              JsonNode moveNode = mapper.valueToTree(move);
 
              boolean exact = false;
-             if(xDirect != 1 || xDirect != -1) {
+             if(xDirect != 1 && xDirect != -1 && xDirect != 0) {
                 exact = true;
              }
-             if(yDirect != 1 || yDirect != -1) {
+             if(yDirect != 1 && yDirect != -1 && yDirect != 0) {
                 exact = true;
              }
-
+            BoardGamePiece piece = null;
              if(exact) {
-                boolean valid = this.validateAttack.checkMove(moveNode);
 
-                if(valid) {
-                    return true;
-                }
+                 if(piece != null) {
+                     boolean valid = this.validateAttack.checkMove(moveNode);
+                     if(valid) {
+                         return true;
+                     }
+                 }
              } else {
-                BoardGamePiece piece = null;
                 while(this.board.isValidPos(sX, sY) && piece == null) {
                     piece = this.board.getBoardPos(sX, sY).getPiece();
 
+                    move = new BoardGameMove(sX, sY, kX, kY);
+                    moveNode = mapper.valueToTree(move);
                     if(piece != null) {
                         boolean valid = this.validateAttack.checkMove(moveNode);
                         if(valid) {
                             return true;
                         }
+                        continue;
                     }
 
                     if(rise == 0) {
@@ -139,13 +143,30 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
         int eX = move.get("endX").asInt();
         int eY = move.get("endY").asInt();
 
+        if(!this.board.isValidPos(sX, sY) || !this.board.isValidPos(eX, eY)) {
+            return false;
+        }
+
         CoordPairImpl ogStart = this.board.getBoardPos(sX, sY);
         CoordPairImpl ogEnd = this.board.getBoardPos(eX, eY);
         BoardGamePiece ogEndPiece = ogEnd.getPiece();
 
+        String[] teams = this.gameState.getTeamNames();
+
+        if(ogEndPiece != null && ogStart.getPiece().getTeam().equals(ogEndPiece.getTeam())) {
+            return false;
+        }
+
         ogEnd.setPiece(ogStart.getPiece());
-        
-        boolean underAttack = checkKing(king);
+        ogStart.setPiece(null);
+
+        boolean underAttack = false;
+        if(ogEnd.getPiece().getType().equals("K")) {
+            underAttack = checkKing(ogEnd);
+        } else {
+            underAttack = checkKing(king);
+        }
+
 
         ogStart.setPiece(ogEnd.getPiece());
         ogEnd.setPiece(ogEndPiece);
@@ -207,7 +228,7 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
 
     @Override
     public void addDependencies(Map<String, Constraint> arg0) {
-        this.validateAttack = arg0.get("validateChessAttack");
+        this.validateAttack = arg0.get("validChessAttack");
     }
 
     @Override

@@ -58,10 +58,10 @@ public class CastleEffect extends Effect {
         CoordPairImpl currRook = null;
         if(eY < sY) {
             currRook = this.board.getBoardPos(eX, 0);
-            rookPos = this.board.getBoardPos(eX, eY - 1);
+            rookPos = this.board.getBoardPos(eX, sY - 1);
         } else {
             currRook = this.board.getBoardPos(eX, 7);
-            rookPos = this.board.getBoardPos(eX, eY + 1);
+            rookPos = this.board.getBoardPos(eX, sY + 1);
         }
         
         rookPos.setPiece(currRook.getPiece());

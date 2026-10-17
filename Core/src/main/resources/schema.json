@@ -50,6 +50,7 @@
     "GameState": {
       "type": "object",
       "properties": {
+        "gameName": {"type": "string"},
         "numPlayers": {"type": "integer"},
         "turn": {"type": "integer"},
         "winner": {"anyOf": [{"$ref": "#/definitions/Player"},{"type":"null"}]},
@@ -78,7 +79,7 @@
             ]}
         }
       },
-      "required": ["numPlayers", "turn", "turnFactor", "boardInit", "gameOver", "teamNames"],
+      "required": ["gameName","numPlayers", "turn", "turnFactor", "boardInit", "gameOver", "teamNames"],
       "additionalProperties": false
     }
   },
@@ -94,9 +95,13 @@
               "type": "array",
               "items": {"type": "string"}
             }
-          }
+          },
+          "required": ["choices"],
+          "additionalProperties": false
         }
-      }
+      },
+      "required": ["requestPromoteChoice"],
+      "additionalProperties": false
     },
     {
       "type": "object",
@@ -106,9 +111,13 @@
           "properties": {
             "gameId": {"type": "string"},
             "choice": {"type": "string"}
-          }
+          },
+          "required": ["gameId", "choice"],
+          "additionalProperties": false
         }
-      }
+      },
+      "required": ["promoteChoice"],
+      "additionalProperties": false
     },
     {
       "type": "object",

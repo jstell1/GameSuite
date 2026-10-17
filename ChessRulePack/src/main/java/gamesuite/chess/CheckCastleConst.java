@@ -64,7 +64,7 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
         int tmpY = sY - 2;
         int tmpY2 = sY + 2;
 
-        if(sX != eX && eY != tmpY || eY != tmpY2) {
+        if(sX != eX && (eY != tmpY || eY != tmpY2)) {
             return false;
         }
 
@@ -85,7 +85,7 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
         }
         
         int rookY = 0;
-        if(sY == tmpY2){
+        if(eY == tmpY2){
             tmpY = tmpY2;
             rookY = 7;
         }
@@ -123,11 +123,19 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
         //check attacks on back row
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
+                if(this.board.getBoardPos(i, j).getPiece() == null) {
+                    continue;
+                }
+                BoardGamePiece piece = this.board.getBoardPos(i, j).getPiece();
 
+                if(piece == null || piece.getTeam().equals(team)) {
+                    continue;
+                }
                 for(CoordPairImpl pos : backRow) {
                     BoardGameMove m = new BoardGameMove(i, j, pos.getX(), pos.getY());
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode node = mapper.valueToTree(m);
+
                     boolean validAttack = this.validateAttack.checkMove(node);
 
                     if(validAttack) {
@@ -169,10 +177,10 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
 
     @Override 
     public void setExtraParams(JsonNode extraParams) {
-
-        this.attackVectors = new int[extraParams.size()][];
+        JsonNode vectNodes = extraParams.get("attackVectors");
+        this.attackVectors = new int[vectNodes.size()][];
         int i = 0;
-        for(JsonNode node : extraParams) {
+        for(JsonNode node : vectNodes) {
             int[] vect = new int[2];
             vect[0] = node.get("x").asInt();
             vect[1] = node.get("y").asInt();

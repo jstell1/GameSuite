@@ -17,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import gamesuite.boardgame.model.CoordPairImpl;
 import gamesuite.boardgame.model.BoardGamePiece;
@@ -28,17 +29,23 @@ import gamesuite.staticUI.model.Piece;
 
 public class StaticGameBoard extends GameBoardUI {
 
+    //top left corner of png
     private final int xBoard = 0;
     private final int yBoard = 0;
+
+    //size of test dots
     private final int dotSize = 4;
-    private final int pieceSize = 80;
+    private final int pieceSize = 70;
+    //offset for the line width
     private final int offs = 4;
     private final int squareLen = 82;
     private final int boardSize = 8;
-    private final int pieceXOffs = 4;
-    private final int pieceYOffs = 6;
-    private final int leftX = xBoard + 55;
-    private final int topY = yBoard + 53;
+    private final int pieceXOffs = 3;
+    private final int pieceYOffs = 5;
+
+    //top left corner of actually board outline more or less centered in the line width
+    private final int leftX = xBoard + 58;
+    private final int topY = yBoard + 55;
     private final int rightX = leftX + squareLen;
     private final int xDist = rightX - leftX;
     private final int rightXBound = leftX + xDist*boardSize;
@@ -49,6 +56,8 @@ public class StaticGameBoard extends GameBoardUI {
     private final int midY = (topY + bottomY) >> 1;
     private final int pieceLeftX = leftX+pieceXOffs;
     private final int pieceTopY = topY+pieceYOffs;
+
+    //placement of yellow square
     private final int yellowX = leftX + offs;
     private final int yellowY = topY + offs;
     private final int yellowXDist = xDist - offs;
@@ -70,20 +79,26 @@ public class StaticGameBoard extends GameBoardUI {
     private Piece[][] board;
     private UIListener listener;
     private BoardGameState game;
+    private Map<String, ImageIcon> pieceMap1;
+    private Map<String, ImageIcon> pieceMap2;
 
-    public StaticGameBoard(UIListener listener, Piece[][] board, String[] teamNames, BoardGameState game) {
+
+    public StaticGameBoard(UIListener listener, Piece[][] board, String[] teamNames, BoardGameState game, Map<String, ImageIcon> pieceMap1, Map<String, ImageIcon> pieceMap2, ImageIcon boardIcon) {
+        this.pieceMap1 = pieceMap1;
+        this.pieceMap2 = pieceMap2;
         this.teamNames = teamNames;
         this.game = game;
-        URL redPieceURL = getClass().getClassLoader().getResource("images/red.png");
-        URL blackPieceURL = getClass().getClassLoader().getResource("images/black.png");
-        URL boardURL = getClass().getClassLoader().getResource("images/board.png");
-        URL redKingURL = getClass().getClassLoader().getResource("images/red_king.png");
-        URL blackKingURL = getClass().getClassLoader().getResource("images/black_king.png");
-        this.redPieceIcon = new ImageIcon(redPieceURL);
-        this.blackPieceIcon = new ImageIcon(blackPieceURL);
-        this.redKingIcon = new ImageIcon(redKingURL);
-        this.blackKingIcon = new ImageIcon(blackKingURL);
-        this.boardIcon = new ImageIcon(boardURL);
+        this.boardIcon = boardIcon;
+       // URL redPieceURL = getClass().getClassLoader().getResource("images/red.png");
+       // URL blackPieceURL = getClass().getClassLoader().getResource("images/black.png");
+       // URL boardURL = getClass().getClassLoader().getResource("images/board.png");
+      //  URL redKingURL = getClass().getClassLoader().getResource("images/red_king.png");
+       // URL blackKingURL = getClass().getClassLoader().getResource("images/black_king.png");
+        //this.redPieceIcon = new ImageIcon(redPieceURL);
+       // this.blackPieceIcon = new ImageIcon(blackPieceURL);
+       // this.redKingIcon = new ImageIcon(redKingURL);
+      //  this.blackKingIcon = new ImageIcon(blackKingURL);
+       // this.boardIcon = new ImageIcon(boardURL);
         this.setPreferredSize(new Dimension(800,800));
         this.setMaximumSize(new Dimension(800,800));
         this.setMinimumSize(new Dimension(800,800));
@@ -155,6 +170,7 @@ public class StaticGameBoard extends GameBoardUI {
         super.paintComponent(g);
         //Graphics2D g2 = (Graphics2D)g;
         g.drawImage(boardIcon.getImage(), xBoard, yBoard, this);
+        //g.drawOval(leftX, bottomY, WIDTH, HEIGHT);
 
         for(int i = 0; i < boardSize; i++) {
             for(int j = 0; j < boardSize; j++) {
@@ -179,12 +195,14 @@ public class StaticGameBoard extends GameBoardUI {
 
 
         if(team.equals(teamNames[1])) {
-            Image ico = type.equals("K") ? redKingIcon.getImage() : redPieceIcon.getImage();
+           // Image ico = type.equals("K") ? redKingIcon.getImage() : redPieceIcon.getImage();
+           Image ico = this.pieceMap2.get(type).getImage();
             
             g.drawImage(ico, pieceX, pieceY, pieceSize, pieceSize, this);
 
         } else {
-            Image ico = type.equals("K") ? blackKingIcon.getImage() : blackPieceIcon.getImage();
+           // Image ico = type.equals("K") ? blackKingIcon.getImage() : blackPieceIcon.getImage();
+           Image ico = this.pieceMap1.get(type).getImage();
             g.drawImage(ico, pieceX, pieceY, pieceSize, pieceSize, this);
         }
 

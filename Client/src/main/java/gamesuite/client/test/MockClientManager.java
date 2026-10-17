@@ -95,11 +95,17 @@ public class MockClientManager implements ClientManager {
         this.guiGm.setGameId("gameId");
         this.guiGm.setPlayerTurn(1);
         p1GameId = "gameId";
-        getGameReady();
+        try {
+            getGameReady();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println("could not setup board");
+        }
         return null;
     }
 
-    private void getGameReady() 
+    private void getGameReady() throws IOException 
     {
         try {
             System.out.println("readying game");
@@ -124,7 +130,7 @@ public class MockClientManager implements ClientManager {
     }
 
     @Override
-    public String joinGame(String game, String name, String gameId) {
+    public String joinGame(String game, String name, String gameId) throws IOException {
          this.guiGm.setGameId("gameId");
         this.guiGm.setPlayerTurn(2);
         p2GameId = "gameId";

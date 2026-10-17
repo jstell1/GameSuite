@@ -1,4 +1,5 @@
 package gamesuite.client.control;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,7 +20,7 @@ public interface ClientManager {
 
     public String createGame(String game, String group, String playerName);
 
-    public String joinGame(String game, String name, String gameId);
+    public String joinGame(String game, String name, String gameId) throws IOException;
 
     public void quitGame(boolean hardQuit);
 

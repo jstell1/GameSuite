@@ -59,7 +59,7 @@ public class ChessEndRowConst extends Constraint implements Updatable {
 
     @Override
     public boolean checkMove(JsonNode move) {
-        
+
         if(move.has("promote")) {
             this.mustChoosePromote = false;
             return true;
@@ -69,7 +69,15 @@ public class ChessEndRowConst extends Constraint implements Updatable {
         int eY = move.get("endY").asInt();
         CoordPairImpl pos = this.board.getBoardPos(eX, eY);
         BoardGamePiece piece = pos.getPiece();
+
+        if(piece == null) {
+            return false;
+        }
         String team = piece.getTeam();
+
+        if(!piece.getType().equals("P")) {
+            return false;
+        }
 
         String[] teams = this.gameState.getTeamNames();
 

@@ -96,6 +96,10 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
             node.put("endX", eX);
             node.put("endY", eY);
 
+            if(!this.board.isValidPos(sX, sY) || !this.board.isValidPos(eX, eY)) {
+                continue;
+            }
+
             if(this.kingProtected.verifyMove(node, kingPos)) {
                 return false;
             }
@@ -128,7 +132,7 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
                     if(!valid) {
                         continue;
                     }
-                    
+
                     valid = false;
                     for(Action act : attackRules) {
                         boolean passed = true;
@@ -167,7 +171,7 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
                     if(!valid) {
                         continue;
                     }
-                    
+
                     valid = false;
                     for(Action act : moveRules) {
                         boolean passed = true;
@@ -199,7 +203,7 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
 
     @Override
     public void addDependencies(Map<String, Constraint> dependencies) {
-        this.kingProtected = (KingProtectedConst)dependencies.get("kingProtectd");
+        this.kingProtected = (KingProtectedConst)dependencies.get("kingProtected");
         this.validMove = (ValidChessMoveConst)dependencies.get("validChessMove");
         this.validAttack = (ValidChessAttackConst)dependencies.get("validChessAttack");
 

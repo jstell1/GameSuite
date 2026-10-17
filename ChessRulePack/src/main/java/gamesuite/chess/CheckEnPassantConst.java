@@ -1,6 +1,7 @@
 package gamesuite.chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,20 +17,25 @@ import gamesuite.boardgame.model.CoordPairImpl;
 import gamesuite.boardgame.model.GameBoardImpl;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
+import gamesuite.core.model.rules.ConstDependent;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Updatable;
 
-public class CheckEnPassantConst extends Constraint implements Updatable {
+public class CheckEnPassantConst extends Constraint implements Updatable, ConstDependent {
 
     private GameBoardImpl board;
     private BoardGameState gameState;
     private Set<BoardGamePiece> movedPawns;
     private Map<BoardGamePiece, List<BoardGamePiece>> missedPassant;
+    private final String[] dependencies = {"noEmptyTarg"};
+    private NoEmptyTargConst noEmpty;
+    private Set<BoardGamePiece> passantDone;
 
     public CheckEnPassantConst() {
         super("checkEnPassant");
         this.movedPawns = new HashSet<>();
         this.missedPassant = new HashMap<>();
+        this.passantDone = new HashSet<>();
     }
 
     public CheckEnPassantConst(GameState gameState, GameBoard board) {
@@ -38,6 +44,7 @@ public class CheckEnPassantConst extends Constraint implements Updatable {
         this.name = "checkEnPassant";
         this.movedPawns = new HashSet<>();
         this.missedPassant = new HashMap<>();
+        this.passantDone = new HashSet<>();
     }
 
     @Override
@@ -72,7 +79,9 @@ public class CheckEnPassantConst extends Constraint implements Updatable {
         CoordPairImpl pos = this.board.getBoardPos(sX, sY);
         BoardGamePiece pawn = pos.getPiece();
 
-        
+        if(this.passantDone.contains(pawn)) {
+            return false;
+        }
 
         String team = pawn.getTeam();
         String[] teams = this.gameState.getTeamNames();   
@@ -97,6 +106,8 @@ public class CheckEnPassantConst extends Constraint implements Updatable {
             List<BoardGamePiece> list = new ArrayList<>();
             list.add(opp);
             this.missedPassant.put(pawn, list);
+            this.noEmpty.override();
+            this.passantDone.add(pawn);
             return true;
         }
         
@@ -106,6 +117,8 @@ public class CheckEnPassantConst extends Constraint implements Updatable {
 
         if(this.movedPawns.contains(opp)) {
             this.missedPassant.get(pawn).add(opp);
+            this.noEmpty.override();
+            this.passantDone.add(pawn);
             return true;
         }
 
@@ -123,6 +136,16 @@ public class CheckEnPassantConst extends Constraint implements Updatable {
         BoardGamePiece piece = this.board.getBoardPos(x, y).getPiece();
         this.movedPawns.add(piece);
         
+    }
+
+    @Override
+    public void addDependencies(Map<String, Constraint> dependencies) {
+        this.noEmpty = (NoEmptyTargConst)dependencies.get("noEmptyTarg");
+    }
+
+    @Override
+    public List<String> getDependencyList() {
+        return Arrays.asList(Arrays.copyOf(this.dependencies, this.dependencies.length));
     }
 
 }

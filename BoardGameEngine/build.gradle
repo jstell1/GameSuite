@@ -59,7 +59,7 @@ task CheckersJar(type: Jar) {
 }
 
 task UIJar(type: Jar) {
-    archiveBaseName = 'CheckersGameBoardPanel'
+    archiveBaseName = 'GameBoardPanel'
     
   
     // grab compiled classes

@@ -1,0 +1,10 @@
+gamesuite.chess.CheckCastleConst
+gamesuite.chess.CheckEnPassantConst
+gamesuite.chess.ChessEndRowConst
+gamesuite.chess.FirstMoveConst
+gamesuite.chess.IsCheckmateConst
+gamesuite.chess.KingProtectedConst
+gamesuite.chess.NoEmptyTargConst
+gamesuite.chess.NoMovesConst
+gamesuite.chess.ValidChessAttackConst
+gamesuite.chess.ValidChessMoveConst

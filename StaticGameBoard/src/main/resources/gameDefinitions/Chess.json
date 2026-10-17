@@ -7,7 +7,7 @@
     "validAttack" : "validChessAttack",
     "gmUpdatee" : "chessEndRow",
     "turnControl" : {
-        "type" : "ChessIncrTurn",
+        "type" : "chessIncrTurn",
         "attackVectors" : [
             { "x" : 0, "y" : -1 },
             { "x" : -1, "y" : -1 },
@@ -30,9 +30,25 @@
         "fullVector" : true
     },
     "constraints" : [
-        
+        "checkCastle",
+        "checkEnPassant",
+        "chessEndRow",
+        "firstMove",
+        "isCheckmate",
+        "kingProtected",
+        "noEmptyTarg",
+        "noMoves",
+        "emptyTarg",
+        "turnCheck"
     ],
     "effects" : [
+        "castle",
+        "checkmate",
+        "chessIncrTurn",
+        "chessMakeMove",
+        "chessPromote",
+        "draw",
+        "enPassant"
     ],
     "actions" : [
         {
@@ -45,7 +61,14 @@
                 }
             ],
             "effects": [
-                {"type": "chessMakeMove"}
+                {
+                    "type": "chessMakeMove",
+                    "updatees": [
+                        "checkCastle",
+                        "kingProtected",
+                        "checkEnPassant"
+                    ]
+                }
             ]
         },
         {
@@ -101,6 +124,16 @@
             ]
         },
         {
+            "name": "pawnAttack",
+            "type": "attack",
+            "constraints": [
+                {"type": "noEmptyTarg"}
+            ],
+            "effects":[
+                {"type":"chessMakeMove"}
+            ]
+        },
+        {
             "name": "promote",
             "type": "promotion",
             "constraints": [
@@ -120,7 +153,17 @@
                 {"type": "isCheckmate"}
             ],
             "effects": [
-                {"type": "checkmate"}
+                {"type": "win"}
+            ]
+        },
+        {
+            "name": "draw",
+            "type": "endCheck",
+            "constraints": [
+                {"type": "noMoves"}
+            ],
+            "effects": [
+                {"type": "draw"}
             ]
         }
     ],
@@ -138,9 +181,9 @@
             ],
             "vectType": "exact",
             "actions" : [
-                "attack",
-                "pawnStep",
-                "enPassant"
+                {"name": "enPassant" },
+                {"name": "pawnAttack"},
+                {"name": "pawnStep" }
             ]
         },
         {
@@ -162,8 +205,8 @@
             ],
             "vectType": "exact",
             "actions": [
-                "castle",
-                "attack"
+                {"name": "castle" },
+                {"name": "attack" }
             ]
         },
         {
@@ -181,7 +224,7 @@
             ],
             "vectType": "directional",
             "actions": [
-                "attack"
+                {"name": "attack"}
             ]
         },
         {
@@ -195,7 +238,7 @@
             ],
             "vectType": "directional",
             "actions": [
-                "attack"
+                {"name": "attack" }
             ]
         },
         {
@@ -213,7 +256,7 @@
             ],
             "vectType": "exact",
             "actions": [
-                "attack"
+                {"name": "attack"}
             ]
         },
         {
@@ -227,7 +270,8 @@
             ],
             "vectType": "directional",
             "actions": [
-                "attack"
+                {"name": "attack" }
+
             ]
         }
     ],   
@@ -261,8 +305,12 @@
 
     "postChecks" : [
         {
-            "name":"promote",
-            "extra": "cheese"
+            "name":"promote"
+        }
+    ],
+    "drawConditions": [
+        {
+            "name": "draw"
         }
     ],
     "winConditions" : [
@@ -281,5 +329,142 @@
             "turnName" : "B",
             "turn" : 2
         }
-    ]
+    ],
+    "board": {
+        "type": "rectangle",
+        "dimensions": {
+            "height": 8,
+            "width": 8
+        },
+        "initState": [
+            {
+                "x": 0, "y": 0,
+                "piece": { "name" :  "R", "player":  1}
+            },
+            {
+                "x": 0, "y": 1,
+                "piece": { "name" :  "N", "player":  1}
+            },
+            {
+                "x": 0, "y": 2,
+                "piece": { "name" :  "B", "player":  1}
+            },
+            {
+                "x": 0, "y": 3,
+                "piece": { "name" :  "K", "player":  1}
+            },
+            {
+                "x": 0, "y": 4,
+                "piece": { "name" :  "Q", "player":  1}
+            },
+            {
+                "x": 0, "y": 5,
+                "piece": { "name" :  "B", "player":  1}
+            },
+            {
+                "x": 0, "y": 6,
+                "piece": { "name" :  "N", "player":  1}
+            },
+            {
+                "x": 0, "y": 7,
+                "piece": { "name" :  "R", "player":  1}
+            },
+            {
+                "x": 1, "y": 0,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 1,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 2,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 3,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 4,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 5,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 6,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 1, "y": 7,
+                "piece": { "name" :  "P", "player":  1}
+            },
+            {
+                "x": 6, "y": 0,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 1,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 2,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 3,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 4,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 5,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 6,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 6, "y": 7,
+                "piece": { "name" :  "P", "player":  2}
+            },
+            {
+                "x": 7, "y": 0,
+                "piece": { "name" :  "R", "player":  2}
+            },
+            {
+                "x": 7, "y": 1,
+                "piece": { "name" :  "N", "player":  2}
+            },
+            {
+                "x": 7, "y": 2,
+                "piece": { "name" :  "B", "player":  2}
+            },
+            {
+                "x": 7, "y": 3,
+                "piece": { "name" :  "K", "player":  2}
+            },
+            {
+                "x": 7, "y": 4,
+                "piece": { "name" :  "Q", "player":  2}
+            },
+            {
+                "x": 7, "y": 5,
+                "piece": { "name" :  "B", "player":  2}
+            },
+            {
+                "x": 7, "y": 6,
+                "piece": { "name" :  "N", "player":  2}
+            },
+            {
+                "x": 7, "y": 7,
+                "piece": { "name" :  "R", "player":  2}
+            }
+        ]
+    }
 }

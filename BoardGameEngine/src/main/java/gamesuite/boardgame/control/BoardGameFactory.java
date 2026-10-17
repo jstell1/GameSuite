@@ -42,7 +42,7 @@ public class BoardGameFactory extends GameManagerFactory {
         JsonNode pieces = gameDef.get("pieces");
         String[] packs = mapper.treeToValue(gameDef.get("rulePacks"), String[].class);
         String ui = gameDef.get("ui").asText();
-        
+        String gameName = gameDef.get("game").asText();
         for(String pack : packs) {
             if(this.constraints == null) {
                 this.constraints = this.rulesLoader.loadConstraints(pack);
@@ -115,6 +115,7 @@ public class BoardGameFactory extends GameManagerFactory {
                 .setChangedPos(new ArrayList<CoordPairImpl>())
                 .setGameOver(false)
                 .setJustPromoted(new HashSet<CoordPairImpl>())
+                .setGameName(gameName)
                 .build();
 
         //adding game board and game state to constraints and effects
@@ -185,10 +186,21 @@ public class BoardGameFactory extends GameManagerFactory {
         JsonNode drawConditions = gameDef.get("drawConditions");
         JsonNode postChecks = gameDef.get("postChecks");
 
+
+        Map<String, Effect> extras = new HashMap<>();
+        Map<String, Constraint> extras2 = new HashMap<>();
+
         for(JsonNode constraint : gameRules) {
             String type = constraint.get("type").asText();
             Constraint temp = this.constraints.get(type);
             controller.addGameConstraint(temp);
+            if(constraint.size() > 1 && !extras.containsKey(type)) {
+                ObjectNode n = constraint.deepCopy();
+                n.remove("type");
+                Constraint tmp = this.constraints.get(type);
+                tmp.setExtraParams(n);
+                extras2.put(type, tmp);
+            }
         }
        
 
@@ -214,8 +226,7 @@ public class BoardGameFactory extends GameManagerFactory {
 
 
         //setting the extra params variable in all constraints and effects
-        Map<String, Effect> extras = new HashMap<>();
-        Map<String, Constraint> extras2 = new HashMap<>();
+
         for(JsonNode action : actionsNode) {
             String name = action.get("name").asText();
             JsonNode ref = d.get(name);
@@ -224,6 +235,24 @@ public class BoardGameFactory extends GameManagerFactory {
             Action act = this.actions.get(name);
             for(JsonNode effect : effectsNode) {
                 String t = effect.get("type").asText();
+
+                if(effect.has("updatees")) {
+
+                    JsonNode updatees = effect.get("updatees");
+
+                    Updater f = (Updater)this.effects.get(effect.get("type").asText());
+                    Map<String, Updatable> ups = new HashMap<>();
+                    for(JsonNode u : updatees) {
+                        if(this.constraints.get(u.asText()) != null) {
+                            ups.put(u.asText(), (Updatable)this.constraints.get(u.asText()));
+                        } else if(this.effects.get(u.asText()) != null) {
+                            ups.put(u.asText(), (Updatable)this.effects.get(u.asText()));
+                        
+                        }    
+                    }
+                    f.addUpdatables(ups);
+                }
+
 
                 if(effect.size() > 1 && !extras.containsKey(t)) {
                     ObjectNode n = effect.deepCopy();
@@ -235,6 +264,23 @@ public class BoardGameFactory extends GameManagerFactory {
             }
             for(JsonNode constraint : constraintsNode) {
                 String t = constraint.get("type").asText();
+
+                if(constraint.has("updatees")) {
+
+                    JsonNode updatees = constraint.get("updatees");
+
+                    Updater f = (Updater)this.constraints.get(constraint.get("type").asText());
+                    Map<String, Updatable> ups = new HashMap<>();
+                    for(JsonNode u : updatees) {
+                        if(this.constraints.get(u.asText()) != null) {
+                            ups.put(u.asText(), (Updatable)this.constraints.get(u.asText()));
+                        } else if(this.effects.get(u.asText()) != null) {
+                            ups.put(u.asText(), (Updatable)this.effects.get(u.asText()));
+                        
+                        }    
+                    }
+                    f.addUpdatables(ups);
+                }
 
                 if(constraint.size() > 1 && !extras2.containsKey(t)) {
                     ObjectNode n = constraint.deepCopy();
@@ -314,7 +360,7 @@ public class BoardGameFactory extends GameManagerFactory {
             
             if(piece.has("moveVector")) {
                   JsonNode moveVector = piece.get("moveVector");
-                int[][] vectList2 = new int[moveVector.size()][2];
+                int[][] vectList2 = new int[moveVector.size()][];
                 
                 int j = 0;
                 for(JsonNode vect : moveVector) {
@@ -325,11 +371,14 @@ public class BoardGameFactory extends GameManagerFactory {
                 }
 
                 builder.setValidMoves(vectList2);
-            }            
+            } else {
+                int[][] arr = new int[0][];
+                builder.setValidMoves(arr);
+            }
 
             if(piece.has("attackVector")) {
                  JsonNode attackVector = piece.get("attackVector");
-                int[][] vectList2 = new int[attackVector.size()][2];
+                int[][] vectList2 = new int[attackVector.size()][];
                 
                 int j = 0;
                 for(JsonNode vect : attackVector) {
@@ -341,6 +390,9 @@ public class BoardGameFactory extends GameManagerFactory {
 
                 builder.setAttackVectors(vectList2);
                 
+            }else {
+                int[][] arr = new int[0][];
+                builder.setAttackVectors(arr);
             }
 
             if(piece.has("maxDist")) {

@@ -63,6 +63,9 @@ public class ValidChessAttackConst extends Constraint {
         String[] teamNames = this.gameState.getTeamNames();
         //int turn = this.gameState.getTurn();
         CoordPairImpl start = this.board.getBoardPos(sX, sY);
+        if(start.getPiece() == null) {
+            return false;
+        }
         CoordPairImpl end = this.board.getBoardPos(eX, eY);
 
         BoardGamePiece piece = start.getPiece();
@@ -100,7 +103,7 @@ public class ValidChessAttackConst extends Constraint {
         } else if(vectType.equals("directional")) {
             int rise = eY - sY;
             int run = eX - sX;
-            int slope = rise / run;
+
             if(rise == 0) {
 
                  for(int[] pair : validJumps) {
@@ -140,8 +143,8 @@ public class ValidChessAttackConst extends Constraint {
     
                 }
             } else {
-                
-                if(slope != 1 || slope != -1) {
+                int slope = rise / run;
+                if(slope != 1 && slope != -1) {
                     return false;
                 }
                 

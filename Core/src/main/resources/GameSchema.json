@@ -8,7 +8,7 @@
         "type": {"type" : "string"}
       },
       "required": ["type"],
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "Effect" : {
       "type" : "object",
@@ -157,7 +157,18 @@
           "name": {"type": "string"}
         },
         "required": ["name"],
-        "additionalProperties": false
+        "additionalProperties": true
+      }
+    },
+    "drawConditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type":  "string"}
+        },
+        "required": ["name"],
+        "additionalProperties": true
       }
     },
     "winConditions": {
@@ -168,7 +179,7 @@
           "name" : {"type": "string"}
         },
         "required": ["name"],
-        "additionalProperties": false
+        "additionalProperties": true
       }
     },
     "players": {

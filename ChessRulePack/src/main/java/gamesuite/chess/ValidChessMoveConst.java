@@ -62,7 +62,7 @@ public class ValidChessMoveConst extends Constraint {
             return false;
         }
         BoardGamePiece piece = start.getPiece();
-        String team = piece.getName();
+        String team = piece.getTeam();
         String[] teams = this.gameState.getTeamNames();
 
         int turnFactor = -1;
@@ -84,7 +84,7 @@ public class ValidChessMoveConst extends Constraint {
             BoardGamePiece targ = this.board.getBoardPos(tmpX, tmpY).getPiece();
 
             if(targ != null) {
-                return false;
+                continue;
             }
 
             if(tmpX == eX && tmpY == eY) {
