@@ -106,6 +106,10 @@
     },
     "ui": {"type": "string"},
     "validMove": {"type": "string"},
+    "vmUpdatees": {
+      "type": "array",
+      "items": { "type": "string"}
+    },
     "validAttack": {"type": "string"},
     "gmUpdatee": {"type": "string"},
     "turnControl": {

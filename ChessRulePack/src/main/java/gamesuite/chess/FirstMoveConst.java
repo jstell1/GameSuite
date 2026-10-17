@@ -3,6 +3,7 @@ package gamesuite.chess;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gamesuite.boardgame.model.BoardGamePiece;
@@ -12,8 +13,9 @@ import gamesuite.boardgame.model.GameBoardImpl;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
+import gamesuite.core.model.rules.Updatable;
 
-public class FirstMoveConst extends Constraint {
+public class FirstMoveConst extends Constraint implements Updatable {
 
     private GameBoardImpl board;
     private BoardGameState gameState;
@@ -92,5 +94,15 @@ public class FirstMoveConst extends Constraint {
     public void setGameState(GameState game) {
         this.gameState = (BoardGameState) game;
     }
-    
+
+    @Override
+    public void update(JsonNode update) throws IllegalArgumentException, JsonProcessingException {
+        int x = update.get(0).asInt();
+        int y = update.get(1).asInt();
+
+        BoardGamePiece piece = this.board.getBoardPos(x,y).getPiece();
+
+        this.madeFirstMove.add(piece);
+
+    }
 }

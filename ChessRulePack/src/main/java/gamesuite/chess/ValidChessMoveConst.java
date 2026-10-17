@@ -9,11 +9,16 @@ import gamesuite.boardgame.model.GameBoardImpl;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.Constraint;
+import gamesuite.core.model.rules.Updatable;
+import gamesuite.core.model.rules.Updater;
+
+import java.util.Map;
 
 public class ValidChessMoveConst extends Constraint {
 
     private BoardGameState gameState;
     private GameBoardImpl board;
+    private Map<String, Updatable> updatees;
 
     public ValidChessMoveConst() {
         super("validChessMove");
@@ -94,5 +99,4 @@ public class ValidChessMoveConst extends Constraint {
 
         return false;
     }
-    
 }

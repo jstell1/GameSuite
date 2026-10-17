@@ -175,6 +175,18 @@ public class BoardGameFactory extends GameManagerFactory {
         MoveController controller = new MoveController(board);
         String moveName = gameDef.get("validMove").asText();
         Constraint moveConst = this.constraints.get(moveName);
+
+//        if(moveConst instanceof Updater) {
+//            JsonNode vmUp = gameDef.get("vmUpdatees");
+//            Updater mc = (Updater)moveConst;
+//            Map<String, Updatable> map = new HashMap<>();
+//            for(JsonNode node : vmUp ) {
+//                String name = node.asText();
+//                Updatable up = (Updatable)this.constraints.get(name);
+//                map.put(name, up);
+//            }
+//            mc.addUpdatables(map);
+//        }
         controller.setMoveConstraint(moveConst);
 
         String attackName = gameDef.get("validAttack").asText();

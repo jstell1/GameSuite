@@ -143,7 +143,7 @@ public class ValidChessAttackConst extends Constraint {
     
                 }
             } else {
-                int slope = rise / run;
+                double slope = ((double)rise) / run;
                 if(slope != 1 && slope != -1) {
                     return false;
                 }
