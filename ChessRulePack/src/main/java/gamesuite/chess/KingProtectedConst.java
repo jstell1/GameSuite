@@ -95,9 +95,9 @@ public class KingProtectedConst extends Constraint implements ConstDependent, Up
                 exact = true;
              }
 
-            BoardGamePiece piece = this.board.getBoardPos(sX, sY).getPiece();
+            BoardGamePiece piece = null;
              if(exact) {
-
+                 piece = this.board.getBoardPos(sX, sY).getPiece();
                  if(piece != null) {
                      boolean valid = this.validateAttack.checkMove(moveNode);
                      if(valid) {

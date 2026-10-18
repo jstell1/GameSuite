@@ -118,6 +118,7 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
 
                 //checking attacking moves
                 attacks = piece.getValidAttacks();
+                String vectType = piece.getVectType();
                 List<Action> attackRules = piece.getAttackRules();
                 int eX;
                 int eY;
@@ -126,35 +127,76 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
                 for(int[] vect : attacks) {
                     eX = i + vect[0] * turnFactor;
                     eY = j + vect[1] * turnFactor;
-                    BoardGameMove m = new BoardGameMove(i, j, eX, eY);
-                    JsonNode node = mapper.valueToTree(m);
-                    valid = this.validAttack.checkMove(node);
+                    int rise = eY - j;
+                    int run = eX - i;
 
-                    if(!valid) {
-                        continue;
-                    }
+                    BoardGamePiece targ = null;
+                    while(targ == null && this.board.isValidPos(eX, eY)) {
 
-                    valid = false;
-                    for(Action act : attackRules) {
-                        boolean passed = true;
-                        List<Constraint> constList = act.getConstraints();
-                        for(Constraint constraint : constList) {
-                            if(!constraint.checkMove(node)) {
-                                passed = false;
+                        BoardGameMove m = new BoardGameMove(i, j, eX, eY);
+                        JsonNode node = mapper.valueToTree(m);
+                        valid = this.validAttack.checkMove(node);
+                        targ = this.board.getBoardPos(eX, eY).getPiece();
+                        if(!valid) {
+                            if(vectType.equals("exact")) {
                                 break;
                             }
+
+                            if(rise == 0) {
+                                eX += vect[0] * turnFactor;
+                            } else if(run == 0) {
+                                eY += vect[1] * turnFactor;
+                            } else {
+                                eX += vect[0] * turnFactor;
+                                eY += vect[1] * turnFactor;
+                            }
+                            continue;
                         }
-                        if(passed) {
-                            valid = true;
+
+                        valid = false;
+                        for(Action act : attackRules) {
+                            boolean passed = true;
+                            List<Constraint> constList = act.getConstraints();
+                            for(Constraint constraint : constList) {
+                                if(!constraint.checkMove(node)) {
+                                    passed = false;
+                                    break;
+                                }
+                            }
+                            if(passed) {
+                                valid = true;
+                                break;
+                            }
+
+                        }
+
+                        if(valid && this.kingProtected.verifyMove(node, kingPos)) {
+                            return false;
+                        }
+
+                        if(vectType.equals("exact")) {
                             break;
                         }
 
+                        if(rise == 0) {
+                            eX += vect[0]*turnFactor;
+                        } else if(run == 0) {
+                            eY += vect[1]*turnFactor;
+                        } else {
+                            eX += vect[0]*turnFactor;
+                            eY += vect[1]*turnFactor;
+                        }
                     }
 
-                    if(valid && this.kingProtected.verifyMove(node, kingPos)) {
-                        return false;
-                    }
+
+
+
+
                 }
+
+
+
+
 
 
                 //checking non-attacking moves
@@ -165,35 +207,79 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
                 for(int[] vect : moves) {
                     eX = i + vect[0] * turnFactor;
                     eY = j + vect[1] * turnFactor;
-                    BoardGameMove m = new BoardGameMove(i, j, eX, eY);
-                    JsonNode node = mapper.valueToTree(m);
-                    valid = this.validMove.checkMove(node);
+                    int rise = eY - j;
+                    int run = eX - i;
 
-                    if(!valid) {
-                        continue;
-                    }
+                    BoardGamePiece targ = null;
 
-                    valid = false;
-                    for(Action act : moveRules) {
-                        boolean passed = true;
-                        List<Constraint> constList = act.getConstraints();
-                        for(Constraint constraint : constList) {
-                            if(!constraint.checkMove(node)) {
-                                passed = false;
+
+                    while(targ == null && this.board.isValidPos(eX, eY)) {
+                        BoardGameMove m = new BoardGameMove(i, j, eX, eY);
+                        JsonNode node = mapper.valueToTree(m);
+                        valid = this.validMove.checkMove(node);
+                        targ = this.board.getBoardPos(eX,eY).getPiece();
+                        if(!valid) {
+                            if(vectType.equals("exact")) {
                                 break;
                             }
+
+                            if(rise == 0) {
+                                eX += vect[0]*turnFactor;
+                            } else if(run == 0) {
+                                eY += vect[1]*turnFactor;
+                            } else {
+                                eX += vect[0]*turnFactor;
+                                eY += vect[1]*turnFactor;
+                            }
+                            continue;
                         }
-                        if(passed) {
-                            valid = true;
+
+                        valid = false;
+                        for(Action act : moveRules) {
+                            boolean passed = true;
+                            List<Constraint> constList = act.getConstraints();
+                            for(Constraint constraint : constList) {
+                                if(!constraint.checkMove(node)) {
+                                    passed = false;
+                                    break;
+                                }
+                            }
+                            if(passed) {
+                                valid = true;
+                                break;
+                            }
+
+                        }
+
+                        if(valid && this.kingProtected.verifyMove(node, kingPos)) {
+                            return false;
+                        }
+                        if(vectType.equals("exact")) {
                             break;
                         }
 
+                        if(rise == 0) {
+                            eX += vect[0]*turnFactor;
+                        } else if(run == 0) {
+                            eY += vect[1]*turnFactor;
+                        } else {
+                            eX += vect[0]*turnFactor;
+                            eY += vect[1]*turnFactor;
+                        }
                     }
 
-                    if(valid && this.kingProtected.verifyMove(node, kingPos)) {
-                        return false;
-                    }
+
+
+
+
                 }
+
+
+
+
+
+
+
             }
         }
 

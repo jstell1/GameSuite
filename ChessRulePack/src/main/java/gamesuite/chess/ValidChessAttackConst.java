@@ -108,9 +108,10 @@ public class ValidChessAttackConst extends Constraint {
 
                  for(int[] pair : validJumps) {
                     int xDirect = pair[0] * turnFactor;
+                    int yDirect = pair[1] * turnFactor;
                     int tmpX = sX + xDirect;
     
-                    if(sameSign(xDirect, run)) {
+                    if(sameSign(xDirect, run) && sameSign(yDirect, rise)) {
                         while(!reachedFinal(xDirect, eX, tmpX)) {
                             CoordPairImpl pos = this.board.getBoardPos(tmpX, sY);
                             BoardGamePiece tmp = pos.getPiece();
@@ -127,9 +128,10 @@ public class ValidChessAttackConst extends Constraint {
 
                  for(int[] pair : validJumps) {
                     int yDirect = pair[1] * turnFactor;
+                    int xDirect = pair[0] * turnFactor;
                     int tmpY = sY + yDirect;
     
-                    if(sameSign(yDirect, rise)) {
+                    if(sameSign(yDirect, rise) && sameSign(xDirect, run)) {
                         while(!reachedFinal(yDirect, eY, tmpY)) {
                             CoordPairImpl pos = this.board.getBoardPos(sX, tmpY);
                             BoardGamePiece tmp = pos.getPiece();
