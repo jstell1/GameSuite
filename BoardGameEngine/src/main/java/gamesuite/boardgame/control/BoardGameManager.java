@@ -77,6 +77,11 @@ public class BoardGameManager implements GameManager, Updater {
         this.gameId = gameId;
     }
 
+    @Override
+    public boolean getOverride() {
+        return this.override;
+    }
+
     @Override 
     public boolean checkPlayerSession(String playerId) {
 
@@ -296,7 +301,7 @@ public class BoardGameManager implements GameManager, Updater {
         String sessionId = this.sessionPlayerMap.get(turn - 1);
         u.update(node);
         this.override = false;
-        BoardGameMove move = new BoardGameMove(0, 0, this.move.get("endX").asInt(), this.move.get("endY").asInt());
+        BoardGameMove move = new BoardGameMove(this.move.get("startX").asInt(), this.move.get("startY").asInt(), this.move.get("endX").asInt(), this.move.get("endY").asInt());
         ObjectNode m = mapper.valueToTree(move);
         m.put("promote", type);
         this.move = null;

@@ -82,8 +82,8 @@ public class ClientManagerImpl implements ClientManager {
             this.schemaRoot = mapper.readTree(schemaStream);
 
         System.out.println("cwd: " + System.getProperty("user.dir"));
-System.out.println("ui dir: " + new File("../plugins/ui").getCanonicalPath());
-System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSource().getLocation());
+        System.out.println("ui dir: " + new File("../plugins/ui").getCanonicalPath());
+        System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSource().getLocation());
    
     }
 

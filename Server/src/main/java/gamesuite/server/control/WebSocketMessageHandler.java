@@ -462,7 +462,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
              
                 boolean success = gm.sendMove(move, session.getId());
        
-              
+                if(gm.getOverride()) {
+                    return;
+                }
 
                 JsonNode game = gm.getGameStateJson();
                 String msgType = "stateUpdateResponse";

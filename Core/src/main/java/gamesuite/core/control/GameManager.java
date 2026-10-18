@@ -40,4 +40,5 @@ public interface GameManager {
     public void sendPromotionRequest(JsonNode move, JsonNode choices);
     public void setPromoteRequester(PromoteRequester requester);
     public void setGameId(String gameId);
+    public boolean getOverride();
 }

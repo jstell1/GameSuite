@@ -65,12 +65,17 @@ public class ChessPromoteEffect extends Effect {
         String type = move.get("promote").asText();
         int x = move.get("endX").asInt();
         int y = move.get("endY").asInt();
+        int oX = move.get("startX").asInt();
+        int oY = move.get("startY").asInt();
+        CoordPairImpl og = this.board.getBoardPos(oX,oY);
         CoordPairImpl pos = this.board.getBoardPos(x, y);
         String team = pos.getPiece().getTeam();
 
 
         BoardGamePiece piece = this.gm.buildPiece(type, team);
         pos.setPiece(piece);
+        this.gameState.addChangedPos(og);
+        this.gameState.addChangedPos(pos);
     }
 
     
