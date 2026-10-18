@@ -3,6 +3,8 @@ package gamesuite.core.ui;
 import javax.swing.JPanel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import gamesuite.core.model.GamePiece;
+import gamesuite.core.model.Player;
 
 
 public abstract class GameBoardUI extends JPanel {
@@ -21,7 +23,9 @@ public abstract class GameBoardUI extends JPanel {
 
     public abstract boolean isGameOver();
 
-    public abstract String getWinner();
+    public abstract Player getWinner();
+
+    public abstract String getWinnerName();
 
     public abstract void setPromotionChoices(String[] list);
     

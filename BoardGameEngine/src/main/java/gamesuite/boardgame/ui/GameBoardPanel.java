@@ -10,6 +10,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gamesuite.core.model.Player;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.boardgame.model.CoordPairImpl;
@@ -162,6 +163,11 @@ public class GameBoardPanel extends GameBoardUI {
     }
 
     @Override
+    public Player getWinner() {
+        return this.gameView.getWinner();
+    }
+
+    @Override
     public void setGameState(JsonNode gameState) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setGameState'");
@@ -174,7 +180,7 @@ public class GameBoardPanel extends GameBoardUI {
     }
 
     @Override
-    public String getWinner() {
+    public String getWinnerName() {
         return this.gameView.getWinner().getName();
     }
 

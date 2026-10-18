@@ -23,6 +23,8 @@ import gamesuite.boardgame.model.CoordPairImpl;
 import gamesuite.boardgame.model.BoardGamePiece;
 import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.boardgame.model.BoardGameMove;
+import gamesuite.core.model.GamePiece;
+import gamesuite.core.model.Player;
 import gamesuite.core.ui.GameBoardUI;
 import gamesuite.core.ui.UIListener;
 import gamesuite.staticUI.model.Piece;
@@ -62,7 +64,7 @@ public class StaticGameBoard extends GameBoardUI {
     private final int yellowY = topY + offs;
     private final int yellowXDist = xDist - offs;
     private final int yellowYDist = yDist - offs;
-    
+
     private ImageIcon redPieceIcon;
     private ImageIcon blackPieceIcon;
     private ImageIcon redKingIcon;
@@ -111,10 +113,10 @@ public class StaticGameBoard extends GameBoardUI {
         this.tmpX2 = -1;
         this.tmpY2 = -1;
         this.addMouseListener(new MouseAdapter() {
-            @Override 
+            @Override
             public void mousePressed(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
-                
+
                 System.out.println("Mouse coords: (" + x + "," + y + ")");
 
                 if(x > leftX && x < rightXBound && y > topY && y < bottomYBound && StaticGameBoard.this.listener.getIsBoardEnabled()) {
@@ -130,7 +132,7 @@ public class StaticGameBoard extends GameBoardUI {
                     }
 
                     if(StaticGameBoard.this.tmpX == -1 && StaticGameBoard.this.tmpY == -1) {
-                        StaticGameBoard.this.tmpX = yCoord; 
+                        StaticGameBoard.this.tmpX = yCoord;
                         StaticGameBoard.this.tmpY = xCoord;
                     } else if(yCoord == StaticGameBoard.this.tmpX && xCoord == StaticGameBoard.this.tmpY) {
                         StaticGameBoard.this.tmpX = -1;
@@ -141,8 +143,8 @@ public class StaticGameBoard extends GameBoardUI {
 
                         StaticGameBoard.this.listener.disabledBoard();
                           BoardGameMove move = new BoardGameMove(
-                                StaticGameBoard.this.tmpX, 
-                                StaticGameBoard.this.tmpY, 
+                                StaticGameBoard.this.tmpX,
+                                StaticGameBoard.this.tmpY,
                                 StaticGameBoard.this.tmpX2,
                                 StaticGameBoard.this.tmpY2
                             );
@@ -165,7 +167,7 @@ public class StaticGameBoard extends GameBoardUI {
         this.board = board;
     }
 
-    @Override 
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         //Graphics2D g2 = (Graphics2D)g;
@@ -179,13 +181,13 @@ public class StaticGameBoard extends GameBoardUI {
                     g.fillRect(yellowX+xDist*j, yellowY+yDist*i, yellowXDist, yellowYDist);
                     g.drawRect(yellowX+xDist*j, yellowY+yDist*i, yellowXDist, yellowYDist);
                 }
-                
+
                 if(board[i][j] != null) {
                     String team = board[i][j].getTeam();
                     String type = board[i][j].getType();
                     setPiece(g, pieceLeftX + xDist*j, pieceTopY+yDist*i, pieceSize, team, type);
                 }
-                
+
             }
         }
     }
@@ -197,7 +199,7 @@ public class StaticGameBoard extends GameBoardUI {
         if(team.equals(teamNames[1])) {
            // Image ico = type.equals("K") ? redKingIcon.getImage() : redPieceIcon.getImage();
            Image ico = this.pieceMap2.get(type).getImage();
-            
+
             g.drawImage(ico, pieceX, pieceY, pieceSize, pieceSize, this);
 
         } else {
@@ -212,12 +214,12 @@ public class StaticGameBoard extends GameBoardUI {
           g.setColor(Color.YELLOW);
         g.fillOval(x,y,size,size);
         g.drawOval(x,y,size,size);
-       
+
     }
 
     @Override
     public void addYellowedPanel(JsonNode arg0) {
-      
+
     }
 
     @Override
@@ -226,7 +228,7 @@ public class StaticGameBoard extends GameBoardUI {
     }
 
     @Override
-    public String getWinner() {
+    public String getWinnerName() {
        return this.game.getWinner().getName();
     }
 
@@ -236,18 +238,23 @@ public class StaticGameBoard extends GameBoardUI {
     }
 
     @Override
+    public Player getWinner() {
+        return this.game.getWinner();
+    }
+
+    @Override
     public void removeYellowed(int arg0, int arg1) {
-       
+
     }
 
     @Override
     public void setGameState(JsonNode arg0) {
-        
+
     }
 
     @Override
     public void setListener(UIListener arg0) {
-    
+
     }
 
     @Override
@@ -299,9 +306,9 @@ public class StaticGameBoard extends GameBoardUI {
     public void setPromotionChoices(String[] list) {
         this.listener.disabledBoard();
         String choice = (String) JOptionPane.showInputDialog(
-                this, 
-                "Pick one: ", 
-                "Promotion", 
+                this,
+                "Pick one: ",
+                "Promotion",
                 JOptionPane.QUESTION_MESSAGE,
                 null,
                 list,

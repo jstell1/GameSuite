@@ -228,9 +228,11 @@ public class GameGUI {
                 if(this.playerTurn == this.gameBoard.getTurn())
                     enableGUI();
                 setTurnLabel(this.gameBoard.getTurn());
-            } else {
-                String winner = this.gameBoard.getWinner();
+            } else if(this.gameBoard.getWinner() != null){
+                String winner = this.gameBoard.getWinnerName();
                 setGameOverLabel(winner + " is the winner");
+            } else {
+                setGameOverLabel("Draw");
             }
     }
 

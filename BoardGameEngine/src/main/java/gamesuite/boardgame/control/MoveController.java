@@ -197,11 +197,11 @@ public class MoveController {
     }
 
     public boolean endCheck(JsonNode move) {
-        boolean success = true;
+        boolean success1 = true;
         for(Action act : endChecks) {
             List<Constraint> constraints = act.getConstraints();
             List<Effect> effects = act.getEffects();
-
+            boolean success = true;
             
             for(Constraint constraint : constraints) {
 
@@ -219,6 +219,6 @@ public class MoveController {
             }
 
         }
-        return success;
+        return success1;
     }
 }
