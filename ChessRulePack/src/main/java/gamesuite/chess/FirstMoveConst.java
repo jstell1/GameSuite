@@ -46,8 +46,8 @@ public class FirstMoveConst extends Constraint implements Updatable {
 
         BoardGamePiece start = this.board.getBoardPos(sX, sY).getPiece();
 
-        if(start == null || !start.getType().equals("P")) {
-            return true;
+        if(start == null) {
+            return false;
         }
 
         int turnFactor = this.gameState.getTurnFactor();
@@ -62,7 +62,7 @@ public class FirstMoveConst extends Constraint implements Updatable {
             return false;
         }
         
-        tmpX = sX - 1 * turnFactor;
+        tmpX = eX + turnFactor;
         BoardGamePiece inFront = this.board.getBoardPos(tmpX, sY).getPiece();
 
         if(inFront != null) {

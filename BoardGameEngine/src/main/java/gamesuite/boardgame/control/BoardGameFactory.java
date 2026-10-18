@@ -325,6 +325,7 @@ public class BoardGameFactory extends GameManagerFactory {
             Constraint c = this.constraints.get(name);
             c.setGameManager(gm);
             m.put(name, (Updatable)this.constraints.get(name));
+            gm.addUpdatables(m);
         }
 
        

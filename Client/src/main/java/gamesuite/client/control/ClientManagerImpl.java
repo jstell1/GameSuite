@@ -271,6 +271,7 @@ System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSo
                             } 
                             break;
                         case "requestPromoteChoice":
+                            System.out.println("recieved choices");
                             JsonNode choices = payload.get("choices");
                             try {
                                 String[] list = mapper.treeToValue(choices, String[].class);
@@ -524,17 +525,22 @@ System.out.println("core: " + PluginLoader.class.getProtectionDomain().getCodeSo
             payload.put("gameId", this.gameId);
             payload.put("choice", choice);
             ObjectNode outer = mapper.createObjectNode().set(msgType, payload);
+            System.out.println(outer);
             String str = null;
             try {
                 str = mapper.writeValueAsString(outer);
                 
                 
             } catch (JsonProcessingException e) {
+                System.out.println("NOOOOO!!!!! NOT IN HERE!!!! AAAQAH");
                 e.printStackTrace();
                 throw new IllegalArgumentException("problem writing move message");
                 
             }
+            System.out.println(str);
             TextMessage msg = new TextMessage(str);
+            System.out.println(msg.toString());
+            System.out.println(msg);
             try {
                 session.sendMessage(msg);
             } catch (IOException e) {

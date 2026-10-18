@@ -37,7 +37,7 @@ public class StaticGameBoard extends GameBoardUI {
     private final int dotSize = 4;
     private final int pieceSize = 70;
     //offset for the line width
-    private final int offs = 4;
+    private final int offs = 3;
     private final int squareLen = 82;
     private final int boardSize = 8;
     private final int pieceXOffs = 3;

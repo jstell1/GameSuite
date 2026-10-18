@@ -2,9 +2,6 @@
 package gamesuite.server.control;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +17,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.PromoteRequester;
@@ -36,6 +32,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
     @Autowired
     public WebSocketMessageHandler(ServerGameRepo gmRepo) {
         this.gmRepo = gmRepo;
+        this.gmRepo.setPromoteRequester(this);
 
     }
 
@@ -232,7 +229,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
     }
 
     private void sendPromotion(WebSocketSession session, ObjectNode payload) {
-        String type = payload.get("type").asText();
+        String type = payload.get("choice").asText();
         GameManager gm = this.gmRepo.getGM(payload.get("gameId").asText());
 
         synchronized(gm) {
@@ -503,11 +500,26 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
         ObjectMapper mapper = new ObjectMapper();
         String msgType = "requestPromoteChoice";
         String id = choices.get("id").asText();
-        choices = ((ObjectNode)choices).remove("id");
+        ((ObjectNode)choices).remove("id");
         ObjectNode respPayload = (ObjectNode)choices;
-
         sendMessage(msgType, (ObjectNode)respPayload, this.webSocketSessions.get(id));
 
+    }
+
+    @Override
+    public void sendUpdate(JsonNode update) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String msgType = "stateUpdateResponse";
+        JsonNode tmp = mapper.createObjectNode();
+        ObjectNode outer = mapper.createObjectNode().set(msgType, update);
+        String gameId = update.get("gameId").asText();
+
+
+        String str = mapper.writeValueAsString(outer);
+        TextMessage msg = new TextMessage(str);
+        List<String> sessionList = this.gmRepo.getGameSessions(gameId);
+        for(String user : sessionList)
+            this.webSocketSessions.get(user).sendMessage(msg);
     }
 
     private void sendMessage(String msgType, ObjectNode payload, WebSocketSession session) {

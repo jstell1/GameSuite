@@ -1,5 +1,6 @@
 package gamesuite.core.control;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.Move;
 import gamesuite.core.model.Player;
+import gamesuite.core.model.PromoteRequester;
 
 public interface GameManager {
 
@@ -34,6 +36,8 @@ public interface GameManager {
     public List<String> getUserIdList();
     public int getNumMappedPlayers();
     public String getUI();
-	public void sendPromotionChoice(String type) throws JsonProcessingException, IllegalArgumentException, Exception;
-    void sendPromotionRequest(JsonNode move, JsonNode choices);
+	public void sendPromotionChoice(String type) throws Exception;
+    public void sendPromotionRequest(JsonNode move, JsonNode choices);
+    public void setPromoteRequester(PromoteRequester requester);
+    public void setGameId(String gameId);
 }

@@ -97,8 +97,13 @@ public class ChessEndRowConst extends Constraint implements Updatable {
             ObjectNode choices = mapper.createObjectNode();
 
             String[] ch = {"Q", "R", "B", "N"};
-            choices.set("choices",mapper.valueToTree(ch));
-            this.topGm.sendPromotionRequest(move, choices);
+            ArrayNode arr = mapper.createArrayNode();
+
+            for(String c : ch) {
+                arr.add(c);
+            }
+            //choices.set("choices",arr);
+            this.topGm.sendPromotionRequest(move, arr);
 
         }
 

@@ -85,8 +85,9 @@ public class ServerGameRepo implements PromoteRequester {
         } else {
             gm = gmFact.createGame(p1, sessionId, null);
         }
-        
+        gm.setPromoteRequester(this);
         String gameId = UUID.randomUUID().toString();
+        gm.setGameId(gameId);
         this.games.put(gameId, gm);
 
         
@@ -247,5 +248,10 @@ public class ServerGameRepo implements PromoteRequester {
     @Override
     public void requestPromoteChoice(JsonNode choices) {
         this.requester.requestPromoteChoice(choices);
+    }
+
+    @Override
+    public void sendUpdate(JsonNode update) throws IOException {
+        this.requester.sendUpdate(update);
     }
 }

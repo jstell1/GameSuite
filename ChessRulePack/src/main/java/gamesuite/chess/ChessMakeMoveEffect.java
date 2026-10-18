@@ -108,6 +108,11 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
 
             }
 
+            if(type.equals("P")) {
+                Updatable updatee = this.updatees.get("firstMove");
+                updatee.update(vectNode);
+            }
+
             Updatable updatee = this.updatees.get("checkEnPassant");
             updatee.update(move);
                 

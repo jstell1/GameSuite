@@ -1,5 +1,6 @@
 package gamesuite.boardgame.control;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class BoardGameManager implements GameManager, Updater {
     private PromoteRequester requester;
     private Map<String,Updatable> updatees;
     private JsonNode move;
+    private String gameId;
 
     
     public BoardGameManager(GameBoardImpl board, BoardGameState game, MoveController moveController) {
@@ -68,6 +70,11 @@ public class BoardGameManager implements GameManager, Updater {
 
     public void setPromoteRequester(PromoteRequester requester) {
         this.requester = requester;
+    }
+
+    @Override
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 
     @Override 
@@ -271,20 +278,22 @@ public class BoardGameManager implements GameManager, Updater {
         this.move = move;
         this.override = true;
         int turn = this.game.getTurn();
-        String sessionId = this.sessionPlayerMap.get(turn);
-        ((ObjectNode)choices).put("id", sessionId);
-
-
-        this.requester.requestPromoteChoice(choices);
+        String sessionId = this.sessionPlayerMap.get(turn - 1);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("id", sessionId);
+        node.set("choices", choices);
+        System.out.println(node);
+        this.requester.requestPromoteChoice(node);
     }
 
     @Override
     public void sendPromotionChoice(String type) throws Exception {
-        Updatable u = this.updatees.get("chessPromoteEffect");
+        Updatable u = this.updatees.get("chessEndRow");
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.createObjectNode().put("type", type);
         int turn = this.game.getTurn();
-        String sessionId = this.sessionPlayerMap.get(turn);
+        String sessionId = this.sessionPlayerMap.get(turn - 1);
         u.update(node);
         this.override = false;
         BoardGameMove move = new BoardGameMove(0, 0, this.move.get("endX").asInt(), this.move.get("endY").asInt());
@@ -292,6 +301,9 @@ public class BoardGameManager implements GameManager, Updater {
         m.put("promote", type);
         this.move = null;
         sendMove(m, sessionId);
+        ObjectNode n = mapper.createObjectNode().put("gameId", this.gameId);
+        n.set("gameState", getGameStateJson());
+        this.requester.sendUpdate(n);
     }
 
     @Override
