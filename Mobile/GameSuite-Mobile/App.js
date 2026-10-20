@@ -57,15 +57,16 @@ export default function App() {
   const [ gameTurn, setGameTurn ] = useState("");
   const [ gameBoard, setGameBoard ] = useState(null);
   const [gameChoice, setGameChoice ] = useState("");
+  const gameGroup = useRef(new Map());
   //const gameBoard = useState(null);
 
   //console.log(currGameId);
   async function getSchema() {
-    //console.log("in getSchema")
+    console.log("in getSchema")
     const resp = await fetch(`${API_HOST}/schema`);
-    //console.log(resp.text);
+    console.log(resp.text);
     const schema = await resp.json();
-    //console.log(schema);
+    console.log(schema);
     validate.current = ajv.current.compile(schema);
   }
 
@@ -76,15 +77,15 @@ export default function App() {
         ws.current = new WebSocket(`${WS_HOST}`);
     
         ws.current.onopen = () => {
-          //console.log("WebSocket connected");
+          console.log("WebSocket connected");
           resolve(ws.current);
         };
     
         ws.current.onmessage = e => {
           
-          //console.log(e.data);
+          console.log(e.data);
           const data = JSON.parse(e.data);
-            //console.log("WS Message:", data);
+            console.log("WS Message:", data);
           const valid = validate.current(data);
     
           if (!valid) {
@@ -94,18 +95,18 @@ export default function App() {
               }
             }
             ws.current.send(JSON.stringify(msg));
-            //console.log(validate.current.errors);
+            console.log(validate.current.errors);
             return;
           };
     
           let type = Object.keys(data)[0];
           let payload = data[type];
-          //console.log(payload);
+          console.log(payload);
     
           switch(type) {
             case "sessionConnectedResponse":
                 sessionId.current = payload.sessionId;
-                //console.log(sessionId.current);
+                console.log(sessionId.current);
                 break;
             case "gameCreatedResponse":
                 setCurrGameId(payload.gameId);
@@ -121,11 +122,11 @@ export default function App() {
               setCurrGameId(payload.gameId);
               
               if(playerTurn.current === 0) {
-                //console.log("setting player turn to 2");
+                console.log("setting player turn to 2");
                 playerTurn.current = 2;
                 //name = joinName;
               }
-              //console.log(payload.gameState.turn);
+              console.log(payload.gameState.turn);
               setGameTurn(`Player ${payload.gameState.turn}'s turn`);
               //turnNum = payload.gameState.turn;
               //id = payload.gameId;
@@ -144,8 +145,8 @@ export default function App() {
               break;
             case "stateUpdateResponse":
               setGameTurn(`Player ${payload.gameState.turn}'s turn`);
-              //console.log("new turn: " + payload.gameState.turn);
-              //console.log("getting update");
+              console.log("new turn: " + payload.gameState.turn);
+              console.log("getting update");
               let turnNum = payload.gameState.turn;
               
               if(payload.gameState.winner == null) {
@@ -200,6 +201,7 @@ export default function App() {
                                   resetSocket, sessionId,
                                   gameBoard, setGameBoard,
                                   gameChoice, setGameChoice,
+                                    gameGroup
                                 }}>
       <NavigationContainer>
         <Stack.Navigator

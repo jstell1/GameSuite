@@ -30,17 +30,18 @@ export default function ActiveGamesScreen({navigation, route}) {
     const { game, setGame } = useContext(GameContext);
     const { resetSocket } = useContext(GameContext);
     const { sessionId } = useContext(GameContext);
+    const { gameGroup } = useContext(GameContext);
 
     useEffect(() => {getGames()}, [gameChoice]);
 
     const getGames = async () => {
          if(gameChoice === null) return;
-         //console.log("getting list");
+         console.log("getting list");
         fetch(gamesListURI + '/' + gameChoice)
           .then(resp => resp.json())
           .then(data =>
             {
-           //   console.log(data);
+              console.log(data);
               if(data)
                 setGamesList(data);
             }
@@ -65,10 +66,10 @@ export default function ActiveGamesScreen({navigation, route}) {
             } catch (err) {
                 console.log("cleanup error:", err);
             }
-  });
+      });
 
-  return unsubscribe;
-}, [navigation]);
+      return unsubscribe;
+    }, [navigation]);
 
     useEffect(() => {
         if(!gameBoard) return;
@@ -84,7 +85,8 @@ export default function ActiveGamesScreen({navigation, route}) {
 
       let msg = {
         "createGameRequest": {
-            "game": gameChoice,
+            "game": gameGroup.current.get(gameChoice),
+            "subGame": gameChoice,
             "name": createName
         }
       }

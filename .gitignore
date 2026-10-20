@@ -2,13 +2,14 @@
 .gradle/
 .vscode/
 .idea/
+android/
 # Ignore Gradle build output directory
 build/
 bin/
 *.class
 *.log
 
-
+Server/src/main/resources/static/favicon.ico
 node_modules/
 
 # Expo/React Native cache

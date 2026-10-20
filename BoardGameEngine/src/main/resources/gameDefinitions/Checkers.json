@@ -2,7 +2,7 @@
 
     "game" : "Checkers",
     "rulePacks" : ["BaseRulePack.jar"],
-    "ui": "CheckersGameBoardPanel",
+    "ui": "GameBoardPanel",
     "validMove" : "validMove",
     "validAttack" : "validAttack",
     "turnControl" : {

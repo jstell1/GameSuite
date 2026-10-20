@@ -20,19 +20,32 @@ export default function GamesScreen({navigation}) {
   const [gamesList, setGamesList] = useState([]);
   const [ selectedIndex, setSelectedIndex ] = useState(null);
   const { setGameChoice } = useContext(GameContext);
+  const { gameGroup } = useContext(GameContext);
   
   useEffect(() => {getGames()}, []);
 
   const getGames = async () => {
-    //console.log("getting the games list");
-    //console.log(gamesListURI);
+    console.log("getting the games list");
+    console.log(gamesListURI);
      fetch(gamesListURI)
       .then(resp => resp.json())
       .then(data =>
         {
-      //    console.log(data);
-          if(data)
-            setGamesList(data);
+          console.log(data);
+          var list = [];
+          Object.entries(data).forEach(([group, games]) => {
+              if(games === null || games.length === 0) {
+                  list.push(group);
+                  gameGroup.current.set(group, null);
+              } else {
+                  games.forEach((game) => {
+                      list.push(game);
+                      gameGroup.current.set(game, group);
+                  });
+              }
+          });
+          console.log(gameGroup.toString());
+            setGamesList(list);
         }
       );
   }
