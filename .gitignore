@@ -8,10 +8,9 @@ build/
 bin/
 *.class
 *.log
-
+.env
 Server/src/main/resources/static/favicon.ico
 node_modules/
-
 # Expo/React Native cache
 .expo/
 .expo-shared/

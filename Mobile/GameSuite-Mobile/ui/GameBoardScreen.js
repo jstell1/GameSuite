@@ -28,18 +28,18 @@ export default function GameBoardScreen({navigation, route}) {
 
   useEffect(() => {
     if(!game) return;
-    //console.log("curr game turn: " + game.turn);
+    console.log("curr game turn: " + game.turn);
 
     if(game.turn === playerTurn.current) {
-      //console.log("my turn");
+      console.log("my turn");
       setIsClickable(true);
     }
   }, [playerTurn, game]);
 
   useEffect(() => {
-    //console.log(gameBoard);
+    console.log(gameBoard);
     if(!gameBoard) return;
-    //console.log("not supposed to be here if null");
+    console.log("not supposed to be here if null");
     setBoard(() => initBoardData(gameBoard));
   }, [gameBoard]);
 
@@ -79,7 +79,7 @@ export default function GameBoardScreen({navigation, route}) {
     changedPos.forEach((pos) => {
       if(pos.piece !== null) {
         let color;
-        if(pos.piece.name === "R") 
+        if(pos.piece.team === "R")
           color = "red";
         else
           color = "black"
@@ -99,7 +99,7 @@ export default function GameBoardScreen({navigation, route}) {
       for (let col = 0; col < 8; col++) {
         let piece = null;
         let tmp = gameBoard[row][col]["piece"];
-        let name = tmp != null ? tmp["name"] : null;
+        let name = tmp != null ? tmp["team"] : null;
 
         if(name != null && name === "B")
           piece = { color: "black", type: "C" };

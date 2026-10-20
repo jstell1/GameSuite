@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 export const GameContext = createContext({});
 
 // LAN IP of your PC
-const MOBILE_IP = "192.168.0.43:8080";
+const MOBILE_IP = process.env.EXPO_PUBLIC_SERVER_IP;
 
 /*
 Determine protocol
