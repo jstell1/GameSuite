@@ -5,13 +5,13 @@ import {
   View, Button,
   Pressable, Dimensions,
   Platform } from 'react-native';
-import { GameContext } from '../Global';
+import { GameContext } from '../../Global';
 
 const { width } = Dimensions.get('window');
 const BOARD_SIZE = Platform.OS === "web" ? Math.min(width * 0.8, 480) : width;
 const squareSize = BOARD_SIZE / 8;
 
-export default function GameBoardScreen({navigation, route}) {
+export default function GameBoardPanel({navigation, route}) {
   const {gameBoard , setGameBoard} = useContext(GameContext);
   const { resetSocket} = useContext(GameContext);
   const [board,setBoard] = useState(null); //() => initBoardData(gameBoard));

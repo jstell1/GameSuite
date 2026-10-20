@@ -12,12 +12,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ajv from 'ajv';
-import GameBoardScreen from './ui/GameBoardScreen';
+import GameBoardRegistry from './ui/GameBoard/GameBoardPanel';
 import HomeScreen from './ui/HomeScreen';
 import { GameContext, API_HOST, WS_HOST, gamesListURI } from './Global';
 import GamesScreen from './ui/GamesScreen';
 import ActiveGamesScreen from './ui/ActiveGamesScreen';
-
 
 const listeners = {};
 const Stack = createNativeStackNavigator();
@@ -58,7 +57,9 @@ export default function App() {
   const [ gameBoard, setGameBoard ] = useState(null);
   const [gameChoice, setGameChoice ] = useState("");
   const gameGroup = useRef(new Map());
+  const [gameUI, setGameUI] = useState("");
   //const gameBoard = useState(null);
+
 
   //console.log(currGameId);
   async function getSchema() {
@@ -137,6 +138,7 @@ export default function App() {
                 setIsClickable(true);
               }
               setGame(payload.gameState);
+              setGameUI(payload.ui);
               setGameBoard(payload.board);
               
               // navigation.navigate("GameBoard",
@@ -187,8 +189,6 @@ export default function App() {
     getSchema();//resetSocket();//getSchema().then(() => connectWebSocket());
   }, []);
 
- 
-
   return (
     <GameContext.Provider value={{ ws, playerTurn,
                                   currGameId,setCurrGameId, 
@@ -201,7 +201,8 @@ export default function App() {
                                   resetSocket, sessionId,
                                   gameBoard, setGameBoard,
                                   gameChoice, setGameChoice,
-                                    gameGroup
+                                    gameUI, setGameUI,
+                                  gameGroup
                                 }}>
       <NavigationContainer>
         <Stack.Navigator
@@ -212,7 +213,7 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="GamesScreen" component={GamesScreen} />
           <Stack.Screen name="ActiveGamesScreen" component={ActiveGamesScreen} />
-          <Stack.Screen name="GameBoard" component={GameBoardScreen} />
+          <Stack.Screen name="GameBoardRegistry" component={GameBoardRegistry} />
         </Stack.Navigator>
       </NavigationContainer>
     </GameContext.Provider>

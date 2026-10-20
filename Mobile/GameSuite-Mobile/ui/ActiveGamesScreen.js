@@ -31,6 +31,7 @@ export default function ActiveGamesScreen({navigation, route}) {
     const { resetSocket } = useContext(GameContext);
     const { sessionId } = useContext(GameContext);
     const { gameGroup } = useContext(GameContext);
+    const { gameUI } = useContext(GameContext);
 
     useEffect(() => {getGames()}, [gameChoice]);
 
@@ -72,9 +73,11 @@ export default function ActiveGamesScreen({navigation, route}) {
     }, [navigation]);
 
     useEffect(() => {
-        if(!gameBoard) return;
-        navigation.navigate("GameBoard");
-    }, [gameBoard, navigation]);
+        console.log(gameUI);
+        if(gameUI === "") return;
+        console.log("are we here?")
+        navigation.navigate("GameBoardRegistry");
+    }, [gameUI, navigation]);
     
     const createGame = async () => {
       if(!createName) { Alert.alert("Must have name!"); return; }
