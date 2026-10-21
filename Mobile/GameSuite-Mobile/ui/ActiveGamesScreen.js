@@ -14,7 +14,7 @@ import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GameContext, API_HOST, WS_HOST, gamesListURI } from '../Global';
 import { FlatList } from 'react-native-web';
-
+import {registry} from '../App';
 
 
 
@@ -75,8 +75,8 @@ export default function ActiveGamesScreen({navigation, route}) {
     useEffect(() => {
         console.log(gameUI);
         if(gameUI === "") return;
-        console.log("are we here?")
-        navigation.navigate("GameBoardRegistry");
+       console.log("are we here?")
+        navigation.navigate(gameUI);
     }, [gameUI, navigation]);
     
     const createGame = async () => {

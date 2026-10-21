@@ -168,7 +168,8 @@ tasks.register('masterClean') {
         // Items to delete
         def targets = [
                 "_expo",
-                "assets",
+                "assets/node_modules",
+                "favicon.ico",
                 "index.html",
                 "metadata.json"
         ]

@@ -1,0 +1,24 @@
+{
+
+    "board": "assets/CheckersStaticBoard/board.png",
+    "team1": [
+        {
+            "name": "C",
+            "path": "assets/CheckersStaticBoard/black.png"
+        },
+        {
+            "name": "K",
+            "path": "assets/CheckersStaticBoard/black_king.png"
+        }
+    ],
+    "team2": [
+        {
+            "name": "C",
+            "path": "assets/CheckersStaticBoard/red.png"
+        },
+        {
+            "name": "K",
+            "path": "assets/CheckersStaticBoard/red_king.png"
+        }
+    ]
+}

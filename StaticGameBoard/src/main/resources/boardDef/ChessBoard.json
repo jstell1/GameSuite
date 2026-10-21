@@ -1,56 +1,56 @@
 {
 
-    "board": "images/ChessBoard/board.png",
+    "board": "assets/ChessBoard/board.png",
     "team1": [
         {
             "name": "P",
-            "path": "images/ChessBoard/white_pawn.png"
+            "path": "assets/ChessBoard/white_pawn.png"
         },
         {
             "name": "K",
-            "path": "images/ChessBoard/white_king.png"
+            "path": "assets/ChessBoard/white_king.png"
         },
         {
             "name": "Q",
-            "path": "images/ChessBoard/white_queen.png"
+            "path": "assets/ChessBoard/white_queen.png"
         },
         {
             "name": "B",
-            "path": "images/ChessBoard/white_bishop.png"
+            "path": "assets/ChessBoard/white_bishop.png"
         },
         {
             "name": "N",
-            "path": "images/ChessBoard/white_knight.png"
+            "path": "assets/ChessBoard/white_knight.png"
         },
         {
             "name": "R",
-            "path": "images/ChessBoard/white_rook.png"
+            "path": "assets/ChessBoard/white_rook.png"
         }
     ],
     "team2": [
         {
             "name": "P",
-            "path": "images/ChessBoard/black_pawn.png"
+            "path": "assets/ChessBoard/black_pawn.png"
         },
         {
             "name": "K",
-            "path": "images/ChessBoard/black_king.png"
+            "path": "assets/ChessBoard/black_king.png"
         },
         {
             "name": "Q",
-            "path": "images/ChessBoard/black_queen.png"
+            "path": "assets/ChessBoard/black_queen.png"
         },
         {
             "name": "B",
-            "path": "images/ChessBoard/black_bishop.png"
+            "path": "assets/ChessBoard/black_bishop.png"
         },
         {
             "name": "N",
-            "path": "images/ChessBoard/black_knight.png"
+            "path": "assets/ChessBoard/black_knight.png"
         },
         {
             "name": "R",
-            "path": "images/ChessBoard/black_rook.png"
+            "path": "assets/ChessBoard/black_rook.png"
         }
     ]
 }

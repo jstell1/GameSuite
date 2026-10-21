@@ -12,7 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ajv from 'ajv';
-import GameBoardRegistry from './ui/GameBoard/GameBoardPanel';
+import GameBoardPanel from './ui/GameBoard/GameBoardPanel';
+import StaticGameBoard from './ui/GameBoard/StaticGameBoard';
 import HomeScreen from './ui/HomeScreen';
 import { GameContext, API_HOST, WS_HOST, gamesListURI } from './Global';
 import GamesScreen from './ui/GamesScreen';
@@ -40,6 +41,7 @@ export function publish(eventType, data) {
   listeners[eventType].forEach(cb => cb(data));
 }
 
+export const registry = { GameBoardPanel, StaticGameBoard }
 export default function App() {
 
   const ajv = useRef(new Ajv());
@@ -58,6 +60,7 @@ export default function App() {
   const [gameChoice, setGameChoice ] = useState("");
   const gameGroup = useRef(new Map());
   const [gameUI, setGameUI] = useState("");
+  const [teamNames, setTeamNames] = useState([]);
   //const gameBoard = useState(null);
 
 
@@ -119,7 +122,7 @@ export default function App() {
                 setGame(payload.gameState);
                 playerTurn.current = 1;
                 break;
-            case "gameReadyResponse":
+              case "gameReadyResponse":
               setCurrGameId(payload.gameId);
               
               if(playerTurn.current === 0) {
@@ -137,6 +140,11 @@ export default function App() {
               if(playerTurn.current === payload.gameState.turn) {
                 setIsClickable(true);
               }
+              console.log(payload.gameState.teamNames);
+
+
+
+              setTeamNames(payload.gameState.teamNames);
               setGame(payload.gameState);
               setGameUI(payload.ui);
               setGameBoard(payload.board);
@@ -202,7 +210,8 @@ export default function App() {
                                   gameBoard, setGameBoard,
                                   gameChoice, setGameChoice,
                                     gameUI, setGameUI,
-                                  gameGroup
+                                  gameGroup,
+                                    teamNames, setTeamNames
                                 }}>
       <NavigationContainer>
         <Stack.Navigator
@@ -213,7 +222,9 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="GamesScreen" component={GamesScreen} />
           <Stack.Screen name="ActiveGamesScreen" component={ActiveGamesScreen} />
-          <Stack.Screen name="GameBoardRegistry" component={GameBoardRegistry} />
+          {Object.entries(registry).map(([name, component]) => (
+              <Stack.Screen key={name} name={name} component={component}/>
+          ))}
         </Stack.Navigator>
       </NavigationContainer>
     </GameContext.Provider>

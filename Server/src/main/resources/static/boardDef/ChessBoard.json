@@ -1,0 +1,56 @@
+{
+
+    "board": "assets/ChessBoard/board.png",
+    "team1": [
+        {
+            "name": "P",
+            "path": "assets/ChessBoard/white_pawn.png"
+        },
+        {
+            "name": "K",
+            "path": "assets/ChessBoard/white_king.png"
+        },
+        {
+            "name": "Q",
+            "path": "assets/ChessBoard/white_queen.png"
+        },
+        {
+            "name": "B",
+            "path": "assets/ChessBoard/white_bishop.png"
+        },
+        {
+            "name": "N",
+            "path": "assets/ChessBoard/white_knight.png"
+        },
+        {
+            "name": "R",
+            "path": "assets/ChessBoard/white_rook.png"
+        }
+    ],
+    "team2": [
+        {
+            "name": "P",
+            "path": "assets/ChessBoard/black_pawn.png"
+        },
+        {
+            "name": "K",
+            "path": "assets/ChessBoard/black_king.png"
+        },
+        {
+            "name": "Q",
+            "path": "assets/ChessBoard/black_queen.png"
+        },
+        {
+            "name": "B",
+            "path": "assets/ChessBoard/black_bishop.png"
+        },
+        {
+            "name": "N",
+            "path": "assets/ChessBoard/black_knight.png"
+        },
+        {
+            "name": "R",
+            "path": "assets/ChessBoard/black_rook.png"
+        }
+    ]
+}

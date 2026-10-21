@@ -23,6 +23,5 @@ Mobile/GameSuite-Mobile/config.json
 plugins/
 **/plugins/
 Server/src/main/resources/static/_expo/
-Server/src/main/resources/static/assets/
 Server/src/main/resources/static/index.html
 Server/src/main/resources/static/metadata.json
