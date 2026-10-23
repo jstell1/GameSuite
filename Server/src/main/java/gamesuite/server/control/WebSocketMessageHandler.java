@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -28,6 +31,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
 
     private Map<String, WebSocketSession> webSocketSessions = new ConcurrentHashMap<>();
     private ServerGameRepo gmRepo;
+    private static final Logger log = LoggerFactory.getLogger(WebSocketMessageHandler.class);
 
     @Autowired
     public WebSocketMessageHandler(ServerGameRepo gmRepo) {
@@ -54,53 +58,44 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
         synchronized(session) {
 
             super.afterConnectionEstablished(session);
-            System.out.println(session.getId() + " Connected");
+
             String msgType = "sessionConnectedResponse";
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode inner = mapper.createObjectNode();
             inner.put("sessionId", session.getId());
             webSocketSessions.put(session.getId(), session);
             sendMessage(msgType, inner, session);
-            System.out.println("Session connected: " + session.getId());
-            System.out.println("Active Sessions: " + webSocketSessions.size());
+            log.info("Websocket connected: session={} activeSessions={}", session.getId(), webSocketSessions.size());
         }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        System.out.println("CloseStatus: " + status.toString());
-        synchronized(session) {
 
+        synchronized(session) {
+            String id = session.getId();
             super.afterConnectionClosed(session, status);
-            System.out.println(session.getId() + " DisConnected");
             String gameId = null;
-                gameId = this.gmRepo.getUserSessionGame(session.getId());
+                gameId = this.gmRepo.getUserSessionGame(id);
 
                GameManager gm = this.gmRepo.getGM(gameId);
 
-            
             synchronized(gm) {
 
                 if(gm.getNumMappedPlayers() > 1) {
-                    GameManager game = this.gmRepo.removePlayer(session.getId());
-                    webSocketSessions.remove(session.getId());
+                    GameManager game = this.gmRepo.removePlayer(id);
+                    webSocketSessions.remove(id);
                     if(gm.gameOver()) {
                         notifyGameOver(gm.getGameStateJson(), gameId);
                     }
                 } else {
-                    webSocketSessions.remove(session.getId());
-                    this.gmRepo.removePlayer(session.getId());
+                    webSocketSessions.remove(id);
+                    this.gmRepo.removePlayer(id);
                     this.gmRepo.closeGame(gameId);
                 }
-
-
-
-
-                
             }
 
-                System.out.println("Active sessions: " + webSocketSessions.size());
-                System.out.println("NumGames: " + this.gmRepo.getNumGames());
+            log.info("Websocket session closed: session={} activeSessions={} numGames={}, closeStatus={}", id, webSocketSessions.size(), this.gmRepo.getNumGames(), status.toString());
             
         }
     }
@@ -108,7 +103,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
 
     public void notifyPlayerJoined(String gameId, String msg) throws IOException {
         List<String> userSessions = this.gmRepo.getGameSessions(gameId);
-        System.out.println(msg.length());
+        log.debug("Notifying of player joined: msgLength={}", msg.length());
         for (String sessionId : userSessions) {
         
                 WebSocketSession s = this.webSocketSessions.get(sessionId);
@@ -116,7 +111,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
         }
     }
 
-    public void notifyGameOver(JsonNode game, String gameId) {
+    public void notifyGameOver(JsonNode game, String gameId) throws IOException {
         
         GameManager gm = this.gmRepo.getGM(gameId);
         synchronized(gm) {
@@ -127,7 +122,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             inner.put("gameId", gameId);
             inner.set("gameState", game);
             outer = mapper.createObjectNode().set(msgType, inner);
-            try {
+          //  try {
                 String str = mapper.writeValueAsString(outer);
                 TextMessage msg = new TextMessage(str);
         
@@ -135,20 +130,20 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     
                     WebSocketSession s = this.webSocketSessions.get(sessionId);
                     
-                    if(s.isOpen()) {
-                        try {
+                 //   if(s.isOpen()) {
+                       // try {
                             
                             s.sendMessage(msg);
-                        } catch (Exception e) {
-                            System.out.println("no socket connection");
-                        }
-                    }
+                    //    } catch (Exception e) {
+                           // System.out.println("no socket connection");
+                    //    }
+                //    }
                     
                 }
-            } catch (Exception e) {
+       //     } catch (Exception e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+         //       e.printStackTrace();
+         //   }
         }
     }
 
@@ -166,6 +161,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 ObjectNode inner = mapper.createObjectNode();
                 inner.put("message", "issue with socket");
                 sendMessage("badRequestError", inner, session);
+                log.error("Issue with socket: session={}",session.getId(), e);
                 return;
 
             }
@@ -184,6 +180,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     ObjectNode inner = mapper.createObjectNode();
                     inner.put("message", "message is not correctly formed");
                     sendMessage("badRequestError", inner, session);
+                    log.warn("Invalid json sent: session={} networkMsg={}", session.getId(), netWorkMsg);
                     return;
                 } 
             } catch (JsonProcessingException e) {
@@ -192,6 +189,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 ObjectNode inner = mapper.createObjectNode();
                 inner.put("message", "json processing failed: invalid json");
                 sendMessage("badRequestError", inner, session);
+                log.error("error processing json message: session={}", session.getId(), e);
                 return;
             }
     
@@ -231,13 +229,13 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
     private void sendPromotion(WebSocketSession session, ObjectNode payload) {
         String type = payload.get("choice").asText();
         GameManager gm = this.gmRepo.getGM(payload.get("gameId").asText());
-
+        String id = session.getId();
         synchronized(gm) {
             try {
                 gm.sendPromotionChoice(type);
             } catch (JsonProcessingException | IllegalArgumentException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+             //   e.printStackTrace();
                 ObjectMapper mapper = new ObjectMapper();
                   mapper = new ObjectMapper();
                 String msgType = "serverError";
@@ -245,10 +243,10 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.put("message", "Error processing promotion choice");
                 sendMessage(msgType, respPayload, session);
-
+                log.error("Error processing promotion choice: session={}", id, e);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+             //   e.printStackTrace();
                 ObjectMapper mapper = new ObjectMapper();
                   mapper = new ObjectMapper();
                 String msgType = "serverError";
@@ -256,13 +254,14 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.put("message", "Error processing promotion choice");
                 sendMessage(msgType, respPayload, session);
+                log.error("Error processing promotion choice: session={}", id, e);
             }
         }
     } 
 
     private void sendActiveGamesList(WebSocketSession session, ObjectNode payload) {
         ObjectMapper mapper = new ObjectMapper();
-       // try {
+        String id = session.getId();
             String game = payload.get("game").asText();
 
             if(!this.gmRepo.validGame(game, game)) {
@@ -271,6 +270,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 ObjectNode respPayload = mapper.createObjectNode();
                 respPayload.put("message", "game does not exist");
                 sendMessage(msgType, respPayload, session);
+                log.warn("requesting join list for non-existing game: session={} gameChoice={}", id, game);
                 return;
             }
 
@@ -279,6 +279,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.set("gamesList", mapper.valueToTree(list));
             sendMessage(msgType, respPayload, session);
+            log.info("Sent joinable games list: session={} gameChoice={}", id, game);
     }
     
     private void sendGamesList(WebSocketSession session, ObjectNode payload) {
@@ -289,10 +290,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.set("games", mapper.valueToTree(list));
             sendMessage(msgType, respPayload, session);
+            log.info("Sent games list: session={}", session.getId());
     }
 
     private void createGame(WebSocketSession session, ObjectNode payload) {
-         System.out.println("recieved");
+         //System.out.println("recieved");
+        String id = session.getId();
         ObjectMapper mapper = new ObjectMapper();
         if(this.gmRepo.hasUserSession(session.getId())) {
             mapper = new ObjectMapper();
@@ -300,11 +303,11 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             ObjectNode inner = mapper.createObjectNode();
             inner.put("message", "This user session is already in a game");
             sendMessage(msgType, inner, session);
+            log.warn("Player already created game: session={}", id);
             return;
         }
 
-        
-        System.out.println("passed the check");
+
         String group = payload.get("game").asText();
         String gameNm = payload.get("subGame").asText();
         String name = payload.get("name").asText();
@@ -315,6 +318,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.put("message", "invalid game request");
             sendMessage(msgType, respPayload, session);
+            log.warn("Invalid game creation choice: session={} chosenGroup={} chosenGame={}", id, group, gameNm);
             return;
         }
         try {
@@ -329,33 +333,35 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             respPayload.set("gameState", game);
             
             sendMessage(msgType, respPayload, session);
-            System.out.println("sent");
+            log.info("Game created: session={} chosenGroup={} chosenGame={} gameId={} name={}", id, group, gameNm, gameId, name);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            //e.printStackTrace();
             mapper = new ObjectMapper();
             String msgType = "serverError";
             ObjectNode respPayload = mapper.createObjectNode();
             respPayload.put("message", "Error processing createGameRequest");
             sendMessage(msgType, respPayload, session);
+            log.error("Game creation error: session={} chosenGroup={} chosenGame={} name={}", id, group, gameNm, name, e);
         }
     }
 
     private void joinGame(WebSocketSession session, ObjectNode payload) {
         ObjectMapper mapper = new ObjectMapper();
-         if(this.gmRepo.hasUserSession(session.getId())) {
+        String id = session.getId();
+         if(this.gmRepo.hasUserSession(id)) {
             mapper = new ObjectMapper();
             String msgType = "gameNotJoinedError";
             JsonNode tmp = mapper.createObjectNode();
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.put("message", "This user session is already in a game");
             sendMessage(msgType, respPayload, session);
+            log.warn("Session already joined game: session={}", id);
             return;
         }
 
         String player = payload.get("name").asText();
         String gameId = payload.get("gameId").asText();
-        System.out.println(player + ",," + gameId);
         if(!gmRepo.containsGame(gameId)) {
             mapper = new ObjectMapper();
             String msgType = "gameNotJoinedError";
@@ -363,6 +369,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.put("message", "gameId does not exist");
             sendMessage(msgType, respPayload, session);
+            log.warn("Game does not exist: session={} gameId={}", id, gameId);
             return;
         }
 
@@ -379,24 +386,25 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.put("message", "game is full");
                 sendMessage(msgType, respPayload, session);
+                log.warn("Game is already full: session={} gameId={}", id, gameId);
                 return;
             }
 
             JsonNode boardJson = null;
-            try {
+          //  try {
                 
                 boardJson = this.gmRepo.joinGame(player, session.getId(), gameId);
                 
                 
-            } catch (Exception e) {
-                mapper = new ObjectMapper();
-                String msgType = "serverError";
-                JsonNode tmp = mapper.createObjectNode();
-                ObjectNode respPayload = tmp.deepCopy();
-                respPayload.put("message", "Error processing joinGameRequest");
-                sendMessage(msgType, respPayload, session);
-                return;
-            }
+          //  } catch (Exception e) {
+           //     mapper = new ObjectMapper();
+         //       String msgType = "serverError";
+         //       JsonNode tmp = mapper.createObjectNode();
+        //        ObjectNode respPayload = tmp.deepCopy();
+         //       respPayload.put("message", "Error processing joinGameRequest");
+         //       sendMessage(msgType, respPayload, session);
+         //       return;
+         //   }
             mapper = new ObjectMapper();
             JsonNode game = this.gmRepo.getGM(gameId).getGameStateJson();
             this.gmRepo.addWebSocketToGame(gameId, session.getId());
@@ -413,10 +421,17 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             try {
                 str = mapper.writeValueAsString(outer);
                 notifyPlayerJoined(gameId, str);
+                log.info("Game joined: session={} gameId={}", id, gameId);
             } catch (Exception e) {
                //  TODO: handle exception
-                e.printStackTrace();
-               
+               // e.printStackTrace();
+                mapper = new ObjectMapper();
+               msgType = "serverError";
+               tmp = mapper.createObjectNode();
+               respPayload = tmp.deepCopy();
+               respPayload.put("message", "Error processing json");
+               sendMessage(msgType, respPayload, session);
+               log.error("Json processing error after joining game: session={} faultJson={} gameId={}", id, outer, gameId, e);
             }
         }
     }
@@ -425,6 +440,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode move = (ObjectNode) payload.get("move");
         String gameId = payload.get("gameId").asText();
+        String id = session.getId();
 
         if(!this.gmRepo.containsGame(gameId)) {
             String msgType = "badRequestError";
@@ -432,6 +448,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             ObjectNode respPayload = tmp.deepCopy();
             respPayload.put("message", "game does not exist");
             sendMessage(msgType, respPayload, session);
+            log.warn("Game does not exist: session={} gameId={}", id, gameId);
             return;
         }
         GameManager gm = this.gmRepo.getGM(gameId);
@@ -446,6 +463,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     ObjectNode respPayload = tmp.deepCopy();
                     respPayload.put("message", "not in game or not your turn");
                     sendMessage(msgType, respPayload, session);
+                    log.warn("invalid move attempt. Not in game: session={}, gameId={}", id, gameId);
                     return;
                 }
     
@@ -455,6 +473,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     ObjectNode respPayload = tmp.deepCopy();
                     respPayload.put("message", "player 2 has not joined the game");
                     sendMessage(msgType, respPayload, session);
+                    log.warn("Game has not started yet. Awaiting second player: session={} gameId={}", id, gameId);
                     return;
                 }
                List<String> sessionList = this.gmRepo.getGameSessions(gameId);
@@ -483,15 +502,17 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 for(String user : sessionList)
                     this.webSocketSessions.get(user).sendMessage(msg);
 
+                log.debug("Move processed: session={} gameId={} msg={}", id, gameId, str);
             } catch (Exception e) {
                 // TODO: handle exception
-                e.printStackTrace();
+                //e.printStackTrace();
                     mapper = new ObjectMapper();
                 String msgType = "moveUpdateError";
                 JsonNode tmp = mapper.createObjectNode();
                 ObjectNode respPayload = tmp.deepCopy();
                 respPayload.put("message", "problem processing player move");
                 sendMessage(msgType, respPayload, session);
+                log.error("Move processing error: session={} gameId={} payload={}", id, gameId, payload, e);
             }
           
         }
@@ -535,9 +556,10 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
             try {
                 
                 session.sendMessage(new TextMessage("Server failed to build response message"));
+                log.error("Failure sending message: session={} payload={}", session.getId(), payload, e);
             } catch (Exception e2) {
                 // TODO: handle exception
-                System.out.println("Server is having issues with jsonParsing");
+                log.error("Socket failure: session={} payload={}", session.getId(), payload, e2);
             }
 
         } catch(IOException e) {
@@ -546,7 +568,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                 
             } catch (Exception e1) {
                 // TODO: handle exception
-                System.out.println("Server failure, could not close socket: " + e1.getMessage());
+                log.error("Socket failure: session={} payload={}", session.getId(), payload, e1);
             }
         }
     }

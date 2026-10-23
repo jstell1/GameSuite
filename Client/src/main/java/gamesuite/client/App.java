@@ -11,8 +11,11 @@ import gamesuite.client.test.MockClientManager;
 import gamesuite.client.view.GameGUI;
 //import gamesuite.client.view.TextGameCLI;
 import gamesuite.client.view.MainGUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class App {
+    private static final Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
 
@@ -68,7 +71,7 @@ public class App {
                 ///
             } catch (Exception e) {
                 // TODO: handle exception
-                e.printStackTrace();
+                log.error("problem starting the app", e);
             }
         }
 

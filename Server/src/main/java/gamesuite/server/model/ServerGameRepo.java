@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,19 +38,20 @@ public class ServerGameRepo implements PromoteRequester {
     //<gameName, List<gameId>>
     private final Map<String, List<String>> joinable = new ConcurrentHashMap<>();
 
-    PromoteRequester requester;
+    private static final Logger log = LoggerFactory.getLogger(ServerGameRepo.class);
+
+    private PromoteRequester requester;
     
     public ServerGameRepo() {
       
     
         this.loader = new PluginLoader("../plugins/");
     
-        try {
+      //  try {
             this.loader.loadAll();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new RuntimeException("issue loading plugins");
-        }
+       // } catch (IOException e) {
+        //    throw new RuntimeException("issue loading plugins");
+      //  }
         this.loader.loadAllRules();
         //this.loader.watchForChanges();
 
@@ -110,8 +114,7 @@ public class ServerGameRepo implements PromoteRequester {
             }
             this.joinable.get(joinName).add(gameId);
         
-            System.out.println("numGames: " + this.games.size());
-            System.out.println("numSessions: " + this.userSessions.size());
+            log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), this.joinable.size());
             }
             return gameId;
     }
@@ -138,9 +141,7 @@ public class ServerGameRepo implements PromoteRequester {
             this.userSessions.put(sessionId, gameId);
         }
 
-        System.out.println("numGames: " + this.games.size());
-        System.out.println("numSessions: " + this.userSessions.size());
-        System.out.println("gamePluginMap: " + this.gamePluginMap.size());
+        log.info("Added webSock to game: gameId={} sessionId={}", gameId, sessionId);
     }
 
     public Set<String> getGameUsers(String gameId) {
@@ -152,7 +153,7 @@ public class ServerGameRepo implements PromoteRequester {
 
     public int getNumGames() { return this.games.size(); }
 
-    public JsonNode joinGame(String player, String playerId, String gameId) throws Exception {
+    public JsonNode joinGame(String player, String playerId, String gameId) {
         
         GameManager gm = this.games.get(gameId);
         JsonNode node = null;
@@ -162,7 +163,7 @@ public class ServerGameRepo implements PromoteRequester {
             String gameName = this.gamePluginMap.get(gameId);
             
             this.joinable.get(gameName).remove(gameId);
-         
+            log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), this.joinable.size());
         }
         return node;
     }
@@ -219,9 +220,7 @@ public class ServerGameRepo implements PromoteRequester {
                     gm.quitGame(sessionId);
                     this.userSessions.remove(sessionId);
 
-                 System.out.println("numGames: " + this.games.size());
-                 System.out.println("numSessions: " + this.userSessions.size());
-                System.out.println("gamePluginMap: " + this.gamePluginMap.size());
+                 log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), this.joinable.size());
             }
         
         return gm;

@@ -16,6 +16,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +32,7 @@ public class PluginLoader {
     File[] jars;
     File[] uiJars;
     File[] rulePacks;
+    private static final Logger log = LoggerFactory.getLogger(PluginLoader.class);
 
     //this is for multi-game game engine jars that can have multiple game defs and rulePacks
     private final Map<String, ArrayList<String>> games = new HashMap<>();
@@ -64,87 +67,101 @@ public class PluginLoader {
     }
     
 
-    private void loadGameUIs(File jarFile) throws IOException {
-        URL jarUrl = jarFile.toURI().toURL();
+    private void loadGameUIs(File jarFile) {
+        URL jarUrl = null;
         String gameName = jarFile.getName();
+        try {
+            jarUrl = jarFile.toURI().toURL();
 
-        gameName = jarFile.getName().replaceFirst("\\.jar$", "");
 
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, resolveParent(jarFile));//this.getClass().getClassLoader());
+            gameName = jarFile.getName().replaceFirst("\\.jar$", "");
 
-        ServiceLoader<GameBoardFactory> serviceLoader = ServiceLoader.load(GameBoardFactory.class, classLoader);
-        Iterator<GameBoardFactory> iterator = serviceLoader.iterator();
+            URLClassLoader classLoader = new URLClassLoader(new URL[]{jarUrl}, resolveParent(jarFile));//this.getClass().getClassLoader());
 
-        if (!iterator.hasNext()) {
-            System.err.println("No GameBoardUI found in " + jarFile.getName());
-            return;
+            ServiceLoader<GameBoardFactory> serviceLoader = ServiceLoader.load(GameBoardFactory.class, classLoader);
+            Iterator<GameBoardFactory> iterator = serviceLoader.iterator();
+
+            if (!iterator.hasNext()) {
+               // System.err.println("No GameBoardUI found in " + jarFile.getName());
+                log.warn("Missing GameBoardUI in jar: gameName={}", gameName);
+                return;
+            }
+
+            GameBoardFactory temp = iterator.next();
+            Class<? extends GameBoardFactory> clazz = (Class<? extends GameBoardFactory>) temp.getClass();
+
+            this.gameBoards.put(gameName, clazz);
+            this.gameBoardClassLoaders.put(gameName, classLoader);
+
+            log.debug("Registered game plugin: gameName={}",gameName);
+        } catch (IOException e) {
+            log.error("Failed to load ui plugin: fileName={}", gameName, e);
         }
 
-        GameBoardFactory temp = iterator.next();
-        Class<? extends GameBoardFactory> clazz = (Class<? extends GameBoardFactory>) temp.getClass();
-
-        this.gameBoards.put(gameName, clazz);
-        this.gameBoardClassLoaders.put(gameName, classLoader);
-
-        System.out.println("Registered game plugin: " + gameName);
     }
 
-    public void loadAll() throws MalformedURLException, IOException {
+    public void loadAll() {
         this.jars = pluginDir.listFiles((dir, name) -> name.endsWith(".jar"));
-        if (this.jars == null) return;
+        if (this.jars == null) {
+            throw new IllegalStateException("this should not be null");
+        }
         for (File jar : this.jars) {
-
-
             loadPlugin(jar);
         }
     }
 
-     private void loadPlugin(File jarFile) throws MalformedURLException, IOException {
-        URL jarUrl = jarFile.toURI().toURL();
-        String gameName = jarFile.getName();
+     private void loadPlugin(File jarFile) {
 
-        gameName = jarFile.getName().replaceFirst("\\.jar$", "");
+         String gameName = jarFile.getName();
 
-        URLClassLoader classLoader = 
-            new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
+         gameName = jarFile.getName().replaceFirst("\\.jar$", "");
+         try{
+             URL jarUrl = jarFile.toURI().toURL();
 
-        ServiceLoader<GameManagerFactory> serviceLoader = 
-            ServiceLoader.load(GameManagerFactory.class, classLoader);
-        Iterator<GameManagerFactory> iterator = serviceLoader.iterator();
 
-        if (!iterator.hasNext()) {
-            System.err.println("No GameManager found in " + jarFile.getName());
-            return;
-        }
+             URLClassLoader classLoader =
+                     new URLClassLoader(new URL[]{jarUrl}, this.getClass().getClassLoader());
 
-        GameManagerFactory temp = iterator.next();
-        Class<? extends GameManagerFactory> clazz = (Class<? extends GameManagerFactory>) temp.getClass();
+             ServiceLoader<GameManagerFactory> serviceLoader =
+                     ServiceLoader.load(GameManagerFactory.class, classLoader);
+             Iterator<GameManagerFactory> iterator = serviceLoader.iterator();
 
-        gameClasses.put(gameName, clazz);
-        classLoaders.put(gameName, classLoader);
-        ArrayList<String> tmp = null;
+             if (!iterator.hasNext()) {
+                 log.warn("No GameManager found: jarFile={}", jarFile.getName());
+                 return;
+             }
 
-        if(temp.isMultiGame()) {  
-            File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
-            File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
+             GameManagerFactory temp = iterator.next();
+             Class<? extends GameManagerFactory> clazz = (Class<? extends GameManagerFactory>) temp.getClass();
 
-            tmp = new ArrayList<>();
-            for(File file : gameDefs) {
-                String game = file.getName().replaceFirst("\\.json$", "");
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode schema = mapper.readTree(file);
-                if(JsonSchemaValidator.isValidGameSchema(schema)) {
-                    this.gameDefs.put(game, schema);
-                    tmp.add(game);
-                } else {
-                    System.out.println("Schema failed validation: " + game);
-                }
-            }
-        } 
-           this.games.put(gameName, tmp);
-       
+             gameClasses.put(gameName, clazz);
+             classLoaders.put(gameName, classLoader);
+             ArrayList<String> tmp = null;
 
-        System.out.println("Registered game plugin: " + gameName);
+             if(temp.isMultiGame()) {
+                 File gamesDirect = new File(this.pluginDir + "/" + gameDefsPath + "/" + gameName);
+                 File[] gameDefs = gamesDirect.listFiles((dir, name) -> name.endsWith(".json"));
+
+                 tmp = new ArrayList<>();
+                 for(File file : gameDefs) {
+                     String game = file.getName().replaceFirst("\\.json$", "");
+                     ObjectMapper mapper = new ObjectMapper();
+                     JsonNode schema = mapper.readTree(file);
+                     if(JsonSchemaValidator.isValidGameSchema(schema)) {
+                         this.gameDefs.put(game, schema);
+                         tmp.add(game);
+                     } else {
+                         log.warn("Schema failed validation for multi-game: game={} gameGroup={}", game, gameName);
+                     }
+                 }
+             }
+             this.games.put(gameName, tmp);
+
+            log.debug("registered plugin: gameName={}", gameName);
+         } catch(IOException e) {
+             log.error("Failed to laod game plugin: gameName={}", gameName, e);
+         }
+
     }
 
     public Map<String, Constraint> loadConstraints(String packName) throws IOException {
@@ -241,13 +258,12 @@ public class PluginLoader {
                                                                          InvocationTargetException, NoSuchMethodException, 
                                                                          SecurityException, IllegalArgumentException
     {
-        System.out.println("IT IS HAPPENING HERE MAYBE?!?!");
+        log.debug("In createBoardFactory func: gameName={}", gameName);
 
         
         Class<? extends GameBoardFactory> clazz = this.gameBoards.get(gameName);
         if (clazz == null) {
-            System.out.println("NOT HERE!! SHOULD THROW!!!");
-          throw new IllegalArgumentException("Game not found: " + gameName);  
+          throw new IllegalArgumentException("Game not found: " + gameName);
         } 
   
             return clazz.getDeclaredConstructor().newInstance();

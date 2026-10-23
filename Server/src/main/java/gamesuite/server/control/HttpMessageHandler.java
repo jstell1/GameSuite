@@ -1,11 +1,13 @@
 package gamesuite.server.control;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +27,16 @@ public class HttpMessageHandler {
     private InputStream schemaStream;
     private JsonNode schemaRoot;
 
-    public HttpMessageHandler(ServerGameRepo gmRepo, WebSocketMessageHandler handler) {
+    public HttpMessageHandler(ServerGameRepo gmRepo, WebSocketMessageHandler handler) throws IOException {
         this.gmRepo = gmRepo;
         this.handler = handler;
         this.schemaStream = JsonSchemaValidator.class.getClassLoader().getResourceAsStream("schema.json");
         ObjectMapper mapper = new ObjectMapper();
-        try {
+        //try {
             this.schemaRoot = mapper.readTree(schemaStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+      //  } catch (Exception e) {
+      //      e.printStackTrace();
+      //  }
     }
 
     @GetMapping("/")
@@ -50,44 +52,45 @@ public class HttpMessageHandler {
     }
 
     @GetMapping("/schema")
-    public ResponseEntity<JsonNode> getSchema() {
+    public ResponseEntity<JsonNode> getSchema() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String str = null;
-        try {
+      //  try {
             
             str = mapper.writeValueAsString(this.schemaRoot);
-        } catch (Exception e) {}
+      //  } catch (Exception e) {}
+
         return new ResponseEntity<>(this.schemaRoot, HttpStatus.OK);
     }
 
     @GetMapping("/games")
     public ResponseEntity<JsonNode> getAllGames() {
-        try {
+       // try {
             
             ObjectMapper mapper = new ObjectMapper();
             JsonNode str = mapper.valueToTree(this.gmRepo.getGamesList());
             return new ResponseEntity<>(str, HttpStatus.OK);
-        } catch (Exception e) {
+      //  } catch (Exception e) {
             // TODO: handle exception
-            System.out.println("NOOOOOOOO!!!!");
-        }
-        return null;
+           // System.out.println("NOOOOOOOO!!!!");
+      //  }
+      //  return null;
     }
 
     @GetMapping("/games/{game}")
     public ResponseEntity<JsonNode> getGames(@PathVariable String game) {
 
-        try {
+       // try {
             ObjectMapper mapper = new ObjectMapper();
             String[] games = this.gmRepo.getJoinableGames(game);
             JsonNode n = mapper.valueToTree(games);
             System.out.println(n);
             return new ResponseEntity<>(n, HttpStatus.OK);
-        } catch (Exception e) {
+     //   } catch (Exception e) {
             // TODO: handle exception
-            System.out.println("Booooo!!!");
-        }
-        return null;
+      //      System.out.println("Booooo!!!");
+     //   }
+     //   return null;
     }
 
 
