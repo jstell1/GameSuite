@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gamesuite.core.control.GameManager;
 import gamesuite.core.model.PromoteRequester;
-import gamesuite.core.network.JsonSchemaValidator;
+import gamesuite.core.utils.JsonSchemaValidator;
 import gamesuite.server.model.ServerGameRepo;
 
 @Component

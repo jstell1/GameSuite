@@ -1,8 +1,8 @@
-package gamesuite.core.control;
+package gamesuite.core.utils;
 
+import gamesuite.core.control.GameManagerFactory;
 import gamesuite.core.model.rules.Constraint;
 import gamesuite.core.model.rules.Effect;
-import gamesuite.core.network.JsonSchemaValidator;
 import gamesuite.core.ui.GameBoardFactory;
 
 import java.io.File;

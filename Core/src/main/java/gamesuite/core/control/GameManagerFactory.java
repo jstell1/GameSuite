@@ -1,9 +1,9 @@
 package gamesuite.core.control;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import gamesuite.core.utils.PluginLoader;
 
 public abstract class GameManagerFactory {
     protected PluginLoader rulesLoader;

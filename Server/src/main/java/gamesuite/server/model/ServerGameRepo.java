@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gamesuite.core.control.GameManager;
 import gamesuite.core.control.GameManagerFactory;
-import gamesuite.core.control.PluginLoader;
+import gamesuite.core.utils.PluginLoader;
 import gamesuite.core.model.PromoteRequester;
 
 @Service

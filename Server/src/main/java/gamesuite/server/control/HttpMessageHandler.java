@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import gamesuite.core.network.JsonSchemaValidator;
+import gamesuite.core.utils.JsonSchemaValidator;
 import gamesuite.server.model.ServerGameRepo;
 
 import org.springframework.web.bind.annotation.GetMapping;

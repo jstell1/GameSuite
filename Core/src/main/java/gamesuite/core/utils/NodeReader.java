@@ -1,4 +1,4 @@
-package gamesuite.core.control;
+package gamesuite.core.utils;
 
 public class NodeReader {
     
