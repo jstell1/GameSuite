@@ -61,6 +61,7 @@ export default function App() {
   const gameGroup = useRef(new Map());
   const [gameUI, setGameUI] = useState("");
   const [teamNames, setTeamNames] = useState([]);
+  const [promoteList, setPromoteList] = useState(null);
   //const gameBoard = useState(null);
 
 
@@ -177,6 +178,10 @@ export default function App() {
               }
               setGame(payload.gameState);
               break;
+              case "requestPromoteChoice":
+                  setPromoteList(payload.choices);
+
+              break;
             default: 
                 //console.log(data);
                 break;
@@ -211,7 +216,8 @@ export default function App() {
                                   gameChoice, setGameChoice,
                                     gameUI, setGameUI,
                                   gameGroup,
-                                    teamNames, setTeamNames
+                                    teamNames, setTeamNames,
+                                    promoteList, setPromoteList
                                 }}>
       <NavigationContainer>
         <Stack.Navigator

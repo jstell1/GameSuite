@@ -1,6 +1,6 @@
 import {useContext, useEffect, useRef, useState} from "react";
 import {API_HOST, GameContext} from "../../Global";
-import {Button, Image, Dimensions, Platform, Pressable, StyleSheet, Text, View} from "react-native";
+import {Button, Image, Dimensions, Platform, Pressable, StyleSheet, Text, View, Modal, FlatList} from "react-native";
 
 
 
@@ -33,6 +33,9 @@ export default function StaticGameBoard({navigation, route}) {
     const [ boardUI, setBoardUI ] = useState("");
     const team1 = useRef(new Map());
     const team2= useRef(new Map());
+    const { promoteList, setPromoteList } = useContext(GameContext);
+    const { gameId} = useContext(GameContext);
+    const over = useRef(false);
 
     useEffect(() => {
         if(!game) return;
@@ -54,7 +57,8 @@ export default function StaticGameBoard({navigation, route}) {
     useEffect(() => {
         async function start() {
             console.log(gameBoard);
-            if(!gameBoard) return;
+            if(!gameBoard || over.current) return;
+            over.current = true;
             console.log("not supposed to be here if null");
 
             const boardDef = await getBoardDef();
@@ -92,6 +96,7 @@ export default function StaticGameBoard({navigation, route}) {
                         team2.current = new Map();
 
                         setCurrGameId("Create or Join Game");
+                        over.current = false;
                     }}
                 />
             )
@@ -104,6 +109,8 @@ export default function StaticGameBoard({navigation, route}) {
             applyChanges(game.changedPos);
         }
     }, [game]);
+
+
 
     function applyChanges(changedPos) {
         if(!board) return;
@@ -191,6 +198,36 @@ export default function StaticGameBoard({navigation, route}) {
     }
     return (
         <View style={styles.container}>
+            <Modal
+                transparent
+                animationType="fade"
+                visible={promoteList !== null}
+                onRequestClose={() => {
+                    setPromoteList(null);
+                }}
+            >
+                <View style={{alignItems: "center", justifyContent: "center", flex: 1}}>
+                    <FlatList style={{flexGrow: 0}} data={promoteList} renderItem={({item}) =>
+                        <Pressable
+                            onPress={() => {
+                                let payload = {
+                                    "promoteChoice": {
+                                        "gameId": currGameId,
+                                        "choice": item
+                                    }
+                                };
+                                ws.current.send(JSON.stringify(payload));
+                                setPromoteList(null);
+                            }}
+                        >
+                            <Text>{item}</Text>
+                        </Pressable>
+                    }
+                              keyExtractor={item => item}
+                    />
+                </View>
+
+            </Modal>
             <Text>{gameTurn}</Text>
             <View style={{width: BOARD_SIZE, height: BOARD_SIZE}}>
 
@@ -224,6 +261,8 @@ export default function StaticGameBoard({navigation, route}) {
         </View>
     );
 }
+
+
 
 function Square({ row, col, piece, onPress, highlighted }) {
 
