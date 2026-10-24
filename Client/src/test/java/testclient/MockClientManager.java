@@ -1,4 +1,4 @@
-package gamesuite.client.test;
+package testclient;
 
 import java.io.IOException;
 import java.io.InputStream;

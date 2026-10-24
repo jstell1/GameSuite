@@ -1,6 +1,8 @@
 plugins {
     id 'application'
     id 'java'
+    id 'org.springframework.boot' version '3.5.4'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 dependencies {
@@ -37,8 +39,8 @@ tasks.register('runCli', JavaExec) {
 tasks.register('runTest', JavaExec) {
     group = 'test'
     description = 'runs the MockClientManager'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'gamesuite.client.test.TestMain'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'testclient.TestMain'
     standardInput = System.in
 }
 

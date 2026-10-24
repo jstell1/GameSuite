@@ -1,4 +1,4 @@
-package gamesuite.client.test;
+package testclient;
 
 import gamesuite.client.control.ClientManager;
 import gamesuite.client.control.GUIManager;

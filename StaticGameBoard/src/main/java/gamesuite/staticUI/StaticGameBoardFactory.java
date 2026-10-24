@@ -47,8 +47,6 @@ public class StaticGameBoardFactory implements GameBoardFactory {
             }
         }
 
-
-
         Map<String,ImageIcon> map1 = new HashMap<>();
         Map<String,ImageIcon> map2 = new HashMap<>();
 
@@ -56,6 +54,8 @@ public class StaticGameBoardFactory implements GameBoardFactory {
         BoardGameState game = mapper.treeToValue(gameJson, BoardGameState.class);
         String gameName = game.getGameName();
         String tmp = "boardDef/" + gameName + "Board.json";
+        System.out.println(gameName);
+        System.out.println(tmp);
         JsonNode file = mapper.readTree(getClass().getClassLoader().getResourceAsStream(tmp));
         URL boardURL = getClass().getClassLoader().getResource(file.get("board").asText());
         ImageIcon boardIcon = new ImageIcon(boardURL);
