@@ -1,6 +1,8 @@
 
 package gamesuite.server.control;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -13,6 +15,7 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private WebSocketMessageHandler handler;
+    private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
 
     public WebSocketConfig(WebSocketMessageHandler handler) {
         this.handler = handler;
@@ -28,7 +31,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        System.out.println("Registering WebSocket handler at /ingame");
+        log.info("Registering WebSocket handler at /ingame");
         webSocketHandlerRegistry
             .addHandler(this.handler,"/ingame")
             .setAllowedOrigins("*");

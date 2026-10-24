@@ -1,9 +1,13 @@
 <configuration>
-    <property name="PATTERN"
-              value="%d{HH:mm:ss.SSS} %-5level [%thread] [game=%X{gameId}] %logger{20} - %msg%n"/>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="FILE_PATTERN"
+              value="%d{HH:mm:ss.SSS} %-5level [%thread] [session=%X{sessionId}] [game=%X{gameId}] %logger{20} - %msg%n"/>
+    <property name="CONSOLE_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%-5level) %clr([%thread]){faint} %clr([session=%X{sessionId}]){orange} %clr([game=%X{gameId}]){cyan} %clr(%logger{20}){blue} - %msg%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder><pattern>${PATTERN}</pattern></encoder>
+        <encoder><pattern>${CONSOLE_PATTERN}</pattern></encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -13,11 +17,14 @@
             <maxFileSize>20MB</maxFileSize>
             <maxHistory>14</maxHistory>
         </rollingPolicy>
-        <encoder><pattern>${PATTERN}</pattern></encoder>
+        <encoder><pattern>${FILE_PATTERN}</pattern></encoder>
     </appender>
 
     <logger name="gamesuite" level="DEBUG"/>
     <logger name="boardgame" level="DEBUG"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.springframework.boot.web.embedded.tomcat" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

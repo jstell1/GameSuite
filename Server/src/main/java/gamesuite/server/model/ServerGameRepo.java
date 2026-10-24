@@ -67,6 +67,7 @@ public class ServerGameRepo implements PromoteRequester {
         List<String> games = this.joinable.get(name);
         games.remove(gameId);
         this.gamePluginMap.remove(gameId);
+        log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable in {}={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), name, this.joinable.get(name).size());
     }
 
     public Object getGamesLock() { return this.gamesLock; } 
@@ -114,7 +115,7 @@ public class ServerGameRepo implements PromoteRequester {
             }
             this.joinable.get(joinName).add(gameId);
         
-            log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), this.joinable.size());
+            log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable in {}={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), joinName, this.joinable.get(joinName).size());
             }
             return gameId;
     }
@@ -163,7 +164,7 @@ public class ServerGameRepo implements PromoteRequester {
             String gameName = this.gamePluginMap.get(gameId);
             
             this.joinable.get(gameName).remove(gameId);
-            log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), this.joinable.size());
+            log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable in {}={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), gameName, this.joinable.get(gameName).size());
         }
         return node;
     }
@@ -211,16 +212,16 @@ public class ServerGameRepo implements PromoteRequester {
          String gameId = null;
          GameManager gm = null;
              gameId = this.userSessions.get(sessionId);
+             String name = this.gamePluginMap.get(gameId);
              gm = this.games.get(gameId);
              synchronized(gm) {
                    if(gm.getNumMappedPlayers() > 1) {
-                    String name = this.gamePluginMap.get(gameId);
                     this.joinable.get(name).remove(gameId);
                    }
                     gm.quitGame(sessionId);
                     this.userSessions.remove(sessionId);
 
-                 log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), this.joinable.size());
+                 log.info("numGames={} numSessions={} numPluginsMapped={} numJoinable in {}={}", this.games.size(), this.userSessions.size(), this.gamePluginMap.size(), name, this.joinable.get(name).size());
             }
         
         return gm;

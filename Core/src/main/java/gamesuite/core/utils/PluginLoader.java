@@ -282,6 +282,9 @@ public class PluginLoader {
     }
 
     public boolean isMultiGame(String game) {
+        if(game == null) {
+            return false;
+        }
          return !this.games.get(game).isEmpty();
     }
 

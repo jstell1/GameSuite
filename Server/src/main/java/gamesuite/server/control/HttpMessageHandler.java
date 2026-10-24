@@ -1,6 +1,8 @@
 package gamesuite.server.control;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +28,7 @@ public class HttpMessageHandler {
     private WebSocketMessageHandler handler;
     private InputStream schemaStream;
     private JsonNode schemaRoot;
+    private Logger log = LoggerFactory.getLogger(HttpMessageHandler.class);
 
     public HttpMessageHandler(ServerGameRepo gmRepo, WebSocketMessageHandler handler) throws IOException {
         this.gmRepo = gmRepo;
@@ -84,7 +87,7 @@ public class HttpMessageHandler {
             ObjectMapper mapper = new ObjectMapper();
             String[] games = this.gmRepo.getJoinableGames(game);
             JsonNode n = mapper.valueToTree(games);
-            System.out.println(n);
+            log.debug(n.asText());
             return new ResponseEntity<>(n, HttpStatus.OK);
      //   } catch (Exception e) {
             // TODO: handle exception
