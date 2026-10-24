@@ -38,8 +38,7 @@ tasks.register('runTest', JavaExec) {
     group = 'test'
     description = 'runs the MockClientManager'
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = application.mainClass
-    args = ['test']
+    mainClass = 'gamesuite.client.test.TestMain'
     standardInput = System.in
 }
 
@@ -49,7 +48,9 @@ tasks.register('fatJar', Jar) {
     manifest {
         attributes('Main-Class': 'gamesuite.client.App')
     }
-    from(sourceSets.main.output)
+    from(sourceSets.main.output) {
+        exclude 'gamesuite/client/test/**'
+    }
 
     dependsOn configurations.runtimeClasspath
     from {
