@@ -82,21 +82,29 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     gameId = this.gmRepo.getUserSessionGame(id);
                     MDC.put("gameId", gameId);
                     MDC.put("sessionId", session.getId());
+                        this.webSocketSessions.remove(id);
+                    if(gameId == null) {
+                        log.info("Websocket session closed: activeSessions={} closeStatus={}", this.webSocketSessions.size(), status.toString());
+                        log.debug("Closing socket with no gm");
+                        return;
+                    }
                    GameManager gm = this.gmRepo.getGM(gameId);
-
                 synchronized(gm) {
 
-                    if(gm.getNumMappedPlayers() > 1) {
+                        int num = gm.getNumMappedPlayers();
+                        log.debug("Num players mapped in current gm: numMapped={}", num);
+                    if(num > 1) {
                         GameManager game = this.gmRepo.removePlayer(id);
-                        this.webSocketSessions.remove(id);
                         if(gm.gameOver()) {
                             notifyGameOver(gm.getGameStateJson(), gameId);
                         }
                     } else {
-                        this.webSocketSessions.remove(id);
-                        this.gmRepo.removePlayer(id);
+                        //this.webSocketSessions.remove(id);
+                        //this.gmRepo.removePlayer(id);
+                        GameManager game = this.gmRepo.removePlayer(id);
                         this.gmRepo.closeGame(gameId);
                     }
+
                 }
 
                 log.info("Websocket session closed: activeSessions={} closeStatus={}", this.webSocketSessions.size(), status.toString());
@@ -176,7 +184,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                         log.error("Issue with socket", e);
                         return;
                     }
-
+                    //log.debug(message.toString());
                     ObjectMapper mapper = new ObjectMapper();
                     String netWorkMsg = null;
                     ObjectNode outer = null;
@@ -186,6 +194,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     netWorkMsg = message.getPayload().toString();
 
                     try {
+                        log.debug("receiving json to check against schema");
+                        log.trace("netMsg={}", netWorkMsg);
                         outer = (ObjectNode) mapper.readTree(netWorkMsg);
                         if(!JsonSchemaValidator.isValid(netWorkMsg)) {
                             ObjectNode inner = mapper.createObjectNode();

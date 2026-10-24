@@ -55,6 +55,9 @@ public class TurnCheckConst extends Constraint {
         String curr = teams[turn - 1];
         int x = move.get("startX").asInt();
         int y = move.get("startY").asInt();
+        if(!this.board.isValidPos(x,y)) {
+            return false;
+        }
         CoordPairImpl pos = this.board.getBoardPos(x, y);
         BoardGamePiece piece = pos.getPiece();
 

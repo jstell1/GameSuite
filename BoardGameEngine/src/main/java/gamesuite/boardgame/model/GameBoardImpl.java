@@ -51,9 +51,9 @@ public class GameBoardImpl implements GameBoard {
     public int getSideLength() { return this.sideLength; }
 
     public CoordPairImpl getBoardPos(int x, int y) {
-        if(isValidPos(x, y))
+
             return board[x][y];
-        return null;
+
     }
 
     public void setBoardPos(int x, int y, BoardGamePiece piece) {
