@@ -16,6 +16,7 @@ import gamesuite.boardgame.model.BoardGamePiece;
 import gamesuite.boardgame.model.BoardGameState;
 import gamesuite.boardgame.model.CoordPairImpl;
 import gamesuite.boardgame.model.GameBoardImpl;
+import gamesuite.core.model.CoordPair;
 import gamesuite.core.model.GameBoard;
 import gamesuite.core.model.GameState;
 import gamesuite.core.model.rules.ConstDependent;
@@ -31,6 +32,8 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
     private boolean p1KingMoved;
     private boolean p2KingMoved;
     private Constraint validateAttack;
+    private CoordPairImpl castlePos1;
+    private CoordPairImpl castlePos2;
     private final String[] dependencies = {"validChessAttack"};
 
     public CheckCastleConst() {
@@ -88,6 +91,12 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
         if(eY == tmpY2){
             tmpY = tmpY2;
             rookY = 7;
+        }
+
+        CoordPairImpl testPos = team.equals(teams[1]) ? this.castlePos2 : this.castlePos1;
+
+        if(start != testPos) {
+            return false;
         }
 
         CoordPairImpl rookPos = this.board.getBoardPos(row, rookY);
@@ -178,6 +187,17 @@ public class CheckCastleConst extends Constraint implements Updatable, ConstDepe
     @Override 
     public void setExtraParams(JsonNode extraParams) {
         JsonNode vectNodes = extraParams.get("attackVectors");
+        JsonNode castlePos1 = extraParams.get("castlePos1");
+        JsonNode castlePos2 = extraParams.get("castlePos2");
+
+        int x1 = castlePos1.get("x").asInt();
+        int y1 = castlePos1.get("y").asInt();
+        int x2 = castlePos2.get("x").asInt();
+        int y2 = castlePos2.get("y").asInt();
+
+        this.castlePos1 = this.board.getBoardPos(x1,y1);
+        this.castlePos2 = this.board.getBoardPos(x2,y2);
+
         this.attackVectors = new int[vectNodes.size()][];
         int i = 0;
         for(JsonNode node : vectNodes) {
