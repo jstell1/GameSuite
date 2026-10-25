@@ -200,34 +200,37 @@ export default function StaticGameBoard({navigation, route}) {
         <View style={styles.container}>
             <Modal
                 transparent
-                animationType="fade"
+                animationType="slide"
                 visible={promoteList !== null}
-                onRequestClose={() => {
-                    setPromoteList(null);
-                }}
+                onRequestClose={() => setPromoteList(null)}
             >
-                <View style={{alignItems: "center", justifyContent: "center", flex: 1}}>
-                    <FlatList style={{flexGrow: 0}} data={promoteList} renderItem={({item}) =>
-                        <Pressable
-                            onPress={() => {
-                                let payload = {
-                                    "promoteChoice": {
-                                        "gameId": currGameId,
-                                        "choice": item
-                                    }
-                                };
-                                ws.current.send(JSON.stringify(payload));
-                                setPromoteList(null);
-                            }}
-                        >
-                            <Text>{item}</Text>
-                        </Pressable>
-                    }
-                              keyExtractor={item => item}
+                <View style={styles.backdrop}>
+                    <FlatList
+                        style={{ flexGrow: 0, width: '100%' }}
+                        contentContainerStyle={{ alignItems: 'center' }}
+                        data={promoteList}
+                        keyExtractor={item => item}
+                        renderItem={({ item }) => (
+                            <Pressable
+                                style={styles.button}
+                                onPress={() => {
+                                    const payload = {
+                                        promoteChoice: {
+                                            gameId: currGameId,
+                                            choice: item
+                                        }
+                                    };
+                                    ws.current.send(JSON.stringify(payload));
+                                    setPromoteList(null);
+                                }}
+                            >
+                                <Text>{item}</Text>
+                            </Pressable>
+                        )}
                     />
                 </View>
-
             </Modal>
+
             <Text>{gameTurn}</Text>
             <View style={{width: BOARD_SIZE, height: BOARD_SIZE}}>
 
@@ -262,11 +265,7 @@ export default function StaticGameBoard({navigation, route}) {
     );
 }
 
-
-
 function Square({ row, col, piece, onPress, highlighted }) {
-
-
 
     return (
         <Pressable
@@ -301,6 +300,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    backdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',  // dims the whole screen
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    button: {
+        backgroundColor: 'rgba(255, 255, 255, 0.92)',  // slightly translucent
+        borderRadius: 12,
+        padding: 20,
+        width: 240,
+        marginBottom: 10,
+        alignItems: 'center',
     },
     input: {
         height: 40,
