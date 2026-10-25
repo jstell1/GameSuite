@@ -31,6 +31,57 @@ public class TestApp {
             manyCreates(args);
         } else if(x == 6) {
             manyCreatesJoins(args);
+        } else if (x == 7) {
+            manyJoins(args);
+        }
+    }
+
+    public static void manyJoins(String[] args) {
+        try {
+            String ip = args[0];
+            int port = Integer.parseInt(args[1]);
+            TestApp creator = new TestApp();
+            creator.mc1 = new MockClient(ip, port, creator);
+            creator.mc1.createGame("CheckersStatic", "BoardGameEngine", "Bob");
+
+            while(creator.gameId == null) {
+                Thread.sleep(1000);
+            }
+
+            ArrayList<TestApp> list = new ArrayList<>();
+            int j = 0;
+            for(int i = 0; i < 15; i++) {
+                new Thread(() -> {
+                    try {
+
+                        TestApp joiner = new TestApp();
+                        joiner.ip = ip;
+                        joiner.port = port;
+                        //joiner.mc1 = new MockClient(ip, port, joiner);
+                        //joiner.mc1.createGame("CheckersStatic", "BoardGameEngine", "Bob");
+                        joiner.mc2 = new MockClient(ip, port, creator);
+
+                        joiner.mc2.joinGame("nancy", creator.gameId);
+                        synchronized (list) {
+                            list.add(joiner);
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+            }
+
+
+            System.in.read();
+
+            for(TestApp app : list) {
+                app.mc2.quitGame(true);
+            }
+
+            System.in.read();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
