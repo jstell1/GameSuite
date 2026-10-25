@@ -185,6 +185,7 @@ public class IsCheckmateConst extends Constraint implements ConstDependent{
                     boolean passed = true;
                     List<Constraint> constList = act.getConstraints();
                     for (Constraint constraint : constList) {
+                        ((ObjectNode)node).put("test", "test");
                         if (!constraint.checkMove(node)) {
                             passed = false;
                             break;

@@ -68,6 +68,8 @@ public class CheckEnPassantConst extends Constraint implements Updatable, ConstD
         int eX = move.get("endX").asInt();
         int eY = move.get("endY").asInt();
 
+        JsonNode test = move.get("test");
+
         CoordPairImpl pos = this.board.getBoardPos(sX,sY);
         BoardGamePiece attacker = pos.getPiece();
         CoordPairImpl targSquare = this.board.getBoardPos(eX,eY);
@@ -90,10 +92,14 @@ public class CheckEnPassantConst extends Constraint implements Updatable, ConstD
             return false;
         }
 
-        if(targSquare == this.tracked) {
+
+
+        if(test == null && targSquare == this.tracked) {
             this.tracked = null;
             this.noEmpty.override();
             attacked.setPiece(null);
+            return true;
+        } else if(test != null && targSquare == this.tracked) {
             return true;
         }
         return false;
