@@ -41,3 +41,16 @@ bootRun {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('runTest', JavaExec) {
+	group = 'test'
+	description = 'runs a MockClient for server testing'
+	classpath = sourceSets.test.runtimeClasspath
+	mainClass = 'gamesuite.server.TestApp'
+	args = [
+	        project.findProperty('host'),
+			project.findProperty('port'),
+			7
+	]
+	standardInput = System.in
+}

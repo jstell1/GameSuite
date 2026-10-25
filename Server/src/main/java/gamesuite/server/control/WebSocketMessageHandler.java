@@ -122,6 +122,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
         for (String sessionId : userSessions) {
         
                 WebSocketSession s = this.webSocketSessions.get(sessionId);
+                if(s==null) {
+                    continue;
+                }
                 synchronized (s) {
                     s.sendMessage(new TextMessage(msg));
                 }
@@ -149,6 +152,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
                     
                  //   if(s.isOpen()) {
                        // try {
+                        if(s == null) {
+                            continue;
+                        }
                             synchronized (s) {
                                 s.sendMessage(msg);
                             }
@@ -583,6 +589,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
         List<String> sessionList = this.gmRepo.getGameSessions(gameId);
         for(String user : sessionList) {
             WebSocketSession s = this.webSocketSessions.get(user);
+            if(s == null) {
+                continue;
+            }
             synchronized (s) {
                 s.sendMessage(msg);
             }
