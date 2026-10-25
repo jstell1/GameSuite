@@ -253,12 +253,12 @@ public class BoardGameFactory extends GameManagerFactory {
                     JsonNode updatees = effect.get("updatees");
 
                     Updater f = (Updater)this.effects.get(effect.get("type").asText());
-                    Map<String, Updatable> ups = new HashMap<>();
+                    List<Updatable> ups = new ArrayList<>();
                     for(JsonNode u : updatees) {
                         if(this.constraints.get(u.asText()) != null) {
-                            ups.put(u.asText(), (Updatable)this.constraints.get(u.asText()));
+                            ups.add((Updatable)this.constraints.get(u.asText()));
                         } else if(this.effects.get(u.asText()) != null) {
-                            ups.put(u.asText(), (Updatable)this.effects.get(u.asText()));
+                            ups.add((Updatable)this.effects.get(u.asText()));
                         
                         }    
                     }
@@ -282,12 +282,12 @@ public class BoardGameFactory extends GameManagerFactory {
                     JsonNode updatees = constraint.get("updatees");
 
                     Updater f = (Updater)this.constraints.get(constraint.get("type").asText());
-                    Map<String, Updatable> ups = new HashMap<>();
+                    List<Updatable> ups = new ArrayList<>();
                     for(JsonNode u : updatees) {
                         if(this.constraints.get(u.asText()) != null) {
-                            ups.put(u.asText(), (Updatable)this.constraints.get(u.asText()));
+                            ups.add((Updatable)this.constraints.get(u.asText()));
                         } else if(this.effects.get(u.asText()) != null) {
-                            ups.put(u.asText(), (Updatable)this.effects.get(u.asText()));
+                            ups.add((Updatable)this.effects.get(u.asText()));
                         
                         }    
                     }
@@ -321,10 +321,10 @@ public class BoardGameFactory extends GameManagerFactory {
 
         if(gameDef.has("gmUpdatee")) {
             String name = gameDef.get("gmUpdatee").asText();
-            Map<String, Updatable> m = new HashMap<>();
+            List<Updatable> m = new ArrayList<>();
             Constraint c = this.constraints.get(name);
             c.setGameManager(gm);
-            m.put(name, (Updatable)this.constraints.get(name));
+            m.add((Updatable)this.constraints.get(name));
             gm.addUpdatables(m);
         }
 

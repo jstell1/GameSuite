@@ -1,5 +1,6 @@
 package gamesuite.chess;
 
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -23,7 +24,7 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
 
     private GameBoardImpl board;
     private BoardGameState gameState;
-    private Map<String, Updatable> updatees;
+    private List<Updatable> updatees;
 
     public ChessMakeMoveEffect() {
         super("chessMakeMove");
@@ -90,7 +91,7 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
         
         try {
             if(type.equals("K")) {
-                Updatable updatee = this.updatees.get("kingProtected");
+                Updatable updatee = this.updatees.get(1);
                 
                 ObjectNode node = mapper.createObjectNode();
                 node.put("king", turn);
@@ -101,7 +102,7 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
 
             if(type.equals("K") || type.equals("R")) {
 
-                Updatable updatee = this.updatees.get("checkCastle");
+                Updatable updatee = this.updatees.get(0);
                 
                     updatee.update(vectNode);
                 
@@ -109,11 +110,11 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
             }
 
             if(type.equals("P")) {
-                Updatable updatee = this.updatees.get("firstMove");
+                Updatable updatee = this.updatees.get(3);
                 updatee.update(vectNode);
             }
 
-            Updatable updatee = this.updatees.get("checkEnPassant");
+            Updatable updatee = this.updatees.get(2);
             updatee.update(move);
                 
                 
@@ -131,7 +132,7 @@ public class ChessMakeMoveEffect extends Effect implements Updater {
     }
 
     @Override
-    public void addUpdatables(Map<String, Updatable> updatees) {
+    public void addUpdatables(List<Updatable> updatees) {
         this.updatees = updatees;
     }
     

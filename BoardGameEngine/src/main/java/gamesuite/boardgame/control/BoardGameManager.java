@@ -34,7 +34,7 @@ public class BoardGameManager implements GameManager, Updater {
     private String ui;
     private boolean override;
     private PromoteRequester requester;
-    private Map<String,Updatable> updatees;
+    private List<Updatable> updatees;
     private JsonNode move;
     private String gameId;
 
@@ -294,7 +294,7 @@ public class BoardGameManager implements GameManager, Updater {
 
     @Override
     public void sendPromotionChoice(String type) throws Exception {
-        Updatable u = this.updatees.get("chessEndRow");
+        Updatable u = this.updatees.get(0);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.createObjectNode().put("type", type);
         int turn = this.game.getTurn();
@@ -312,7 +312,7 @@ public class BoardGameManager implements GameManager, Updater {
     }
 
     @Override
-    public void addUpdatables(Map<String, Updatable> updatees) {
+    public void addUpdatables(List<Updatable> updatees) {
         this.updatees = updatees;
     }
 }
