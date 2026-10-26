@@ -116,6 +116,21 @@ public class ClientManagerImpl implements ClientManager {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
                 ClientManagerImpl.this.session = session;
+                new Thread(() -> {
+                    String ping = "{\"ping\"";
+                    while(ClientManagerImpl.this.session.isOpen()) {
+                        try {
+                            Thread.sleep(30000);
+                            ClientManagerImpl.this.session.sendMessage(new TextMessage(ping));
+                        } catch (InterruptedException e) {
+                            System.out.println("Problem with websock ping");
+                            break;
+                        } catch (IOException e) {
+                            System.out.println("Problem with websock ping");
+                            break;
+                        }
+                    }
+                }).start();
             }
 
             @Override

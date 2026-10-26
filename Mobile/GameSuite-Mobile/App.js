@@ -62,6 +62,7 @@ export default function App() {
   const [gameUI, setGameUI] = useState("");
   const [teamNames, setTeamNames] = useState([]);
   const [promoteList, setPromoteList] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
   //const gameBoard = useState(null);
 
 
@@ -75,6 +76,19 @@ export default function App() {
     validate.current = ajv.current.compile(schema);
   }
 
+
+    useEffect(() => {
+        if(!isConnected) return;
+
+        const id = setInterval(() => {
+            const sock = ws.current;
+            if (sock && sock.readyState === WebSocket.OPEN) {
+                sock.send(JSON.stringify({ ping: {} }));
+            }
+        }, 30000);
+        return () => clearInterval(id);
+    }, [isConnected]);
+
   function connectWebSocket() {
     return new Promise((resolve, reject) => {
 
@@ -82,6 +96,7 @@ export default function App() {
         ws.current = new WebSocket(`${WS_HOST}`);
     
         ws.current.onopen = () => {
+            setIsConnected(true);
           console.log("WebSocket connected");
           resolve(ws.current);
         };
@@ -187,9 +202,11 @@ export default function App() {
                 break;
           }      
         };
-        ws.current.onerror = e => { console.log(e.message); reject(e); };
+        ws.current.onerror = e => { setIsConnected(false); console.log(e.message); reject(e); };
     
-        ws.current.onclose = e => { console.log(e.code, e.reason); };
+        ws.current.onclose = e => { setIsConnected(false); console.log(e.code, e.reason); };
+
+
     });
 
 

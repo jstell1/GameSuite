@@ -199,6 +199,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Pro
 
                     netWorkMsg = message.getPayload().toString();
 
+                    if (netWorkMsg.startsWith("{\"ping\"")) {
+                        //session.sendMessage(new TextMessage("{\"pong\":{}}"));
+                        log.trace("websock ping");
+                        return;
+                    }
+
                     try {
                         log.debug("receiving json to check against schema");
                         log.trace("netMsg={}", netWorkMsg);
